@@ -16,6 +16,9 @@ import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
 import com.xvantage.rental.utils.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import android.content.Intent
+import com.xvantage.rental.ui.dashboard.DashboardActivity
+
 
 @AndroidEntryPoint
 class AuthActivity : BaseActivity() {
@@ -58,16 +61,39 @@ class AuthActivity : BaseActivity() {
         lifecycleScope.launch {
             viewModel.currentScreen.collect { screen ->
                 when (screen) {
-                    is AuthScreen.SignIn -> navController.navigate(R.id.signInFragment)
-                    is AuthScreen.SignUp -> navController.navigate(R.id.signUpFragment)
-                    is AuthScreen.VerifyOtp -> {
-                        val bundle = Bundle().apply {
-                            putString("email", screen.email)
+                    is AuthScreen.SignIn -> {
+                        if (navController.currentDestination?.id
+                            != R.id.signInFragment) {
+                            navController.navigate(R.id.signInFragment)
                         }
-                        navController.navigate(R.id.verifyOtpFragment, bundle)
                     }
-                    is AuthScreen.ForgotPassword -> navController.navigate(R.id.forgotPasswordFragment)
-                    is AuthScreen.Dashboard -> navController.navigate(R.id.dashboardActivity)
+                    is AuthScreen.SignUp -> {
+                        if (navController.currentDestination?.id
+                            != R.id.signUpFragment) {
+                            navController.navigate(R.id.signUpFragment)
+                        }
+                    }
+                    is AuthScreen.VerifyOtp -> {
+                        if (navController.currentDestination?.id
+                            != R.id.verifyOtpFragment) {
+                            val bundle = Bundle().apply {
+                                putString("email", screen.email)
+                            }
+                            navController.navigate(R.id.verifyOtpFragment, bundle)
+                        }
+                    }
+                    is AuthScreen.ForgotPassword -> {
+                        if (navController.currentDestination?.id
+                            != R.id.forgotPasswordFragment) {
+                            navController.navigate(R.id.forgotPasswordFragment)
+                        }
+                    }
+                    is AuthScreen.Dashboard -> {
+                        startActivity(
+                            Intent(this@AuthActivity, DashboardActivity::class.java)
+                        )
+                        finish()
+                    }
                 }
             }
         }

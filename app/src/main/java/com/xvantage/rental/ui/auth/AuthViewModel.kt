@@ -45,7 +45,7 @@ class AuthViewModel @Inject constructor(
                 is ResultWrapper.Success -> {
                     authStateFlow.value = AuthState.Success(response.value.data?.token)
                     storeJwtToken(response.value.data?.token ?: "")
-                    currentScreenFlow.value = AuthScreen.VerifyOtp(email)
+                    currentScreenFlow.value = AuthScreen.Dashboard
                 }
                 is ResultWrapper.Error -> {
                     authStateFlow.value = AuthState.Error(response.message ?: "Login failed")
@@ -61,16 +61,18 @@ class AuthViewModel @Inject constructor(
             when (val response = repository.signUp(email, password)) {
                 is ResultWrapper.Success -> {
                     authStateFlow.value = AuthState.Success("Signup successful")
+
                     currentScreenFlow.value = AuthScreen.VerifyOtp(email)
                 }
                 is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(response.message ?: "Signup failed")
+                    authStateFlow.value = AuthState.Error(
+                        response.message ?: "Signup failed"
+                    )
                 }
                 ResultWrapper.Loading -> Unit
             }
         }
     }
-
     fun signUpWithGoogle(googleData: GoogleLoginRequest) {
         viewModelScope.launch {
             authStateFlow.value = AuthState.Loading

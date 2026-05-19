@@ -17,60 +17,48 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(private val apiInterface: APIInterface) {
 
     suspend fun login(email: String, password: String): ResultWrapper<LoginResponse> {
-        val request = LoginRequest(email, password, "email")
-        val retrofitRequest = apiInterface.login(request).raw().request
-
         return try {
-            ApiLogger.logRequest(request, retrofitRequest)
+            val request = LoginRequest(email, password, "email")
             val response = apiInterface.login(request)
-            ApiLogger.logResponse(response, retrofitRequest)
+            ApiLogger.logRequest(request, response.raw().request)
+            ApiLogger.logResponse(response, response.raw().request)
             NetworkHelper.handleApiResponse(response)
         } catch (e: Exception) {
-            ApiLogger.logError(e, retrofitRequest)
+            ResultWrapper.Error("Network error: ${e.localizedMessage}")
+        }
+    }
+
+    suspend fun signUp(email: String, password: String): ResultWrapper<SignupResponse> {
+        return try {
+            val request = SignupRequest(email, password)
+            val response = apiInterface.signUp(request)
+            ApiLogger.logRequest(request, response.raw().request)
+            ApiLogger.logResponse(response, response.raw().request)
+            NetworkHelper.handleApiResponse(response)
+        } catch (e: Exception) {
             ResultWrapper.Error("Network error: ${e.localizedMessage}")
         }
     }
 
     suspend fun signUpWithGoogle(googleData: GoogleLoginRequest): ResultWrapper<LoginResponse> {
-        val retrofitRequest = apiInterface.googleLogin(googleData).raw().request
         return try {
-            ApiLogger.logRequest(googleData, retrofitRequest)
             val response = apiInterface.googleLogin(googleData)
-            ApiLogger.logResponse(response, retrofitRequest)
+            ApiLogger.logRequest(googleData, response.raw().request)
+            ApiLogger.logResponse(response, response.raw().request)
             NetworkHelper.handleApiResponse(response)
         } catch (e: Exception) {
-            ApiLogger.logError(e, retrofitRequest)
-            ResultWrapper.Error("Network error: ${e.localizedMessage}")
-        }
-    }
-
-
-    suspend fun signUp(email: String, password: String): ResultWrapper<SignupResponse> {
-        val request = SignupRequest(email, password)
-        val retrofitRequest = apiInterface.signUp(request).raw().request
-
-        return try {
-            ApiLogger.logRequest(request, retrofitRequest)
-            val response = apiInterface.signUp(request)
-            ApiLogger.logResponse(response, retrofitRequest)
-            NetworkHelper.handleApiResponse(response)
-        } catch (e: Exception) {
-            ApiLogger.logError(e, retrofitRequest)
             ResultWrapper.Error("Network error: ${e.localizedMessage}")
         }
     }
 
     suspend fun verifyOtp(email: String, otp: String, type: String): ResultWrapper<VerifyOTPResponse> {
-        val request = VerifyOTPRequest(email, otp, type)
-        val retrofitRequest = apiInterface.verifyOtp(request).raw().request
-
         return try {
-            ApiLogger.logRequest(request, retrofitRequest)
+            val request = VerifyOTPRequest(email, otp, type)
             val response = apiInterface.verifyOtp(request)
-            ApiLogger.logResponse(response, retrofitRequest)
+            ApiLogger.logRequest(request, response.raw().request)
+            ApiLogger.logResponse(response, response.raw().request)
             NetworkHelper.handleApiResponse(response)
         } catch (e: Exception) {
-            ApiLogger.logError(e, retrofitRequest)
             ResultWrapper.Error("Network error: ${e.localizedMessage}")
         }
     }

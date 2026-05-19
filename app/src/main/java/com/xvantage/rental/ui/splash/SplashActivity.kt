@@ -34,7 +34,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(layoutBinding.root)
         appPreference = AppPreference(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        startActivity(Intent(this, DashboardActivity::class.java))
+//        startActivity(Intent(this, DashboardActivity::class.java))
 
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = when {
