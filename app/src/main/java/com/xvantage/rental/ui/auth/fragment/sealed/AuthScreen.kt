@@ -8,10 +8,17 @@ package com.xvantage.rental.ui.auth.fragment.sealed
  * Licensed under the Apache License, Version 2.0. See LICENSE file for terms.
  */
 
+
 sealed class AuthScreen {
+
     object SignIn : AuthScreen()
+
     object SignUp : AuthScreen()
-    data class VerifyOtp(val email: String) : AuthScreen()
-    object ForgotPassword : AuthScreen()
+
+    data class VerifyOtp(
+        val phone: String
+    ) : AuthScreen()
+
     object Dashboard : AuthScreen()
 }
+

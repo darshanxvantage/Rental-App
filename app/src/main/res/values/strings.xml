@@ -27,28 +27,33 @@
 
 
     <!-- Sign Up & In screen -->
-    <string name="get_started_txt">Get Started</string>
+
+    <string name="get_started_txt">Create Account</string>
     <string name="welcome_back">Welcome Back!</string>
     <string name="sign_in_desc">Sign in to continue managing your properties.</string>
-    <string name="get_started_desc">Sign up to start managing your properties.</string>
-    <string name="email_address_input">Email Address</string>
-    <string name="email_address_hint">hello@example.com</string>
-    <string name="password_input">Password</string>
+    <string name="get_started_desc">Create your account to start managing your properties.</string>
+    <string name="phone_number_input">Phone Number</string>
+    <string name="phone_number_hint">Enter Phone Number</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="enter_valid_phone">Enter valid phone number</string>
+    <string name="account_not_found">Account Not Found</string>
+    <string name="please_signup_first">Please sign up first</string>
+    <string name="otp_sent">OTP Sent Successfully</string>
+    <string name="enter_valid_otp">Enter valid OTP</string>
+    <string name="account_created">Account Created Successfully</string>
+    <string name="enter_first_name">Enter First Name</string>
     <string name="otp_verfication">OTP Verification</string>
-    <string name="otp_verfication_title">Verify Your Email Address</string>
+    <string name="otp_verfication_title">Verify Your Phone Number</string>
     <string name="enter_otp">Please Enter your OTP</string>
-    <string name="otp_msg">We have send and OTP on given email address hello@xvantgaeinfotech.com</string>
+    <string name="otp_msg">We have sent an OTP to your phone number</string>
     <string name="verify_otp">Verify OTP</string>
-    <string name="password_hint">Enter Your Password</string>
     <string name="sign_up">Sign Up</string>
-    <string name="sign_up_wt_google">Sign up with Google</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="dont_have_account">Don’t have an account?</string>
     <string name="sign_in">Sign In</string>
-    <string name="or">OR</string>
-    <string name="google_client_id">794974421516-le569pg9g6c5jcrukruvg5cog90qcseu.apps.googleusercontent.com</string>
-    <string name="forgot_password">Forgot Password</string>
-    <string name="forgot_password_titile">Forgot your password ?</string>
+
+
+
 
 
     <!-- Dashboard -->

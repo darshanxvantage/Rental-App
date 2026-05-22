@@ -3,7 +3,7 @@ package com.xvantage.rental.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xvantage.rental.data.source.AuthRepository
-import com.xvantage.rental.network.request.auth.GoogleLoginRequest
+
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthScreen
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
@@ -30,6 +30,7 @@ class AuthViewModel @Inject constructor(
     fun setCurrentScreen(screen: AuthScreen) {
         currentScreenFlow.value = screen
     }
+
     fun storeJwtToken(token: String) {
         appPreference.setToken(token)
     }
@@ -38,88 +39,132 @@ class AuthViewModel @Inject constructor(
         return !appPreference.getToken().isNullOrEmpty()
     }
 
-    fun signIn(email: String, password: String) {
+
+    fun signIn(phone: String) {
+
         viewModelScope.launch {
-            authStateFlow.value = AuthState.Loading
-            when (val response = repository.login(email, password)) {
+
+            authStateFlow.value =
+                AuthState.Loading
+
+            when (
+                val response =
+                    repository.login(phone)
+            ) {
+
                 is ResultWrapper.Success -> {
-                    authStateFlow.value = AuthState.Success(response.value.data?.token)
-                    storeJwtToken(response.value.data?.token ?: "")
-                    currentScreenFlow.value = AuthScreen.Dashboard
+
+                    authStateFlow.value =
+                        AuthState.Success("OTP Sent")
+
+                    currentScreenFlow.value =
+                        AuthScreen.VerifyOtp(phone)
                 }
+
                 is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(response.message ?: "Login failed")
+
+                    authStateFlow.value =
+                        AuthState.Error(
+                            response.message
+                                ?: "User not found"
+                        )
                 }
+
                 ResultWrapper.Loading -> Unit
             }
         }
     }
 
-    fun signUp(email: String, password: String) {
-        viewModelScope.launch {
-            authStateFlow.value = AuthState.Loading
-            when (val response = repository.signUp(email, password)) {
-                is ResultWrapper.Success -> {
-                    authStateFlow.value = AuthState.Success("Signup successful")
+    fun signUp(phone: String) {
 
-                    currentScreenFlow.value = AuthScreen.VerifyOtp(email)
+        viewModelScope.launch {
+
+            authStateFlow.value =
+                AuthState.Loading
+
+            when (
+                val response =
+                    repository.signUp(phone)
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    authStateFlow.value =
+                        AuthState.Success("OTP Sent")
+
+                    currentScreenFlow.value =
+                        AuthScreen.VerifyOtp(phone)
                 }
+
                 is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(
-                        response.message ?: "Signup failed"
+
+                    authStateFlow.value =
+                        AuthState.Error(
+                            response.message
+                                ?: "Signup Failed"
+                        )
+                }
+
+                ResultWrapper.Loading -> Unit
+            }
+        }
+    }
+
+    fun verifyOtp(
+        phone: String,
+        otp: String
+    ) {
+
+        viewModelScope.launch {
+
+            authStateFlow.value =
+                AuthState.Loading
+
+            when (
+                val response =
+                    repository.verifyOtp(
+                        phone,
+                        otp
                     )
-                }
-                ResultWrapper.Loading -> Unit
-            }
-        }
-    }
-    fun signUpWithGoogle(googleData: GoogleLoginRequest) {
-        viewModelScope.launch {
-            authStateFlow.value = AuthState.Loading
-            when (val response = repository.signUpWithGoogle(googleData)) {
-                is ResultWrapper.Success -> {
-                    authStateFlow.value = AuthState.Success(response.value.data?.token ?: "Signup successful")
-                    storeJwtToken(response.value.data?.token ?: "")
-                    currentScreenFlow.value = AuthScreen.Dashboard
-                }
-                is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(response.message ?: "Google Signup failed")
-                }
-                ResultWrapper.Loading -> Unit
-            }
-        }
-    }
+            ) {
 
-    fun verifyOtp(email: String, otp: String, type: String) {
-        viewModelScope.launch {
-            authStateFlow.value = AuthState.Loading
-            when (val response = repository.verifyOtp(email, otp, type)) {
                 is ResultWrapper.Success -> {
-                    authStateFlow.value = AuthState.Success("OTP Verified")
-                    storeJwtToken(response.value.data?.token ?: "")
 
-                    currentScreenFlow.value = AuthScreen.Dashboard
-                }
-                is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(response.message ?: "Invalid OTP")
-                }
-                ResultWrapper.Loading -> Unit
-            }
-        }
-    }
+                    authStateFlow.value =
+                        AuthState.Success(
+                            "OTP Verified"
+                        )
 
-    fun forgotPassword(email: String) {
-        viewModelScope.launch {
-            authStateFlow.value = AuthState.Loading
-            when (val response = repository.forgotPassword(email)) {
-                is ResultWrapper.Success -> {
-                    authStateFlow.value = AuthState.Success("Password reset link sent")
+                    storeJwtToken(
+                        response.value.data?.token
+                            ?: ""
+                    )
+
+                    currentScreenFlow.value =
+                        AuthScreen.Dashboard
                 }
+
                 is ResultWrapper.Error -> {
-                    authStateFlow.value = AuthState.Error(response.message ?: "Invalid email")
+
+                    authStateFlow.value =
+                        AuthState.Error(
+                            response.message
+                                ?: "Invalid OTP"
+                        )
                 }
+
                 ResultWrapper.Loading -> Unit
             }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -49,7 +49,36 @@ class AuthActivity : BaseActivity() {
                     is AuthState.Success -> showLoading(false)
                     is AuthState.Error -> {
                         showLoading(false)
-                        Toast.makeText(this@AuthActivity, state.error, Toast.LENGTH_SHORT).show()
+                        if (
+                            state.error.contains(
+                                "not found",
+                                true
+                            )
+                        ) {
+
+                            androidx.appcompat.app.AlertDialog.Builder(
+                                this@AuthActivity
+                            )
+                                .setTitle("Account Not Found")
+                                .setMessage(
+                                    "Please sign up first"
+                                )
+                                .setPositiveButton(
+                                    "OK",
+                                    null
+                                )
+                                .show()
+
+                        } else {
+
+                            Toast.makeText(
+                                this@AuthActivity,
+                                state.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+
                     }
                     AuthState.Idle -> showLoading(false)
                 }
@@ -77,17 +106,12 @@ class AuthActivity : BaseActivity() {
                         if (navController.currentDestination?.id
                             != R.id.verifyOtpFragment) {
                             val bundle = Bundle().apply {
-                                putString("email", screen.email)
+                                putString("phone", screen.phone)
                             }
                             navController.navigate(R.id.verifyOtpFragment, bundle)
                         }
                     }
-                    is AuthScreen.ForgotPassword -> {
-                        if (navController.currentDestination?.id
-                            != R.id.forgotPasswordFragment) {
-                            navController.navigate(R.id.forgotPasswordFragment)
-                        }
-                    }
+
                     is AuthScreen.Dashboard -> {
                         startActivity(
                             Intent(this@AuthActivity, DashboardActivity::class.java)

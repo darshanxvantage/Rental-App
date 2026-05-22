@@ -8,9 +8,11 @@ package com.xvantage.rental.network.request.auth
  * Licensed under the Apache License, Version 2.0. See LICENSE file for terms.
  */
 
-
 data class VerifyOTPRequest(
-    val email: String,
-    val otp: String,
-    val type: String  // "signup" or "signin"
+
+    val phoneNumber: String,
+    val otp: String
+
 )
+
+

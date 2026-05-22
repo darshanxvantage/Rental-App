@@ -31,18 +31,39 @@ class VerifyOtpFragment : Fragment() {
         appPreference = AppPreference(requireContext())
 
         // Retrieve the email passed via the bundle
-        val email = arguments?.getString("email") ?: run {
-            Toast.makeText(context, "Email not provided", Toast.LENGTH_SHORT).show()
+
+        val phone = arguments?.getString("phone") ?: run {
+
+            Toast.makeText(
+                context,
+                "Phone number not provided",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
-
-        layoutBinding.otpView.setOnFinishListener { otp ->
-            viewModel.verifyOtp(email, otp, "email")
-        }
-
         layoutBinding.btnNext.setOnClickListener {
-            val otp = layoutBinding.otpView.getStringFromFields()
-            viewModel.verifyOtp(email, otp, "email")
+
+            val otp =
+                layoutBinding.otpView
+                    .getStringFromFields()
+
+            if (otp.length == 6) {
+
+                viewModel.verifyOtp(
+                    phone,
+                    otp
+                )
+
+            } else {
+
+                Toast.makeText(
+                    context,
+                    "Enter valid OTP",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
+
     }
 }

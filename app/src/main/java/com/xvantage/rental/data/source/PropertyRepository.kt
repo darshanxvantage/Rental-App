@@ -15,6 +15,7 @@ import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import okhttp3.MediaType
+
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Request

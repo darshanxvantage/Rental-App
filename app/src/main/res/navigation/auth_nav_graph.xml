@@ -19,7 +19,7 @@
             app:popUpTo="@id/signInFragment" />
         <action
             android:id="@+id/action_signIn_to_forgotPassword"
-            app:destination="@id/forgotPasswordFragment" />
+            />
     </fragment>
 
     <!-- Sign Up Fragment -->
@@ -36,15 +36,8 @@
             app:destination="@id/dashboardActivity" />
     </fragment>
 
-    <!-- Forgot Password Fragment -->
-    <fragment
-        android:id="@+id/forgotPasswordFragment"
-        android:name="com.xvantage.rental.ui.auth.fragment.ForgotPasswordFragment"
-        android:label="Forgot Password">
-        <action
-            android:id="@+id/action_forgotPassword_to_signIn"
-            app:destination="@id/signInFragment" />
-    </fragment>
+
+
 
     <!-- Verify OTP Fragment -->
     <fragment
