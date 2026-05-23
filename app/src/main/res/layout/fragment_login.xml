@@ -1,139 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
+    <data />
 
-    </data>
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/transparent"
+        android:background="#000000"
         tools:context=".ui.onboarding.OnboardingFragment">
 
 
         <ImageView
             android:id="@+id/imageOnboarding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/sign_up_bg" />
+            android:src="@drawable/sign_up_bg"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/scrollView"
+            app:layout_constraintHeight_percent="0.42" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/bottomCard"
-            style="@style/OnboardingCardStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
 
-            <LinearLayout
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/imageOnboarding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/bottomCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="45dp">
-
-                <TextView
-                    android:id="@+id/tvTitle"
-                    style="@style/OnboardingTitleTextStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text="@string/welcome_back"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/tvSubtitle"
-                    style="@style/OnboardingSubtitleTextStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/sign_in_desc"
-                    android:textAlignment="center"
-                    android:textSize="14sp" />
+                android:layout_marginTop="-20dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/space5">
+                    android:paddingStart="24dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="24dp"
+                    android:paddingBottom="32dp">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/TextView_black"
+
+                    <View
+                        android:layout_width="45dp"
+                        android:layout_height="5dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/drag_handle_bg" />
+
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/welcome_back"
+                        android:textColor="@android:color/black"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="28dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/sign_in_desc"
+                        android:textAlignment="center"
+                        android:textColor="#7A7A7A"
+                        android:textSize="14sp" />
+
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/space3"
-                        android:layout_marginRight="@dimen/space3"
-                        android:layout_marginBottom="@dimen/space2"
-                        android:fontFamily="@font/outfit_semibold"
+                        android:layout_marginBottom="8dp"
                         android:text="@string/phone_number_input"
-                        android:textColor="@color/black_cole"
-                        android:textSize="@dimen/text8" />
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/etPhone"
-                        style="@style/EditText"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:background="@drawable/edit_text_border"
                         android:digits="0123456789"
+                        android:gravity="center_vertical"
                         android:hint="@string/phone_number_hint"
-                        android:inputType="number"
+                        android:inputType="phone"
                         android:maxLength="10"
-                        android:padding="@dimen/space8"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/gray_sub" />
-                </LinearLayout>
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#9E9E9E"
+                        android:textSize="16sp" />
 
 
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSignin"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="24dp"
+                        android:backgroundTint="@color/royal_blue"
+                        android:text="@string/send_otp"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnSignin"
-                    style="@style/ButtonFilled"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/send_otp"  />
 
-
-
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_already_account"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/splinesans_regular"
-                        android:gravity="center"
-                        android:text="@string/dont_have_account"
-                        android:textAlignment="center"
-                        android:textColor="@color/gray_sub"
-                        android:textSize="14sp" />
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_sign_up"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:fontFamily="@font/splinesans_regular"
-                        android:gravity="center"
-                        android:text="@string/sign_up"
-                        android:textAlignment="center"
-                        android:textColor="@color/royal_blue"
-                        android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tv_already_account"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dont_have_account"
+                            android:textColor="#7A7A7A"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_sign_up"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="@string/sign_up"
+                            android:textColor="@color/royal_blue"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-    </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
