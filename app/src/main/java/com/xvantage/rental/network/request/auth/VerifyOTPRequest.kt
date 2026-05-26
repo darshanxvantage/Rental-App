@@ -11,7 +11,8 @@ package com.xvantage.rental.network.request.auth
 data class VerifyOTPRequest(
 
     val phoneNumber: String,
-    val otp: String
+    val otp: String,
+    val deviceType: String = "android"
 
 )
 

@@ -19,11 +19,19 @@ import com.xvantage.rental.ui.addProperty.activity.AddPropertyActivity
 import com.xvantage.rental.ui.dashboard.fragment.DuesFragment
 import com.xvantage.rental.ui.dashboard.fragment.HomeFragment
 import com.xvantage.rental.utils.CommonFunction
+import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
+import android.content.Intent
+import com.xvantage.rental.ui.auth.AuthActivity
+import com.xvantage.rental.utils.AppPreference
+
+
+
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityDashboardBinding
     private lateinit var toolbarBinding: ToolbarLayoutBinding
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var appPreference: AppPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +66,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun setupViews() {
         drawerLayout = layoutBinding.drawerLayout
         toolbarBinding = layoutBinding.toolbar
+        appPreference = AppPreference(this)
     }
 
     private fun setupToolbar() {
@@ -88,6 +97,30 @@ class DashboardActivity : AppCompatActivity() {
                 CommonFunction().showRatingDialog(this@DashboardActivity)
                 closeDrawer()
             }
+            findViewById<View>(R.id.logout_tv)
+                ?.setOnClickListener {
+
+                    // CLEAR TOKEN
+
+                    appPreference.setToken("")
+
+                    // OPEN LOGIN SCREEN
+
+
+                    val intent = Intent(
+                        this@DashboardActivity,
+                        AuthActivity::class.java
+                    )
+
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    startActivity(intent)
+
+                    finish()
+                }
+
         }
     }
 
@@ -116,6 +149,10 @@ class DashboardActivity : AppCompatActivity() {
                 loadFragment(DuesFragment())
                 true
             }
+                    R.id.profile -> {
+                loadFragment(ProfileFragment())
+                true
+            }
             else -> false
         }
     }
@@ -136,6 +173,12 @@ class DashboardActivity : AppCompatActivity() {
         menu.findItem(R.id.settings).setIcon(
             if (selectedItemId == R.id.settings) R.drawable.due_nav_selected 
             else R.drawable.due_nav_unselected
+        )
+        menu.findItem(R.id.profile).setIcon(
+            if (selectedItemId == R.id.profile)
+                R.drawable.ic_profile_nav
+            else
+                R.drawable.ic_profile_nav
         )
     }
 

@@ -9,7 +9,7 @@ data class SignupRequest(
     val phoneNumber: String,
 
 
-    @SerializedName("device_type")
+    @SerializedName("deviceType")
     val deviceType: String,
 
     @SerializedName("deviceName")

@@ -33,6 +33,7 @@ class AuthViewModel @Inject constructor(
 
     fun storeJwtToken(token: String) {
         appPreference.setToken(token)
+
     }
 
     fun isUserLoggedIn(): Boolean {
@@ -58,7 +59,9 @@ class AuthViewModel @Inject constructor(
                         AuthState.Success("OTP Sent")
 
                     currentScreenFlow.value =
-                        AuthScreen.VerifyOtp(phone)
+                        AuthScreen.VerifyOtp(
+                            phone = phone,
+                            isFromLogin = true)
                 }
 
                 is ResultWrapper.Error -> {
@@ -93,7 +96,10 @@ class AuthViewModel @Inject constructor(
                         AuthState.Success("OTP Sent")
 
                     currentScreenFlow.value =
-                        AuthScreen.VerifyOtp(phone)
+                        AuthScreen.VerifyOtp(
+                            phone = phone,
+                            isFromLogin = false
+                        )
                 }
 
                 is ResultWrapper.Error -> {
@@ -109,10 +115,10 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
     fun verifyOtp(
         phone: String,
-        otp: String
+        otp: String,
+        isFromLogin: Boolean
     ) {
 
         viewModelScope.launch {
@@ -120,13 +126,24 @@ class AuthViewModel @Inject constructor(
             authStateFlow.value =
                 AuthState.Loading
 
-            when (
-                val response =
+            val response =
+
+                if (isFromLogin) {
+
+                    repository.verifyLoginOtp(
+                        phone,
+                        otp
+                    )
+
+                } else {
+
                     repository.verifyOtp(
                         phone,
                         otp
                     )
-            ) {
+                }
+
+            when (response) {
 
                 is ResultWrapper.Success -> {
 
@@ -140,6 +157,66 @@ class AuthViewModel @Inject constructor(
                             ?: ""
                     )
 
+                    if (isFromLogin) {
+
+                        currentScreenFlow.value =
+                            AuthScreen.Dashboard
+
+                    } else {
+
+                        currentScreenFlow.value =
+                            AuthScreen.CreateProfile
+                    }
+                }
+
+                is ResultWrapper.Error -> {
+
+                    authStateFlow.value =
+                        AuthState.Error(
+                            response.message
+                                ?: "Invalid OTP"
+                        )
+                }
+
+                ResultWrapper.Loading -> Unit
+            }
+        }
+    }
+    fun createProfile(
+        firstName: String,
+        lastName: String,
+        email: String,
+        state: String,
+        city: String,
+        age: Int
+    ) {
+
+        viewModelScope.launch {
+
+            authStateFlow.value =
+                AuthState.Loading
+
+            when (
+
+                val response =
+                    repository.createProfile(
+                        firstName,
+                        lastName,
+                        email,
+                        state,
+                        city,
+                        age
+                    )
+
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    authStateFlow.value =
+                        AuthState.Success(
+                            "Profile Created"
+                        )
+
                     currentScreenFlow.value =
                         AuthScreen.Dashboard
                 }
@@ -149,7 +226,7 @@ class AuthViewModel @Inject constructor(
                     authStateFlow.value =
                         AuthState.Error(
                             response.message
-                                ?: "Invalid OTP"
+                                ?: "Profile Create Failed"
                         )
                 }
 

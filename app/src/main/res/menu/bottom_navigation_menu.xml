@@ -11,4 +11,12 @@
         android:id="@+id/settings"
         android:icon="@drawable/due_nav_unselected"
         android:title="@string/due_payments" />
+
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_profile_nav"
+        android:title="Profile" />
+
+
 </menu>

@@ -30,6 +30,7 @@ class VerifyOtpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
 
+
         // Retrieve the email passed via the bundle
 
         val phone = arguments?.getString("phone") ?: run {
@@ -50,10 +51,23 @@ class VerifyOtpFragment : Fragment() {
 
             if (otp.length == 6) {
 
+
+                val isFromLogin =
+                    arguments?.getBoolean(
+                        "isFromLogin"
+                    ) ?: false
+
+                appPreference.setPhone(phone)
+
                 viewModel.verifyOtp(
-                    phone,
-                    otp
+                    phone = phone,
+                    otp = otp,
+                    isFromLogin = isFromLogin
                 )
+
+
+
+
 
             } else {
 

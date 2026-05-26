@@ -20,6 +20,7 @@ import android.content.Intent
 import com.xvantage.rental.ui.dashboard.DashboardActivity
 
 
+
 @AndroidEntryPoint
 class AuthActivity : BaseActivity() {
 
@@ -107,10 +108,26 @@ class AuthActivity : BaseActivity() {
                             != R.id.verifyOtpFragment) {
                             val bundle = Bundle().apply {
                                 putString("phone", screen.phone)
+                                putBoolean(
+                                    "isFromLogin",
+                                    screen.isFromLogin
+                                )
                             }
                             navController.navigate(R.id.verifyOtpFragment, bundle)
                         }
                     }
+                        is AuthScreen.CreateProfile -> {
+
+                    if (
+                        navController.currentDestination?.id
+                        != R.id.createProfileFragment
+                    ) {
+
+                        navController.navigate(
+                            R.id.createProfileFragment
+                        )
+                    }
+                }
 
                     is AuthScreen.Dashboard -> {
                         startActivity(

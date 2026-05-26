@@ -16,9 +16,11 @@ sealed class AuthScreen {
     object SignUp : AuthScreen()
 
     data class VerifyOtp(
-        val phone: String
+        val phone: String,
+        val isFromLogin: Boolean
     ) : AuthScreen()
 
+    object CreateProfile : AuthScreen()
     object Dashboard : AuthScreen()
 }
 

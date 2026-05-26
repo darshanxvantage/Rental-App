@@ -49,6 +49,17 @@
             app:destination="@id/dashboardActivity" />
     </fragment>
 
+    <fragment
+        android:id="@+id/createProfileFragment"
+        android:name="com.xvantage.rental.ui.auth.fragment.CreateProfileFragment"
+        android:label="Create Profile">
+
+        <action
+            android:id="@+id/action_createProfile_to_dashboard"
+            app:destination="@id/dashboardActivity" />
+
+    </fragment>
+
     <activity
         android:id="@+id/dashboardActivity"
         android:name="com.xvantage.rental.ui.dashboard.DashboardActivity"
