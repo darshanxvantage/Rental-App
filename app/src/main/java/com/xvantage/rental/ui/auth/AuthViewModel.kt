@@ -21,7 +21,14 @@ class AuthViewModel @Inject constructor(
     private val appPreference: AppPreference
 
 ) : ViewModel() {
+
+
     private val authStateFlow = MutableStateFlow<AuthState>(AuthState.Idle)
+    fun resetAuthState() {
+
+        authStateFlow.value =
+            AuthState.Idle
+    }
     val authState: StateFlow<AuthState> = authStateFlow.asStateFlow()
 
     private val currentScreenFlow = MutableStateFlow<AuthScreen>(AuthScreen.SignIn)
