@@ -59,16 +59,16 @@ class VerifyOtpFragment : Fragment() {
 
                 appPreference.setPhone(phone)
 
+                if (!isFromLogin) {
+
+                    appPreference.setProfileImage("")
+                }
+
                 viewModel.verifyOtp(
                     phone = phone,
                     otp = otp,
                     isFromLogin = isFromLogin
                 )
-
-
-
-
-
             } else {
 
                 Toast.makeText(

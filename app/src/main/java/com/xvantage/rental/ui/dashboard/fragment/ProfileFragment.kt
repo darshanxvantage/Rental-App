@@ -146,7 +146,7 @@ class ProfileFragment : Fragment() {
 
         binding.btnLogout.setOnClickListener {
 
-            appPreference.clearPreferences()
+            appPreference.logoutUser()
 
             startActivity(
                 Intent(

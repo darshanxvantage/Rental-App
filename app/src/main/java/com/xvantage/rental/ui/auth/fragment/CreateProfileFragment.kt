@@ -49,10 +49,13 @@ class CreateProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ) {
 
+
         super.onViewCreated(
             view,
             savedInstanceState
         )
+
+        viewModel.resetAuthState()
 
         appPreference =
             AppPreference(requireContext())

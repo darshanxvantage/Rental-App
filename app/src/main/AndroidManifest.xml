@@ -47,9 +47,13 @@
         <activity
             android:name=".ui.takeRent.activity.TakeRentActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".ui.auth.AuthActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

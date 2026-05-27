@@ -302,10 +302,12 @@ class AppPreference(context: Context) {
 
     // CLEAR ALL
 
-    fun clearPreferences() {
+    fun logoutUser() {
 
-        editor.clear()
+        editor.remove("jwt_token")
+
         editor.apply()
     }
+
 }
 

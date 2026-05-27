@@ -19,7 +19,7 @@
             android:src="@drawable/sign_up_bg"
             app:layout_constraintBottom_toTopOf="@id/scrollView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.45"
+            app:layout_constraintHeight_percent="0.49"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

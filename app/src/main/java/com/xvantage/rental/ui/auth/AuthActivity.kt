@@ -70,6 +70,68 @@ class AuthActivity : BaseActivity() {
                                 )
                                 .show()
 
+                        }
+
+                        else if (
+
+                            state.error.contains(
+                                "already registered",
+                                true
+                            )
+
+                            ||
+
+                            state.error.contains(
+                                "403",
+                                true
+                            )
+
+                            ||
+
+                            state.error.contains(
+                                "forbidden",
+                                true
+                            )
+                        )
+
+                        {
+
+                            val dialogView =
+                                layoutInflater.inflate(
+                                    R.layout.dialog_already_registered,
+                                    null
+                                )
+
+                            val dialog =
+                                androidx.appcompat.app.AlertDialog.Builder(
+                                    this@AuthActivity
+                                )
+                                    .setView(dialogView)
+                                    .create()
+
+                            dialog.window?.setBackgroundDrawableResource(
+                                android.R.color.transparent
+                            )
+
+                            dialog.show()
+
+                            viewModel.resetAuthState()
+
+
+                            val btnLoginNow =
+                                dialogView.findViewById<com.google.android.material.button.MaterialButton>(
+                                    R.id.btnLoginNow
+                                )
+
+                            btnLoginNow.setOnClickListener {
+
+                                dialog.dismiss()
+
+                                viewModel.setCurrentScreen(
+                                    AuthScreen.SignIn
+                                )
+                            }
+
                         } else {
 
                             Toast.makeText(
@@ -78,6 +140,7 @@ class AuthActivity : BaseActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
 
 
                     }
