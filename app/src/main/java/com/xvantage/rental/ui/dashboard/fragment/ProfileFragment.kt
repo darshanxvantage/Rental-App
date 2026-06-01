@@ -13,6 +13,10 @@ import androidx.fragment.app.Fragment
 import com.xvantage.rental.databinding.FragmentProfileBinding
 import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.utils.AppPreference
+import com.xvantage.rental.R
+import android.widget.EditText
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -134,12 +138,7 @@ class ProfileFragment : Fragment() {
         // EDIT PROFILE BUTTON
 
         binding.btnEditProfile.setOnClickListener {
-
-            Toast.makeText(
-                context,
-                "Edit Profile Coming Soon",
-                Toast.LENGTH_SHORT
-            ).show()
+            showEditProfileBottomSheet()
         }
 
         // LOGOUT BUTTON
@@ -158,6 +157,183 @@ class ProfileFragment : Fragment() {
             requireActivity().finish()
         }
     }
+
+    private fun showEditProfileBottomSheet() {
+
+        val bottomSheet =
+            com.google.android.material.bottomsheet.BottomSheetDialog(
+                requireContext()
+            )
+
+        val view = layoutInflater.inflate(
+            R.layout.bottomsheet_edit_profile,
+            null
+        )
+
+        bottomSheet.setContentView(view)
+
+        bottomSheet.behavior.state =
+            BottomSheetBehavior.STATE_EXPANDED
+
+        val etFirstName =
+            view.findViewById<EditText>(R.id.etFirstName)
+
+        val etLastName =
+            view.findViewById<EditText>(R.id.etLastName)
+
+        val etEmail =
+            view.findViewById<EditText>(R.id.etEmail)
+
+        val etState =
+            view.findViewById<EditText>(R.id.etState)
+
+        val etCity =
+            view.findViewById<EditText>(R.id.etCity)
+
+        val etAge =
+            view.findViewById<EditText>(R.id.etAge)
+
+        val btnSave =
+            view.findViewById<MaterialButton>(R.id.btnSave)
+
+        // AUTO FILL
+
+        etFirstName.setText(
+            appPreference.getUserName()
+        )
+
+        etEmail.setText(
+            appPreference.getEmail()
+        )
+
+        etCity.setText(
+            appPreference.getCity()
+        )
+
+        etAge.setText(
+            appPreference.getAge()
+        )
+        etState.setText(
+            appPreference.getState()
+        )
+
+        btnSave.setOnClickListener {
+
+            val firstName =
+                etFirstName.text.toString().trim()
+
+            val lastName =
+                etLastName.text.toString().trim()
+
+            val email =
+                etEmail.text.toString().trim()
+
+            val state =
+                etState.text.toString().trim()
+
+            val city =
+                etCity.text.toString().trim()
+
+            val age =
+                etAge.text.toString().trim()
+
+            when {
+
+                firstName.isEmpty() -> {
+                    etFirstName.error = "Enter First Name"
+                    etFirstName.requestFocus()
+                }
+
+                lastName.isEmpty() -> {
+                    etLastName.error = "Enter Last Name"
+                    etLastName.requestFocus()
+                }
+
+                email.isEmpty() -> {
+                    etEmail.error = "Enter Email"
+                    etEmail.requestFocus()
+                }
+
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                    etEmail.error = "Enter Valid Email"
+                    etEmail.requestFocus()
+                }
+
+                state.isEmpty() -> {
+                    etState.error = "Enter State"
+                    etState.requestFocus()
+                }
+
+                city.isEmpty() -> {
+                    etCity.error = "Enter City"
+                    etCity.requestFocus()
+                }
+
+                age.toIntOrNull() == null -> {
+                    etAge.error = "Enter Valid Age"
+                    etAge.requestFocus()
+                }
+
+                age.toInt() < 18 -> {
+                    etAge.error = "Age must be 18+"
+                    etAge.requestFocus()
+                }
+
+                else -> {
+
+                    // SAVE DATA
+
+                    appPreference.setUserName(
+                        "$firstName $lastName"
+                    )
+
+                    appPreference.setEmail(
+                        email
+                    )
+
+                    appPreference.setState(
+                        state
+                    )
+
+                    appPreference.setCity(
+                        city
+                    )
+
+                    appPreference.setAge(
+                        age
+                    )
+
+                    // REFRESH PROFILE SCREEN
+
+                    binding.tvUserName.text =
+                        "$firstName $lastName"
+
+                    binding.tvEmail.text =
+                        email
+
+                    binding.tvCity.text =
+                        "📍 City : $city"
+
+                    binding.tvAge.text =
+                        "🎂 Age : $age"
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Profile Updated Successfully"
+                        ,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    bottomSheet.dismiss()
+                }
+            }
+        }
+
+        bottomSheet.show()
+    }
+
+
+
 
     // IMAGE PICK RESULT
 
