@@ -17,6 +17,8 @@ class AppPreference(context: Context) {
 
     companion object {
 
+        private const val KEY_LISTED_COUNT =
+            "listed_count"
         private const val KEY_JWT_TOKEN =
             "jwt_token"
 
@@ -38,9 +40,74 @@ class AppPreference(context: Context) {
         private const val KEY_AGE =
             "age"
 
+
+        private const val KEY_RENTED_COUNT =
+            "rented_count"
+
+        private const val KEY_RATING =
+            "rating"
+
+
         private const val KEY_PROFILE_IMAGE =
             "profile_image"
     }
+
+
+    fun setListedCount(count: Int) {
+
+        editor.putInt(
+            KEY_LISTED_COUNT,
+            count
+        )
+
+        editor.apply()
+    }
+
+    fun getListedCount(): Int {
+
+        return appSharedPrefs.getInt(
+            KEY_LISTED_COUNT,
+            0
+        )
+    }
+
+
+    fun setRentedCount(count: Int) {
+
+        editor.putInt(
+            KEY_RENTED_COUNT,
+            count
+        )
+
+        editor.apply()
+    }
+
+    fun getRentedCount(): Int {
+
+        return appSharedPrefs.getInt(
+            KEY_RENTED_COUNT,
+            0
+        )
+    }
+
+    fun setRating(rating: String) {
+
+        editor.putString(
+            KEY_RATING,
+            rating
+        )
+
+        editor.apply()
+    }
+
+    fun getRating(): String {
+
+        return appSharedPrefs.getString(
+            KEY_RATING,
+            "4.5"
+        ) ?: "4.5"
+    }
+
 
     fun isUserLoginFirstTime(): Boolean {
 

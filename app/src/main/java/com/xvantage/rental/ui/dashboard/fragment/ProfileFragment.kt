@@ -17,6 +17,8 @@ import com.xvantage.rental.R
 import android.widget.EditText
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.fragment.app.activityViewModels
+import com.xvantage.rental.ui.auth.AuthViewModel
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -31,6 +33,8 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
 
     private lateinit var appPreference: AppPreference
+    private val viewModel: AuthViewModel
+            by activityViewModels()
 
     companion object {
 
@@ -78,10 +82,19 @@ class ProfileFragment : Fragment() {
             appPreference.getEmail()
 
         binding.tvCity.text =
-            "📍 City : ${appPreference.getCity()}"
+            appPreference.getCity()
 
         binding.tvAge.text =
-            "🎂 Age : ${appPreference.getAge()}"
+            appPreference.getAge()
+
+        binding.tvListedCount.text =
+            appPreference.getListedCount().toString()
+
+        binding.tvRentedCount.text =
+            appPreference.getRentedCount().toString()
+
+        binding.tvRating.text =
+            "${appPreference.getRating()}★"
 
         // PROFILE IMAGE
 
@@ -198,9 +211,27 @@ class ProfileFragment : Fragment() {
 
         // AUTO FILL
 
-        etFirstName.setText(
-            appPreference.getUserName()
-        )
+
+        val fullName =
+            appPreference.getUserName()?.trim() ?: ""
+
+        val nameParts =
+            fullName.split(" ")
+
+        if (nameParts.isNotEmpty()) {
+
+            etFirstName.setText(
+                nameParts[0]
+            )
+        }
+
+        if (nameParts.size > 1) {
+
+            etLastName.setText(
+                nameParts.drop(1).joinToString(" ")
+            )
+        }
+
 
         etEmail.setText(
             appPreference.getEmail()
@@ -216,6 +247,8 @@ class ProfileFragment : Fragment() {
         etState.setText(
             appPreference.getState()
         )
+
+
 
         btnSave.setOnClickListener {
 
@@ -408,6 +441,10 @@ class ProfileFragment : Fragment() {
                     appPreference.setProfileImage(
                         file.absolutePath
                     )
+//                    viewModel.updateProfileImage(
+//                        appPreference.getUserName() ?: "User",
+//                        file
+//                    )
                 }
 
             } catch (e: Exception) {

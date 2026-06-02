@@ -21,6 +21,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Url
+import retrofit2.http.PUT
 
 interface APIInterface {
 
@@ -91,5 +92,18 @@ interface APIInterface {
         propertyImage: MultipartBody.Part?
 
     ): Response<CreatePropertyResponse>
+
+
+    @Multipart
+    @PUT("auth/profile")
+    suspend fun updateProfileImage(
+
+        @Part("first_name")
+        firstName: RequestBody,
+
+        @Part
+        profilePic: MultipartBody.Part?
+
+    ): Response<CreateProfileResponse>
 }
 

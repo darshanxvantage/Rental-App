@@ -87,6 +87,13 @@ class AddPropertyActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
+                        val currentCount =
+                            appPreference.getListedCount()
+
+                        appPreference.setListedCount(
+                            currentCount + 1
+                        )
+
                         val property = state.data.data.id
 
                         val intent = Intent(this@AddPropertyActivity, PropertyDetailsActivity::class.java).apply {

@@ -15,14 +15,16 @@ import com.xvantage.rental.utils.DeviceUtils
 import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import javax.inject.Inject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class AuthRepository @Inject constructor(
     private val apiInterface: APIInterface
 ) {
 
-    // =========================
-    // LOGIN
-    // =========================
 
     suspend fun login(
         phone: String
@@ -67,9 +69,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    // =========================
-    // SIGN UP
-    // =========================
 
     suspend fun signUp(
         phone: String
@@ -118,10 +117,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    // =========================
-    // VERIFY SIGN UP OTP
-    // =========================
-
     suspend fun verifyOtp(
         phone: String,
         otp: String
@@ -160,9 +155,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    // =========================
-    // VERIFY LOGIN OTP
-    // =========================
 
     suspend fun verifyLoginOtp(
         phone: String,
@@ -202,9 +194,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    // =========================
-    // CREATE PROFILE
-    // =========================
 
     suspend fun createProfile(
         firstName: String,
@@ -247,6 +236,46 @@ class AuthRepository @Inject constructor(
 
             ResultWrapper.Error(
                 "Network error: ${e.localizedMessage}"
+            )
+        }
+
+    }
+    suspend fun updateProfileImage(
+        firstName: String,
+        imageFile: File
+    ): ResultWrapper<CreateProfileResponse> {
+
+        return try {
+
+            val firstNameBody =
+                firstName.toRequestBody(
+                    "text/plain".toMediaTypeOrNull()
+                )
+
+            val requestFile =
+                imageFile.asRequestBody(
+                    "image/*".toMediaTypeOrNull()
+                )
+
+            val imagePart =
+                MultipartBody.Part.createFormData(
+                    "profile_pic",
+                    imageFile.name,
+                    requestFile
+                )
+
+            val response =
+                apiInterface.updateProfileImage(
+                    firstNameBody,
+                    imagePart
+                )
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Upload failed: ${e.localizedMessage}"
             )
         }
     }

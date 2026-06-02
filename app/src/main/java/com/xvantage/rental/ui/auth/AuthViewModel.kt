@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.io.File
 
 @HiltViewModel
 class
@@ -197,7 +198,8 @@ AuthViewModel @Inject constructor(
         state: String,
         city: String,
         age: Int
-    ) {
+    )
+    {
 
         viewModelScope.launch {
 
@@ -240,6 +242,20 @@ AuthViewModel @Inject constructor(
 
                 ResultWrapper.Loading -> Unit
             }
+        }
+
+    }
+    fun updateProfileImage(
+        firstName: String,
+        imageFile: File
+    ) {
+
+        viewModelScope.launch {
+
+            repository.updateProfileImage(
+                firstName,
+                imageFile
+            )
         }
     }
 }

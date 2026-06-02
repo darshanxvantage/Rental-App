@@ -39,21 +39,30 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidth="1dp"
+            app:boxStrokeWidthFocused="1dp"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="First Name" />
-
+                android:hint="First Name"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textCursorDrawable="@drawable/black_cursor"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- LAST NAME -->
@@ -61,20 +70,30 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Last Name" />
+                android:hint="Last Name"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:textCursorDrawable="@drawable/black_cursor"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,13 +102,16 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -97,7 +119,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:textCursorDrawable="@drawable/black_cursor"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,20 +135,30 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="State" />
+                android:hint="State"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:textCursorDrawable="@drawable/black_cursor"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,20 +167,30 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="City" />
+                android:hint="City"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:textCursorDrawable="@drawable/black_cursor"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,13 +199,16 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             app:boxBackgroundMode="outline"
+            app:boxBackgroundColor="#F5F7FB"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="#2962FF"
-            app:boxStrokeWidthFocused="2dp"
+            app:boxStrokeColor="@color/edit_text_border"
+            app:hintTextColor="@color/edit_text_border"
+            app:hintAnimationEnabled="false"
+            app:boxStrokeWidthFocused="1dp"
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -164,7 +216,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Age"
-                android:inputType="number" />
+                android:inputType="number"
+                android:cursorVisible="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey_hint"
+                android:textCursorDrawable="@drawable/black_cursor"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
