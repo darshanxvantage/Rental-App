@@ -3,8 +3,12 @@ package com.xvantage.rental.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class AppPreference(context: Context) {
+class AppPreference @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private var appSharedPrefs: SharedPreferences =
         context.getSharedPreferences(
@@ -50,6 +54,9 @@ class AppPreference(context: Context) {
 
         private const val KEY_PROFILE_IMAGE =
             "profile_image"
+
+        private const val KEY_THEME =
+            "theme"
     }
 
 
@@ -179,6 +186,7 @@ class AppPreference(context: Context) {
         )
 
         editor.commit()
+
     }
 
     fun isUserLogin(): Boolean {
@@ -365,6 +373,25 @@ class AppPreference(context: Context) {
             KEY_PROFILE_IMAGE,
             ""
         )
+    }
+    // THEME
+
+    fun setTheme(theme: String) {
+
+        editor.putString(
+            KEY_THEME,
+            theme
+        )
+
+        editor.apply()
+    }
+
+    fun getTheme(): String {
+
+        return appSharedPrefs.getString(
+            KEY_THEME,
+            "LIGHT"
+        ) ?: "LIGHT"
     }
 
     // CLEAR ALL

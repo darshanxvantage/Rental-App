@@ -252,10 +252,32 @@ AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            repository.updateProfileImage(
-                firstName,
-                imageFile
-            )
+            when(
+                val response =
+                    repository.updateProfileImage(
+                        firstName,
+                        imageFile
+                    )
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    authStateFlow.value =
+                        AuthState.Success(
+                            "Profile Image Updated"
+                        )
+                }
+
+                is ResultWrapper.Error -> {
+
+                    authStateFlow.value =
+                        AuthState.Error(
+                            response.message ?: "Upload Failed"
+                        )
+                }
+
+                ResultWrapper.Loading -> Unit
+            }
         }
     }
 }

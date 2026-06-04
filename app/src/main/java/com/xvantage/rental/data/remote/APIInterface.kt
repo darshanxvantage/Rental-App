@@ -12,6 +12,7 @@ import com.xvantage.rental.network.response.LoginResponse
 import com.xvantage.rental.network.response.PropertyDetailsResponse
 import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
+import com.xvantage.rental.network.response.PropertyListResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -67,6 +68,10 @@ interface APIInterface {
     suspend fun getProperty(
         @Url url: String
     ): Response<PropertyDetailsResponse>
+
+    @GET("landlord/property/list")
+    suspend fun getPropertyList():
+            Response<PropertyListResponse>
 
 
     @Multipart

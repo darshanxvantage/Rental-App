@@ -25,16 +25,17 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import java.io.File
 import java.io.FileOutputStream
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.fragment.app.viewModels
 
 
-
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
     private lateinit var appPreference: AppPreference
-    private val viewModel: AuthViewModel
-            by activityViewModels()
+    private val viewModel: AuthViewModel by viewModels()
 
     companion object {
 
@@ -453,8 +454,8 @@ class ProfileFragment : Fragment() {
 
                 Toast.makeText(
                     context,
-                    "Image Load Failed",
-                    Toast.LENGTH_SHORT
+                    e.message ?: "Unknown Error",
+                    Toast.LENGTH_LONG
                 ).show()
             }
 

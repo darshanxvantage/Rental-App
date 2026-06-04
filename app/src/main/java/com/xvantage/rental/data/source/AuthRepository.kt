@@ -20,6 +20,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import android.util.Log
 
 class AuthRepository @Inject constructor(
     private val apiInterface: APIInterface
@@ -270,9 +271,24 @@ class AuthRepository @Inject constructor(
                     imagePart
                 )
 
+            Log.d(
+                "PROFILE_UPLOAD",
+                "Code = ${response.code()}"
+            )
+
+            Log.d(
+                "PROFILE_UPLOAD",
+                "Body = ${response.body()}"
+            )
+
             NetworkHelper.handleApiResponse(response)
 
         } catch (e: Exception) {
+
+            Log.e(
+                "PROFILE_UPLOAD",
+                "Error = ${e.localizedMessage}"
+            )
 
             ResultWrapper.Error(
                 "Upload failed: ${e.localizedMessage}"

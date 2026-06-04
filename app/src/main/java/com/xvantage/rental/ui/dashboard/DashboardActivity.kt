@@ -23,10 +23,14 @@ import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
 import android.content.Intent
 import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.utils.AppPreference
+import com.xvantage.rental.ui.search.SearchPropertyActivity
+import com.xvantage.rental.ui.settings.SettingsActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 
 
 
+@AndroidEntryPoint
 class DashboardActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityDashboardBinding
     private lateinit var toolbarBinding: ToolbarLayoutBinding
@@ -70,14 +74,39 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
+
         with(toolbarBinding) {
+
             home.visibility = View.VISIBLE
             search.visibility = View.VISIBLE
             setting.visibility = View.VISIBLE
+
             btnSave.visibility = View.GONE
             back.visibility = View.GONE
 
-            home.setOnClickListener { toggleDrawer() }
+            home.setOnClickListener {
+                toggleDrawer()
+            }
+
+            search.setOnClickListener {
+
+                startActivity(
+                    Intent(
+                        this@DashboardActivity,
+                        SearchPropertyActivity::class.java
+                    )
+                )
+            }
+
+            setting.setOnClickListener {
+
+                startActivity(
+                    Intent(
+                        this@DashboardActivity,
+                        SettingsActivity::class.java
+                    )
+                )
+            }
         }
     }
 
@@ -90,6 +119,34 @@ class DashboardActivity : AppCompatActivity() {
 
             findViewById<View>(R.id.premium_tv)?.setOnClickListener {
                 showToast("Premium")
+                closeDrawer()
+            }
+
+            findViewById<View>(R.id.shaer_app_tv)?.setOnClickListener {
+
+                val appPackageName = packageName
+
+                val shareIntent = Intent(Intent.ACTION_SEND)
+
+                shareIntent.type = "text/plain"
+
+                shareIntent.putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    "RentMaster"
+                )
+
+                shareIntent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Download RentMaster App:\nhttps://play.google.com/store/apps/details?id=$appPackageName"
+                )
+
+                startActivity(
+                    Intent.createChooser(
+                        shareIntent,
+                        "Share RentMaster"
+                    )
+                )
+
                 closeDrawer()
             }
 

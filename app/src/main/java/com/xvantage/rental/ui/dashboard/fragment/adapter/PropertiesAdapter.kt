@@ -10,6 +10,8 @@ import com.xvantage.rental.R
 import com.xvantage.rental.data.source.sample.Property
 import com.xvantage.rental.databinding.HomePropertiesItemBinding
 import com.xvantage.rental.utils.AppPreference
+import android.content.Intent
+import com.xvantage.rental.ui.addProperty.activity.PropertyDetailsActivity
 
 
 
@@ -42,12 +44,37 @@ class PropertiesAdapter(
             if (position < data.rooms.size) {
                 if (!data.rooms[position].occupied) {
                     itemBinding.tvStatus.setText("Vacant")
-                    itemBinding.tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                    itemBinding.tvStatus.setBackgroundColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.red
+                        )
+                    )
                 } else {
                     itemBinding.tvStatus.setText("Occupied")
-                    itemBinding.tvStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
+                    itemBinding.tvStatus.setBackgroundColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.green
+                        )
+                    )
                 }
-            } 
+            }
+            itemBinding.moreButton.setOnClickListener {
+
+                android.widget.Toast.makeText(
+                    context,
+                    "Opening ${data.propertyName}",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+
+                val intent = Intent(
+                    context,
+                    PropertyDetailsActivity::class.java
+                )
+
+                context.startActivity(intent)
+            }
         }
     }
 
