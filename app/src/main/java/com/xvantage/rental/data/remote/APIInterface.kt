@@ -13,6 +13,7 @@ import com.xvantage.rental.network.response.PropertyDetailsResponse
 import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
+import com.xvantage.rental.network.response.TenantListResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -23,8 +24,9 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Url
 import retrofit2.http.PUT
+import retrofit2.http.Query
 
-interface APIInterface {
+interface   APIInterface {
 
     @GET
     suspend fun get(
@@ -70,8 +72,16 @@ interface APIInterface {
     ): Response<PropertyDetailsResponse>
 
     @GET("landlord/property/list")
-    suspend fun getPropertyList():
-            Response<PropertyListResponse>
+    suspend fun getPropertyList(
+        @Query("currentPage") page: Int = 1,
+        @Query("pageSize") size: Int = 100
+    ): Response<PropertyListResponse>
+
+    @GET("landlord/tenant/list")
+    suspend fun getTenantList(
+        @Query("currentPage") page: Int = 1,
+        @Query("pageSize") size: Int = 100
+    ): Response<TenantListResponse>
 
 
     @Multipart

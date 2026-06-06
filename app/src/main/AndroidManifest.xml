@@ -55,6 +55,7 @@
             android:exported="false" />
 
 
+
         <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="false"
@@ -73,6 +74,13 @@
 
         <activity
             android:name=".ui.addTenant.AddTenantActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.tenant.TenantListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.tenant.TenantDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.manageProperty.ManagePropertyActivity"

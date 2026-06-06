@@ -21,9 +21,9 @@ import com.xvantage.rental.ui.addProperty.PropertyDetailsViewModel
 import com.xvantage.rental.ui.addProperty.bmsheet.AddRoomBottomSheetFragment
 import com.xvantage.rental.ui.addProperty.bmsheet.AddTenantBottomSheetFragment
 import com.xvantage.rental.ui.addProperty.fragment.FinancialsFragment
-import com.xvantage.rental.ui.addProperty.tempFiles.Property
 import com.xvantage.rental.ui.addProperty.fragment.RoomsFragment
 import com.xvantage.rental.ui.addProperty.fragment.TenantsFragment
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 class PropertyDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPropertyDetailsBinding
-    private lateinit var property: Property
+    private var propertyId: String = ""
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private val viewModel by viewModels<PropertyDetailsViewModel>()
 
@@ -42,10 +42,11 @@ class PropertyDetailsActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
 
         // Get property data from intent
-        property = intent.getParcelableExtra("property") ?: Property()
+        propertyId =
+            intent.getStringExtra("propertyId") ?: ""
 
         setupToolbar()
-//        setupPropertyDetails()
+        setupPropertyDetails()
         setupViewPager()
         setupFab()
     }
@@ -59,7 +60,7 @@ class PropertyDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupPropertyDetails() {
-        viewModel.loadPropertyDetails(property.id)
+        viewModel.loadPropertyDetails(propertyId)
 
         // observe the state & update UI
         lifecycleScope.launch {
@@ -70,8 +71,27 @@ class PropertyDetailsActivity : AppCompatActivity() {
 //                            binding.progressBar.visibility = View.VISIBLE
                         }
                         is PropertyDetailsViewModel.State.Success -> {
-//                            binding.progressBar.visibility = View.GONE
-//                            bindHeader(state.details)
+
+                            android.util.Log.e(
+                                "PROPERTY_DETAILS",
+                                Gson().toJson(state.details.data)
+                            )
+
+                            bindHeader(state.details)
+
+                            state.details.data?.let {
+
+                                supportFragmentManager.setFragmentResult(
+                                    "property_details",
+                                    Bundle().apply {
+
+                                        putString(
+                                            "property_json",
+                                            Gson().toJson(it)
+                                        )
+                                    }
+                                )
+                            }
                         }
                         is PropertyDetailsViewModel.State.Error -> {
 //                            binding.progressBar.visibility = View.GONE
@@ -84,21 +104,18 @@ class PropertyDetailsActivity : AppCompatActivity() {
         }
     }
     private fun bindHeader(details: PropertyDetailsResponse) {
-        // text fields
-        binding.tvPropertyName.text    = details.data?.name ?: ""
-        binding.tvPropertyAddress.text = details.data?.email ?: ""
 
-        // image (with Glide)
-        if (!details.data?.email.isNullOrBlank()) {
-            Glide.with(this)
-                .load(details.data?.email)
-                .placeholder(R.drawable.image)
-                .error(R.drawable.image)
-                .centerCrop()
-                .into(binding.ivPropertyImage)
-        } else {
-            binding.ivPropertyImage.setImageResource(R.drawable.image)
-        }
+        binding.tvPropertyName.text =
+            details.data?.name ?: ""
+
+        binding.tvPropertyAddress.text =
+            details.data?.address ?: ""
+
+        Glide.with(this)
+            .load(details.data?.propertyImage)
+            .placeholder(R.drawable.image)
+            .error(R.drawable.image)
+            .into(binding.ivPropertyImage)
     }
 
     private fun setupViewPager() {
@@ -195,9 +212,9 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> RoomsFragment.Companion.newInstance(property.id)
-                1 -> TenantsFragment.Companion.newInstance(property.id)
-                2 -> FinancialsFragment.Companion.newInstance(property.id)
+                0 -> RoomsFragment.newInstance(propertyId)
+                1 -> TenantsFragment.newInstance(propertyId)
+                2 -> FinancialsFragment.newInstance(propertyId)
                 else -> Fragment()
             }
         }

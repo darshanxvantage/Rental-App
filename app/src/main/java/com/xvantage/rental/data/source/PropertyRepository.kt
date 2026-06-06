@@ -15,12 +15,13 @@ import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import okhttp3.MediaType
-
+import com.xvantage.rental.network.response.PropertyListResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
+import com.xvantage.rental.network.response.TenantListResponse
 
 /**
  * Project: Rental App By XV Team
@@ -120,10 +121,83 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
     }
     suspend fun getPropertyDetails(id: String): ResultWrapper<PropertyDetailsResponse> {
         return try {
-            val response = apiInterface.getProperty("landlord/property/$id/details")
+
+            val response =
+                apiInterface.getProperty(
+                    "landlord/property/details/$id"
+                )
+
+            android.util.Log.e(
+                "PROPERTY_DETAILS_URL",
+                response.raw().request.url.toString()
+            )
+
             NetworkHelper.handleApiResponse(response)
+
         } catch (e: Exception) {
-            ResultWrapper.Error("Network error: ${e.localizedMessage}")
+
+            android.util.Log.e(
+                "PROPERTY_DETAILS_ERROR",
+                e.toString()
+            )
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+    suspend fun getPropertyList():
+            ResultWrapper<PropertyListResponse> {
+
+        return try {
+
+            val response =
+                apiInterface.getPropertyList()
+
+            android.util.Log.e(
+                "PROPERTY_URL",
+                response.raw().request.url.toString()
+            )
+
+            android.util.Log.e(
+                "PROPERTY_CODE",
+                response.code().toString()
+            )
+
+            android.util.Log.e(
+                "PROPERTY_BODY",
+                response.body().toString()
+            )
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            android.util.Log.e(
+                "PROPERTY_EXCEPTION",
+                e.toString()
+            )
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+    suspend fun getTenantList():
+            ResultWrapper<TenantListResponse> {
+
+        return try {
+
+            val response =
+                apiInterface.getTenantList()
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
         }
     }
 }

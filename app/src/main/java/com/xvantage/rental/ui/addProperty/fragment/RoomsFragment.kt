@@ -9,6 +9,9 @@ import androidx.fragment.app.activityViewModels
 import com.xvantage.rental.databinding.FragmentRoomsBinding
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
 import com.xvantage.rental.ui.addProperty.adapter.RoomAdapter
+import com.google.gson.Gson
+import com.xvantage.rental.network.response.PropertyDetailsData
+
 
 class RoomsFragment : Fragment() {
 
@@ -33,7 +36,8 @@ class RoomsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            propertyId = it.getString("property_id", "")
+            propertyId =
+                it.getString(ARG_PROPERTY_ID, "")
         }
     }
 
@@ -46,12 +50,55 @@ class RoomsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
 
         setupRecyclerView()
-        loadRooms()
+
+        parentFragmentManager.setFragmentResultListener(
+            "property_details",
+            viewLifecycleOwner
+        ) { _, bundle ->
+
+            val json =
+                bundle.getString("property_json")
+                    ?: return@setFragmentResultListener
+
+            val property =
+                Gson().fromJson(
+                    json,
+                    PropertyDetailsData::class.java
+                )
+
+            val roomList =
+                property.rooms.map {
+
+                    Room(
+                        id = it.id,
+                        number = it.room_no,
+                        type = property.propertyType,
+                        rent = 0.0,
+                        isOccupied =
+                            it.status.equals(
+                                "OCCUPED",
+                                true
+                            )
+                    )
+                }
+
+            showEmptyState(false)
+
+            roomAdapter.submitList(roomList)
+        }
     }
+
+
 
     private fun setupRecyclerView() {
         roomAdapter = RoomAdapter { room ->

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.xvantage.rental.R
-import com.xvantage.rental.data.source.sample.Property
+import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.databinding.HomePropertiesItemBinding
 import com.xvantage.rental.utils.AppPreference
 import android.content.Intent
 import com.xvantage.rental.ui.addProperty.activity.PropertyDetailsActivity
+import android.util.Log
+import com.bumptech.glide.Glide
 
 
 
@@ -21,10 +23,10 @@ class PropertiesAdapter(
 
     private lateinit var appPreference: AppPreference
     private var readImagePermission: String? = null
-    private lateinit var propertiesList: List<Property>
+    private var propertiesList: List<PropertyItem> = emptyList()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItems(propertiesList: List<Property>) {
+    fun addItems(propertiesList: List<PropertyItem>) {
         this.propertiesList = propertiesList
         notifyDataSetChanged()
     }
@@ -33,44 +35,66 @@ class PropertiesAdapter(
     inner class PropertyDetailsViewHolder(private val itemBinding: HomePropertiesItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
-        @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-        fun setData(data: Property, position: Int) {
-            itemBinding.tvPropertyName.text = data.propertyName
-            itemBinding.roomsValue.text = data.rooms.size.toString()
-            itemBinding.tvPropertyAddress.text = data.address
-            val totalTenants = data.rooms.count { it.tenant != null }
-            itemBinding.tenantsValue.text = totalTenants.toString()
+        @SuppressLint("SetTextI18n")
+        fun setData(data: PropertyItem, position: Int) {
+            Log.d(
+                "PROPERTY_DEBUG",
+                "Binding Property = ${data.name}"
+            )
 
-            if (position < data.rooms.size) {
-                if (!data.rooms[position].occupied) {
-                    itemBinding.tvStatus.setText("Vacant")
-                    itemBinding.tvStatus.setBackgroundColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.red
-                        )
-                    )
-                } else {
-                    itemBinding.tvStatus.setText("Occupied")
-                    itemBinding.tvStatus.setBackgroundColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.green
-                        )
-                    )
-                }
+            itemBinding.tvPropertyName.text =
+                data.name
+
+            itemBinding.tvPropertyAddress.text =
+                data.address
+
+            if (data.property_images.isNotEmpty()) {
+
+                Glide.with(context)
+                    .load(data.property_images[0].image)
+                    .placeholder(R.drawable.image)
+                    .error(R.drawable.image)
+                    .into(itemBinding.itemImage)
+
+            } else {
+
+                itemBinding.itemImage.setImageResource(
+                    R.drawable.image
+                )
             }
+
+            itemBinding.roomsValue.text =
+                data.no_of_room
+
+            itemBinding.tenantsValue.text =
+                data.total_tenants.toString()
+
+            itemBinding.tvStatus.text =
+                "Available"
+
+            itemBinding.tvStatus.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.green
+                )
+            )
+
             itemBinding.moreButton.setOnClickListener {
 
                 android.widget.Toast.makeText(
                     context,
-                    "Opening ${data.propertyName}",
+                    "Opening ${data.name}",
                     android.widget.Toast.LENGTH_SHORT
                 ).show()
 
                 val intent = Intent(
                     context,
                     PropertyDetailsActivity::class.java
+                )
+
+                intent.putExtra(
+                    "propertyId",
+                    data.id
                 )
 
                 context.startActivity(intent)

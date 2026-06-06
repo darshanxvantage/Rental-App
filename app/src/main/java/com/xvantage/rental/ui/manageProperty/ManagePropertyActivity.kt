@@ -11,13 +11,21 @@ import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import com.xvantage.rental.ui.manageProperty.adapter.ManagePropertyAdapter
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.xvantage.rental.ui.manageProperty.adapter.PropertyGroupAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import com.xvantage.rental.ui.dashboard.PropertyListViewModel
 
-
+@AndroidEntryPoint
 class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoomItemClickListener {
 
     private lateinit var binding: ActivityManagePropertyBinding
     private lateinit var appPreference: AppPreference
-    private lateinit var managePropertyAdapter: ManagePropertyAdapter
+    private lateinit var propertyGroupAdapter: PropertyGroupAdapter
+    private val propertyViewModel: PropertyListViewModel by viewModels()
 
     // private val viewModel: ManagePropertyViewModel by viewModels()
 
@@ -37,13 +45,26 @@ class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoom
      * Initialize RecyclerView and static data.
      */
     private fun initViews() {
-        binding.rvPropertyList.layoutManager = GridLayoutManager(this, 2)
-        managePropertyAdapter = ManagePropertyAdapter(this, this)
-        binding.rvPropertyList.adapter = managePropertyAdapter
 
-        // Static sample data for now
-        val sampleData = listOf("101", "102", "103", "104", "105", "106")
-        managePropertyAdapter.addItems(sampleData)
+        binding.rvPropertyList.layoutManager =
+            LinearLayoutManager(this)
+
+        propertyGroupAdapter =
+            PropertyGroupAdapter(this, this)
+
+        binding.rvPropertyList.adapter =
+            propertyGroupAdapter
+
+        propertyViewModel.loadProperties()
+
+        lifecycleScope.launch {
+
+            propertyViewModel.propertyList.collect { list ->
+
+                propertyGroupAdapter.addItems(list)
+
+            }
+        }
 
         binding.toolbar.back.setOnClickListener { onBackPressed() }
     }

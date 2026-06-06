@@ -5,52 +5,94 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.xvantage.rental.data.source.sample.Property
-import com.xvantage.rental.data.source.sample.Tenant
+import com.bumptech.glide.Glide
+import com.xvantage.rental.R
 import com.xvantage.rental.databinding.HomeTenantsItemBinding
+import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.utils.AppPreference
-
-
-
+import android.widget.Toast
 
 class TenantsAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<TenantsAdapter.TenantDetailsViewHolder>() {
 
     private lateinit var appPreference: AppPreference
-    private var readImagePermission: String? = null
-    private lateinit var tenantList: List<Tenant>
+
+    private var tenantList: List<TenantItem> =
+        emptyList()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItems(tenantList: List<Tenant>) {
+    fun addItems(tenantList: List<TenantItem>) {
+
         this.tenantList = tenantList
+
         notifyDataSetChanged()
     }
 
+    inner class TenantDetailsViewHolder(
+        private val itemBinding: HomeTenantsItemBinding
+    ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-    inner class TenantDetailsViewHolder(private val itemBinding: HomeTenantsItemBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+        fun setData(data: TenantItem) {
 
-        @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-        fun setData(data: Tenant, position: Int) {
-            itemBinding.tvTenantName.text = data.tenantName
-            itemBinding.tvLocation.text = data.tenantEmail
-            itemBinding.tvNumber.text = data.contactInfo
+            itemBinding.tvTenantName.text =
+                data.tenant_name
+
+            itemBinding.tvLocation.text =
+                data.tenant_details?.property?.name ?: "N/A"
+
+            itemBinding.tvNumber.text =
+                data.phone_number ?: "N/A"
+
+            // Profile Image
+            Glide.with(context)
+                .load(data.profile_pic)
+                .placeholder(R.drawable.image)
+                .error(R.drawable.image)
+                .into(itemBinding.itemImage)
+
+            // Status
+            itemBinding.tvStatus.text = "Tenant"
+
+            itemBinding.moreButton.setOnClickListener {
+
+                Toast.makeText(
+                    context,
+                    "Tenant ID = ${data.id}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-
-
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TenantDetailsViewHolder {
-        val itemBinding = HomeTenantsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TenantDetailsViewHolder(itemBinding)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): TenantDetailsViewHolder {
+
+        val binding =
+            HomeTenantsItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+
+        return TenantDetailsViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TenantDetailsViewHolder, position: Int) {
-        val data = tenantList[position]
-        appPreference = AppPreference(context)
-        holder.setData(data, position)
+    override fun onBindViewHolder(
+        holder: TenantDetailsViewHolder,
+        position: Int
+    ) {
+
+        appPreference =
+            AppPreference(context)
+
+        holder.setData(
+            tenantList[position]
+        )
     }
 
-    override fun getItemCount(): Int = tenantList.size
+    override fun getItemCount(): Int =
+        tenantList.size
 }
