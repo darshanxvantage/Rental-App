@@ -186,4 +186,23 @@
     <string name="note_required">Please enter a note</string>
 
 
+    <string name="icon_home">&#127968;</string>
+    <string name="icon_pin">&#128205;</string>
+    <string name="icon_door">&#128682;</string>
+    <string name="icon_phone">&#128222;</string>
+    <string name="icon_lightning">&#9889;</string>
+    <string name="icon_money">&#128176;</string>
+    <string name="icon_lock">&#128274;</string>
+    <string name="icon_calendar">&#128197;</string>
+    <string name="icon_calendar2">&#128199;</string>
+    <string name="icon_bulb">&#128161;</string>
+    <string name="icon_water">&#128167;</string>
+<!--    <string name="icon_notes">&#128221;</string>-->
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+
 </resources>

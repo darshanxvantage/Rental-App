@@ -99,6 +99,7 @@ dependencies {
 //    kapt(libs.hilt.compiler.androidx)
 
     implementation(libs.lifecycle.viewmodel.ktx)
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 
     implementation(libs.play.services.auth)
     implementation(libs.androidx.credentials)

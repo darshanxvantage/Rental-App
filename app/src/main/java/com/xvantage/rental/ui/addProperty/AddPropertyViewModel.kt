@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xvantage.rental.data.source.PropertyRepository
 import com.xvantage.rental.network.request.property.CreatePropertyRequest
+import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 import com.xvantage.rental.network.response.CreatePropertyResponse
 import com.xvantage.rental.network.response.PropertyType
 import com.xvantage.rental.network.utils.ResultWrapper
@@ -60,6 +61,45 @@ class AddPropertyViewModel @Inject constructor(
                 is ResultWrapper.Error -> {
                     _createPropertyState.value = CreatePropertyState.Error(response.message ?: "Create property failed")
                 }
+                ResultWrapper.Loading -> Unit
+            }
+        }
+    }
+    fun updateProperty(
+        request: UpdatePropertyRequest
+    ) {
+
+        viewModelScope.launch {
+
+            _createPropertyState.value =
+                CreatePropertyState.Loading
+
+            when (
+
+                val response =
+                    repository.updateProperty(
+                        request
+                    )
+
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    _createPropertyState.value =
+                        CreatePropertyState.Success(
+                            response.value
+                        )
+                }
+
+                is ResultWrapper.Error -> {
+
+                    _createPropertyState.value =
+                        CreatePropertyState.Error(
+                            response.message
+                                ?: "Update property failed"
+                        )
+                }
+
                 ResultWrapper.Loading -> Unit
             }
         }

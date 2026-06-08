@@ -19,7 +19,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import androidx.fragment.app.activityViewModels
 import com.xvantage.rental.ui.auth.AuthViewModel
-
+import com.xvantage.rental.ui.manageProperty.ManagePropertyActivity
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
@@ -58,6 +58,8 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
+
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -70,6 +72,34 @@ class ProfileFragment : Fragment() {
 
         appPreference =
             AppPreference(requireContext())
+
+        binding.cardProperties.setOnClickListener {
+
+            startActivity(
+                Intent(
+                    requireContext(),
+                    ManagePropertyActivity::class.java
+                )
+            )
+        }
+
+        binding.cardTenants.setOnClickListener {
+
+            Toast.makeText(
+                requireContext(),
+                "Tenant Management Coming Soon",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        binding.cardRevenue.setOnClickListener {
+
+            Toast.makeText(
+                requireContext(),
+                "Revenue Details Coming Soon",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         // USER DATA
 
@@ -88,14 +118,11 @@ class ProfileFragment : Fragment() {
         binding.tvAge.text =
             appPreference.getAge()
 
-        binding.tvListedCount.text =
-            appPreference.getListedCount().toString()
+        binding.tvListedCount.text = "12"
 
-        binding.tvRentedCount.text =
-            appPreference.getRentedCount().toString()
+        binding.tvRentedCount.text = "48"
 
-        binding.tvRating.text =
-            "${appPreference.getRating()}★"
+        binding.tvRevenue.text = "₹1.25L"
 
         // PROFILE IMAGE
 

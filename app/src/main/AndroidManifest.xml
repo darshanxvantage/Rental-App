@@ -81,7 +81,8 @@
 
         <activity
             android:name=".ui.tenant.TenantDetailsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.RentalApp" />
         <activity
             android:name=".ui.manageProperty.ManagePropertyActivity"
             android:exported="false" />

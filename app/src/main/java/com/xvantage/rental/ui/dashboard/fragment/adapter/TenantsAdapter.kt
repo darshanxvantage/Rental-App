@@ -11,6 +11,8 @@ import com.xvantage.rental.databinding.HomeTenantsItemBinding
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.utils.AppPreference
 import android.widget.Toast
+import android.content.Intent
+import com.xvantage.rental.ui.tenant.TenantDetailsActivity
 
 class TenantsAdapter(
     private val context: Context,
@@ -56,11 +58,18 @@ class TenantsAdapter(
 
             itemBinding.moreButton.setOnClickListener {
 
-                Toast.makeText(
-                    context,
-                    "Tenant ID = ${data.id}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val intent =
+                    Intent(
+                        context,
+                        TenantDetailsActivity::class.java
+                    )
+
+                intent.putExtra(
+                    "tenantId",
+                    data.id
+                )
+
+                context.startActivity(intent)
             }
         }
     }

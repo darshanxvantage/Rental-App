@@ -27,6 +27,7 @@ import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 import com.xvantage.rental.BuildConfig
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityAddPropertyBinding
@@ -55,6 +56,10 @@ class AddPropertyActivity : AppCompatActivity() {
     private var propertyImage: Uri? = null
     private var imageFile: File? = null
 
+    private var isEditMode = false
+
+    private var propertyId = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_property)
@@ -65,6 +70,44 @@ class AddPropertyActivity : AppCompatActivity() {
         binding.toolbar.tvTitle.setText(R.string.add_property_bottom_n)
 
         llPropertyImage = findViewById(R.id.ll_property_photo)
+
+        isEditMode =
+            intent.getBooleanExtra(
+                "isEdit",
+                false
+            )
+
+        propertyId =
+            intent.getStringExtra(
+                "propertyId"
+            ) ?: ""
+
+        if (isEditMode) {
+
+            binding.toolbar.tvTitle.text =
+                "Edit Property"
+
+            binding.etSignUpEmail.setText(
+                intent.getStringExtra(
+                    "propertyName"
+                )
+            )
+
+            binding.etAddress.setText(
+                intent.getStringExtra(
+                    "propertyAddress"
+                )
+            )
+
+            binding.etHomeNumber.setText(
+                intent.getStringExtra(
+                    "propertyRooms"
+                )
+            )
+
+            binding.toolbar.btnSave.text =
+                "Update"
+        }
 
         initViews()
         initClickEvents()
@@ -81,9 +124,17 @@ class AddPropertyActivity : AppCompatActivity() {
                     is CreatePropertyState.Loading -> {
                     }
                     is CreatePropertyState.Success -> {
+
+                        val message =
+
+                            if (isEditMode)
+                                "Property updated successfully"
+                            else
+                                "Property created successfully"
+
                         Toast.makeText(
                             this@AddPropertyActivity,
-                            "Property created successfully",
+                            message,
                             Toast.LENGTH_SHORT
                         ).show()
 
@@ -94,12 +145,23 @@ class AddPropertyActivity : AppCompatActivity() {
                             currentCount + 1
                         )
 
-                        val property = state.data.data.id
+                        val property =
+                            state.data.data.id
 
-                        val intent = Intent(this@AddPropertyActivity, PropertyDetailsActivity::class.java).apply {
-                            putExtra("property", property)
-                        }
+                        val intent =
+                            Intent(
+                                this@AddPropertyActivity,
+                                PropertyDetailsActivity::class.java
+                            ).apply {
+
+                                putExtra(
+                                    "property",
+                                    property
+                                )
+                            }
+
                         startActivity(intent)
+
                         finish()
                     }
                     is CreatePropertyState.Error -> {
@@ -118,14 +180,19 @@ class AddPropertyActivity : AppCompatActivity() {
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
         binding.toolbar.btnSave.setOnClickListener {
-            val intent = Intent(this@AddPropertyActivity, PropertyDetailsActivity::class.java).apply {
-                putExtra("property", "property")
+
+            if (!validateInputs()) {
+                return@setOnClickListener
             }
-            startActivity(intent)
-            finish()
-            /*if (validateInputs()) {
+
+            if (isEditMode) {
+
+                updateProperty()
+
+            } else {
+
                 submitProperty()
-            }*/
+            }
         }
 
         binding.llAddPhoto.setOnClickListener { checkPermissionsAndOpenOptions() }
@@ -143,10 +210,10 @@ class AddPropertyActivity : AppCompatActivity() {
      */
     private fun validateInputs(): Boolean {
         // Validate property type selection
-        if (selectedPropertyTypeId.isEmpty()) {
-            Toast.makeText(this, "Please select a property type", Toast.LENGTH_SHORT).show()
-            return false
-        }
+//        if (selectedPropertyTypeId.isEmpty()) {
+//            Toast.makeText(this, "Please select a property type", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
 
         // Validate address
         if (binding.etAddress.text.toString().trim().isEmpty()) {
@@ -155,10 +222,14 @@ class AddPropertyActivity : AppCompatActivity() {
             return false
         }
 
-        // Validate owner name
-        if (binding.etOwnerName.text.toString().trim().isEmpty()) {
-            binding.etOwnerName.error = "Please enter owner name"
-            binding.etOwnerName.requestFocus()
+        // Validate property name
+        if (binding.etSignUpEmail.text.toString().trim().isEmpty()) {
+
+            binding.etSignUpEmail.error =
+                "Please enter property name"
+
+            binding.etSignUpEmail.requestFocus()
+
             return false
         }
 
@@ -181,13 +252,52 @@ class AddPropertyActivity : AppCompatActivity() {
             noOfRoom = binding.etHomeNumber.text.toString().toIntOrNull() ?: 0,
             propertyTypeId = selectedPropertyTypeId,  // This should now be properly set
             wa_number = binding.etWhatsappNumber.text.toString().trim(),
-            name = binding.etOwnerName.text.toString().trim(),
+            name = binding.etSignUpEmail.text.toString().trim(),
             imageUri = propertyImage
         )
 
         Log.d("AddProperty", "Submitting with typeId: $selectedPropertyTypeId")
         viewModel.createProperty(request)
     }
+    private fun updateProperty() {
+
+        val request =
+            UpdatePropertyRequest(
+
+                propertyId = propertyId,
+
+                address =
+                    binding.etAddress.text
+                        .toString()
+                        .trim(),
+
+                noOfRoom =
+                    binding.etHomeNumber.text
+                        .toString()
+                        .toIntOrNull() ?: 0,
+
+                propertyTypeId =
+                    selectedPropertyTypeId,
+
+                wa_number =
+                    binding.etWhatsappNumber.text
+                        .toString()
+                        .trim(),
+
+                name =
+                    binding.etSignUpEmail.text
+                        .toString()
+                        .trim(),
+
+                imageUri =
+                    propertyImage
+            )
+
+        viewModel.updateProperty(
+            request
+        )
+    }
+
 
     /**
      * Initialize all views and drop-down menus.

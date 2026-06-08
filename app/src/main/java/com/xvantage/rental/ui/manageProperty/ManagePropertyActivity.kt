@@ -18,9 +18,15 @@ import com.xvantage.rental.ui.manageProperty.adapter.PropertyGroupAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.xvantage.rental.ui.dashboard.PropertyListViewModel
+import com.xvantage.rental.network.response.PropertyItem
+import android.content.Intent
+import com.xvantage.rental.ui.addProperty.activity.AddPropertyActivity
 
 @AndroidEntryPoint
-class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoomItemClickListener {
+class ManagePropertyActivity :
+    AppCompatActivity(),
+    ManagePropertyAdapter.OnRoomItemClickListener,
+    PropertyGroupAdapter.PropertyActionListener {
 
     private lateinit var binding: ActivityManagePropertyBinding
     private lateinit var appPreference: AppPreference
@@ -50,12 +56,38 @@ class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoom
             LinearLayoutManager(this)
 
         propertyGroupAdapter =
-            PropertyGroupAdapter(this, this)
+            PropertyGroupAdapter(
+                this,
+                this,
+                this
+            )
 
         binding.rvPropertyList.adapter =
             propertyGroupAdapter
 
         propertyViewModel.loadProperties()
+
+
+        lifecycleScope.launch {
+
+            propertyViewModel.deletePropertyState.collect {
+
+                if (it) {
+
+                    CommonFunction().toast(
+                        this@ManagePropertyActivity,
+                        "Property Deleted Successfully"
+                    )
+
+                } else {
+
+                    CommonFunction().toast(
+                        this@ManagePropertyActivity,
+                        "Delete Failed"
+                    )
+                }
+            }
+        }
 
         lifecycleScope.launch {
 
@@ -66,7 +98,9 @@ class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoom
             }
         }
 
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onRoomClick(roomNumber: String, position: Int) {
@@ -75,5 +109,69 @@ class ManagePropertyActivity : AppCompatActivity(), ManagePropertyAdapter.OnRoom
 
     override fun onAddTenantClick(roomNumber: String, position: Int) {
         CommonFunction().navigation(this, AddTenantActivity::class.java)
+    }
+
+    override fun onEditProperty(property: PropertyItem) {
+
+        val intent =
+            Intent(
+                this,
+                AddPropertyActivity::class.java
+            )
+
+        intent.putExtra(
+            "isEdit",
+            true
+        )
+
+        intent.putExtra(
+            "propertyId",
+            property.id
+        )
+
+        intent.putExtra(
+            "propertyName",
+            property.name
+        )
+
+        intent.putExtra(
+            "propertyAddress",
+            property.address
+        )
+
+        intent.putExtra(
+            "propertyRooms",
+            property.no_of_room
+        )
+
+        startActivity(intent)
+    }
+
+    override fun onDeleteProperty(property: PropertyItem) {
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+
+            .setTitle("Delete Property")
+
+            .setMessage(
+                "Are you sure you want to delete this property?"
+            )
+
+            .setPositiveButton(
+                "Delete"
+            ) { _, _ ->
+
+                propertyViewModel.deleteProperty(
+                    property.id
+                )
+
+            }
+
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+
+            .show()
     }
 }

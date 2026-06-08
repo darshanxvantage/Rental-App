@@ -14,6 +14,7 @@ import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
+import com.xvantage.rental.network.response.TenantDetailsResponse
 import okhttp3.MediaType
 import com.xvantage.rental.network.response.PropertyListResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -22,6 +23,8 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
 import com.xvantage.rental.network.response.TenantListResponse
+import com.google.gson.JsonObject
+import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 
 /**
  * Project: Rental App By XV Team
@@ -96,6 +99,129 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
         } catch (e: Exception) {
             ApiLogger.logError(e, null)
             ResultWrapper.Error("Network error: ${e.localizedMessage}")
+        }
+    }
+
+
+
+
+    suspend fun updateProperty(
+        request: UpdatePropertyRequest
+    ): ResultWrapper<CreatePropertyResponse> {
+
+        return try {
+
+            val propertyIdPart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.propertyId
+                )
+
+            val addressPart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.address
+                )
+
+            val noOfRoomPart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.noOfRoom.toString()
+                )
+
+            val propertyTypeIdPart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.propertyTypeId
+                )
+
+            val waNumberPart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.wa_number
+                )
+
+            val namePart =
+                RequestBody.create(
+                    "text/plain".toMediaTypeOrNull(),
+                    request.name
+                )
+
+            var imagePart: MultipartBody.Part? = null
+
+            if (request.imageUri != null) {
+
+                val file =
+                    File(
+                        request.imageUri.path ?: ""
+                    )
+
+                val requestFile =
+                    RequestBody.create(
+                        "image/*".toMediaTypeOrNull(),
+                        file
+                    )
+
+                imagePart =
+                    MultipartBody.Part.createFormData(
+                        "propertyImage",
+                        file.name,
+                        requestFile
+                    )
+            }
+
+            val response =
+                apiInterface.updateProperty(
+
+                    propertyIdPart,
+
+                    addressPart,
+
+                    noOfRoomPart,
+
+                    propertyTypeIdPart,
+
+                    waNumberPart,
+
+                    namePart,
+
+                    imagePart
+                )
+
+            NetworkHelper.handleApiResponse(
+                response
+            )
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Update failed"
+            )
+        }
+    }
+
+
+
+    suspend fun deleteProperty(
+        propertyId: String
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            val response =
+                apiInterface.deleteProperty(
+                    propertyId
+                )
+
+            NetworkHelper.handleApiResponse(
+                response
+            )
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Delete failed"
+            )
         }
     }
 
@@ -197,6 +323,25 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             ResultWrapper.Error(
                 "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+
+    suspend fun getTenantDetails(
+        id: String
+    ): ResultWrapper<TenantDetailsResponse> {
+
+        return try {
+
+            val response =
+                apiInterface.getTenantDetails(id)
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Error"
             )
         }
     }

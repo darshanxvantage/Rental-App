@@ -14,6 +14,9 @@ import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
+import retrofit2.http.Path
+import com.xvantage.rental.network.response.TenantDetailsResponse
+import retrofit2.http.DELETE
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -83,6 +86,11 @@ interface   APIInterface {
         @Query("pageSize") size: Int = 100
     ): Response<TenantListResponse>
 
+    @GET("landlord/tenant/{id}")
+    suspend fun getTenantDetails(
+        @Path("id") id: String
+    ): Response<TenantDetailsResponse>
+
 
     @Multipart
     @POST("landlord/property/create")
@@ -107,6 +115,43 @@ interface   APIInterface {
         propertyImage: MultipartBody.Part?
 
     ): Response<CreatePropertyResponse>
+
+
+    @Multipart
+    @PUT("landlord/property/edit")
+    suspend fun updateProperty(
+
+        @Part("propertyId")
+        propertyId: RequestBody,
+
+        @Part("address")
+        address: RequestBody,
+
+        @Part("noOfRoom")
+        noOfRoom: RequestBody,
+
+        @Part("propertyTypeId")
+        propertyTypeId: RequestBody,
+
+        @Part("wa_number")
+        waNumber: RequestBody,
+
+        @Part("name")
+        name: RequestBody,
+
+        @Part
+        propertyImage: MultipartBody.Part?
+
+    ): Response<CreatePropertyResponse>
+
+
+    @DELETE("landlord/property/{propertyId}")
+    suspend fun deleteProperty(
+
+        @Path("propertyId")
+        propertyId: String
+
+    ): Response<JsonObject>
 
 
     @Multipart

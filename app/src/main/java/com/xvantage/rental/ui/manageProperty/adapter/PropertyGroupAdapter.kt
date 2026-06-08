@@ -10,15 +10,29 @@ import com.xvantage.rental.network.response.PropertyItem
 
 class PropertyGroupAdapter(
     private val context: Context,
-    private val listener: ManagePropertyAdapter.OnRoomItemClickListener
+    private val listener: ManagePropertyAdapter.OnRoomItemClickListener,
+    private val propertyListener: PropertyActionListener
 ) : RecyclerView.Adapter<PropertyGroupAdapter.ViewHolder>() {
 
     private var propertyList: List<PropertyItem> = emptyList()
+
+    interface PropertyActionListener {
+
+        fun onEditProperty(
+            property: PropertyItem
+        )
+
+        fun onDeleteProperty(
+            property: PropertyItem
+        )
+    }
 
     fun addItems(list: List<PropertyItem>) {
         propertyList = list
         notifyDataSetChanged()
     }
+
+
 
     inner class ViewHolder(
         private val binding: ItemPropertyGroupBinding
@@ -34,6 +48,7 @@ class PropertyGroupAdapter(
 
             binding.tvTotalRooms.text =
                 "Rooms : ${property.no_of_room}"
+
 
             val roomAdapter =
                 ManagePropertyAdapter(
@@ -54,6 +69,20 @@ class PropertyGroupAdapter(
 
             binding.rvRooms.adapter =
                 roomAdapter
+
+            binding.ivEdit.setOnClickListener {
+
+                propertyListener.onEditProperty(
+                    property
+                )
+            }
+
+            binding.ivDelete.setOnClickListener {
+
+                propertyListener.onDeleteProperty(
+                    property
+                )
+            }
         }
     }
 
