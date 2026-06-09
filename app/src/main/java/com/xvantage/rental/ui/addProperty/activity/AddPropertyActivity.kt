@@ -105,6 +105,16 @@ class AddPropertyActivity : AppCompatActivity() {
                 )
             )
 
+            binding.etOwnerName.setText(
+                appPreference.getUserName()
+            )
+
+            binding.etWhatsappNumber.setText(
+                intent.getStringExtra(
+                    "waNumber"
+                ) ?: ""
+            )
+
             binding.toolbar.btnSave.text =
                 "Update"
         }
@@ -138,12 +148,15 @@ class AddPropertyActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        val currentCount =
-                            appPreference.getListedCount()
+                        if (!isEditMode) {
 
-                        appPreference.setListedCount(
-                            currentCount + 1
-                        )
+                            val currentCount =
+                                appPreference.getListedCount()
+
+                            appPreference.setListedCount(
+                                currentCount + 1
+                            )
+                        }
 
                         val property =
                             state.data.data.id

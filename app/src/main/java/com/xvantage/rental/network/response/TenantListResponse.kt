@@ -22,6 +22,8 @@ data class TenantItem(
 
     val phone_number: String?,
 
+    val status: String?,
+
     val profile_pic: String?,
 
     val documents: List<TenantDocument>,

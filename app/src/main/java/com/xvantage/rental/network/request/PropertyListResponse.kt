@@ -20,6 +20,7 @@ data class PropertyItem(
     val address: String,
     val no_of_room: String,
     val total_tenants: Int,
+    val wa_number: String? = "",
     val property_room_no: List<PropertyRoom>,
     val property_images: List<PropertyImage> = emptyList()
 )

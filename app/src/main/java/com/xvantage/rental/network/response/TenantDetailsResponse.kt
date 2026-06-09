@@ -13,11 +13,15 @@ data class TenantDetailsData(
 
     val tenant_name: String,
 
+    val refrence_name: String?,
+
     val phone_number: String?,
 
     val profile_pic: String?,
 
     val rent: String?,
+
+    val status: String?,
 
     val room_deposit: String?,
 

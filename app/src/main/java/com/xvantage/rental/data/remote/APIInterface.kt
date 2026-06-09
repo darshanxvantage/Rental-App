@@ -14,6 +14,7 @@ import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
+import com.xvantage.rental.network.request.tenant.StatusRequest
 import retrofit2.http.Path
 import com.xvantage.rental.network.response.TenantDetailsResponse
 import retrofit2.http.DELETE
@@ -144,12 +145,86 @@ interface   APIInterface {
 
     ): Response<CreatePropertyResponse>
 
+    @PUT("landlord/tenant/status/{tenantId}")
+    suspend fun updateTenantStatus(
+
+        @Path("tenantId")
+        tenantId: String,
+
+        @Body
+        request: StatusRequest
+
+    ): Response<JsonObject>
+
 
     @DELETE("landlord/property/{propertyId}")
     suspend fun deleteProperty(
 
         @Path("propertyId")
         propertyId: String
+
+    ): Response<JsonObject>
+
+
+    @DELETE("landlord/tenant/{tenantId}")
+    suspend fun deleteTenant(
+
+        @Path("tenantId")
+        tenantId: String
+
+    ): Response<Unit>
+
+
+
+
+    @Multipart
+    @PUT("landlord/tenant/edit")
+    suspend fun updateTenant(
+
+        @Part("tenantId")
+        tenantId: RequestBody,
+
+        @Part("tenant_name")
+        tenantName: RequestBody,
+
+        @Part("phone_number")
+        phoneNumber: RequestBody,
+
+        @Part("phone_code")
+        phoneCode: RequestBody,
+
+        @Part("rent")
+        rent: RequestBody,
+
+        @Part("room_deposit")
+        roomDeposit: RequestBody,
+
+        @Part("rent_start_date")
+        rentStartDate: RequestBody,
+
+        @Part("fixed_waterbill_amount")
+        fixedWaterBill: RequestBody,
+
+        @Part("fixed_electricity_amount")
+        fixedElectricity: RequestBody,
+
+        @Part("meter_reading")
+        meterReading: RequestBody,
+
+        @Part("meter_reading_water")
+        waterReading: RequestBody,
+
+        @Part("cost_per_unit")
+        costPerUnit: RequestBody,
+
+        @Part("cost_unit_water")
+        costUnitWater: RequestBody,
+
+        @Part
+        profilePic: MultipartBody.Part?,
+
+        @Part
+        document: List<MultipartBody.Part>?
 
     ): Response<JsonObject>
 

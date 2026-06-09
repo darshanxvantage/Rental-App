@@ -1,4 +1,4 @@
-package com.xvantage.rental.ui.tenant
+package com.xvantage.rental.ui.addTenant
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,31 +8,41 @@ import com.xvantage.rental.network.utils.ResultWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 import javax.inject.Inject
 
 @HiltViewModel
-class TenantDetailsViewModel @Inject constructor(
+class AddTenantViewModel @Inject constructor(
     private val repository: PropertyRepository
 ) : ViewModel() {
 
-    val tenant =
+    val tenantDetails =
         MutableStateFlow<TenantDetailsResponse?>(null)
 
-    val statusUpdateState =
+    val updateTenantState =
         MutableStateFlow(false)
 
-    fun loadTenant(id: String) {
+    val createTenantState =
+        MutableStateFlow(false)
+
+    fun loadTenantDetails(
+        tenantId: String
+    ) {
 
         viewModelScope.launch {
 
             when (
+
                 val response =
-                    repository.getTenantDetails(id)
+                    repository.getTenantDetails(
+                        tenantId
+                    )
+
             ) {
 
                 is ResultWrapper.Success -> {
 
-                    tenant.value =
+                    tenantDetails.value =
                         response.value
                 }
 
@@ -40,43 +50,31 @@ class TenantDetailsViewModel @Inject constructor(
             }
         }
     }
-    fun deleteTenant(
-        tenantId: String
-    ) {
 
-        viewModelScope.launch {
 
-            repository.deleteTenant(
-                tenantId
-            )
-        }
-    }
-
-    fun updateTenantStatus(
-        tenantId: String,
-        status: String
+    fun updateTenant(
+        request: UpdateTenantRequest
     ) {
 
         viewModelScope.launch {
 
             when (
 
-                repository.updateTenantStatus(
-                    tenantId,
-                    status
+                repository.updateTenant(
+                    request
                 )
 
             ) {
 
                 is ResultWrapper.Success -> {
 
-                    statusUpdateState.value =
+                    updateTenantState.value =
                         true
                 }
 
                 else -> {
 
-                    statusUpdateState.value =
+                    updateTenantState.value =
                         false
                 }
             }

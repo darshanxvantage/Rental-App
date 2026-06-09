@@ -204,5 +204,8 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
 
 </resources>

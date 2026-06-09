@@ -21,10 +21,12 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody
+import com.xvantage.rental.network.request.tenant.StatusRequest
 import java.io.File
 import com.xvantage.rental.network.response.TenantListResponse
 import com.google.gson.JsonObject
 import com.xvantage.rental.network.request.property.UpdatePropertyRequest
+import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 
 /**
  * Project: Rental App By XV Team
@@ -337,6 +339,83 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 apiInterface.getTenantDetails(id)
 
             NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Error"
+            )
+        }
+    }
+
+
+
+
+    suspend fun updateTenantStatus(
+        tenantId: String,
+        status: String
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            val response =
+                apiInterface.updateTenantStatus(
+                    tenantId,
+                    StatusRequest(status)
+                )
+
+            NetworkHelper.handleApiResponse(
+                response
+            )
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Status Update Failed"
+            )
+        }
+    }
+
+    suspend fun updateTenant(
+        request: UpdateTenantRequest
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            ResultWrapper.Success(
+                JsonObject()
+            )
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Update Failed"
+            )
+        }
+    }
+    suspend fun deleteTenant(
+        tenantId: String
+    ): ResultWrapper<Boolean> {
+
+        return try {
+
+            val response =
+                apiInterface.deleteTenant(
+                    tenantId
+                )
+
+            if (response.isSuccessful) {
+
+                ResultWrapper.Success(
+                    true
+                )
+
+            } else {
+
+                ResultWrapper.Error(
+                    "Delete Failed"
+                )
+            }
 
         } catch (e: Exception) {
 

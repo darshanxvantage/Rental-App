@@ -37,12 +37,12 @@
                 android:layout_alignParentEnd="true"
                 android:layout_margin="8dp"
                 android:background="@drawable/status_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="8dp"
-                android:text="Paid"
-                android:textColor="@color/black_cole"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="🟢 Active"
+                android:textColor="@android:color/white"
                 android:textStyle="bold"
-                android:textSize="10sp" />
+                android:textSize="10sp"/>
 
             <TextView
                 android:id="@+id/tvTenantName"

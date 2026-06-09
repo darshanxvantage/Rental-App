@@ -13,12 +13,21 @@ import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityTenantDetailsBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import android.view.Menu
+import android.view.MenuItem
+import android.content.Intent
+import com.xvantage.rental.ui.addTenant.AddTenantActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 @AndroidEntryPoint
 class TenantDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTenantDetailsBinding
     private val viewModel by viewModels<TenantDetailsViewModel>()
+
+    private var tenantId: String = ""
+
+    private var currentStatus = "ACTIVE"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +58,36 @@ class TenantDetailsActivity : AppCompatActivity() {
             ContextCompat.getColor(this, android.R.color.black)
         )
 
-        val tenantId = intent.getStringExtra("tenantId") ?: return
+        tenantId = intent.getStringExtra("tenantId") ?: return
 
         viewModel.loadTenant(tenantId)
+
+        lifecycleScope.launch {
+
+            viewModel.statusUpdateState.collect {
+
+                if (it) {
+
+                    android.widget.Toast.makeText(
+                        this@TenantDetailsActivity,
+                        "Tenant Status Updated",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+
+                    viewModel.loadTenant(
+                        tenantId
+                    )
+                }
+            }
+        }
 
         lifecycleScope.launch {
             viewModel.tenant.collect { response ->
                 response?.let {
                     val data = it.data
+
+                    currentStatus =
+                        data.status ?: "ACTIVE"
 
 
                     binding.tvTenantName.text = data.tenant_name ?: "N/A"
@@ -92,5 +123,110 @@ class TenantDetailsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        menuInflater.inflate(
+            R.menu.menu_tenant_details,
+            menu
+        )
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+
+            R.id.action_edit -> {
+
+                val intent = Intent(
+                    this,
+                    AddTenantActivity::class.java
+                )
+
+                intent.putExtra(
+                    "tenantId",
+                    tenantId
+                )
+
+                startActivity(intent)
+
+                return true
+            }
+            R.id.action_status -> {
+
+                val newStatus =
+
+                    if (
+                        currentStatus.equals(
+                            "ACTIVE",
+                            true
+                        )
+                    ) {
+
+                        "INACTIVE"
+
+                    } else {
+
+                        "ACTIVE"
+                    }
+
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(
+
+                        if (
+                            currentStatus.equals(
+                                "ACTIVE",
+                                true
+                            )
+                        )
+                            "Deactivate Tenant"
+                        else
+                            "Activate Tenant"
+
+                    )
+                    .setMessage(
+                        "Are you sure?"
+                    )
+                    .setPositiveButton("Yes") { _, _ ->
+
+                        viewModel.updateTenantStatus(
+                            tenantId,
+                            newStatus
+                        )
+                    }
+                    .setNegativeButton(
+                        "Cancel",
+                        null
+                    )
+                    .show()
+
+                return true
+            }
+
+            R.id.action_delete -> {
+
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Delete Tenant")
+                    .setMessage(
+                        "Are you sure want to delete this tenant?"
+                    )
+                    .setPositiveButton("Delete") { _, _ ->
+
+                        viewModel.deleteTenant(
+                            tenantId
+                        )
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

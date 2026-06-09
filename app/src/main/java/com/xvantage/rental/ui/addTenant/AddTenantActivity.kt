@@ -27,17 +27,27 @@ import com.xvantage.rental.databinding.ActivityAddTenantBinding
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
 import java.io.File
-
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 /**
  * Activity to add a tenant.
  *
  * This activity uses static data and performs all UI logic for tenant data and image management.
  * In future iterations, a [TenantViewModel] will be integrated to supply dynamic data using MVVM.
  */
+@AndroidEntryPoint
 class AddTenantActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddTenantBinding
     private lateinit var appPreference: AppPreference
+
+    private val viewModel by viewModels<AddTenantViewModel>()
+
+    private var tenantId = ""
+
+    private var isEditMode = false
+
 
     // Future integration: Use TenantViewModel to manage tenant data dynamically
 //    private val tenantViewModel: TenantViewModel by viewModels()
@@ -67,10 +77,32 @@ class AddTenantActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_tenant)
         appPreference = AppPreference(this)
+        tenantId =
+            intent.getStringExtra(
+                "tenantId"
+            ) ?: ""
+
+        isEditMode =
+            tenantId.isNotEmpty()
+
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Set toolbar title
-        binding.toolbar.tvTitle.setText(R.string.add_tenant_property)
+        if (isEditMode) {
+
+            binding.toolbar.tvTitle.text =
+                "Edit Tenant"
+
+            binding.toolbar.btnSave.text =
+                "Update"
+
+        } else {
+
+            binding.toolbar.tvTitle.setText(
+                R.string.add_tenant_property
+            )
+        }
 
         // Initialize views for selected images
         llTenantPhoto = findViewById(R.id.ll_selected_tenant_photo)
@@ -81,10 +113,75 @@ class AddTenantActivity : AppCompatActivity() {
         setupClickEvents()
         setupSpinners()
 
-        // Future integration: Bind ViewModel to UI
-//        binding.viewModel = tenantViewModel
-        binding.lifecycleOwner = this
+
+        if (isEditMode) {
+
+            viewModel.loadTenantDetails(
+                tenantId
+            )
+        }
+
+        lifecycleScope.launch {
+
+            viewModel.tenantDetails.collect { response ->
+
+                response?.let {
+
+                    val tenant = it.data
+
+                    binding.etTenantName.setText(
+                        tenant.tenant_name ?: ""
+                    )
+
+                    binding.etPhoneNumber.setText(
+                        tenant.phone_number ?: ""
+                    )
+
+                    binding.etReferenceName.setText(
+                        tenant.refrence_name ?: ""
+                    )
+
+                    binding.llRentFinanceDetail.etRentAmount.setText(
+                        tenant.rent ?: ""
+                    )
+
+                    binding.llRentFinanceDetail.etDepositAmount.setText(
+                        tenant.room_deposit ?: ""
+                    )
+
+                    binding.llRentFinanceDetail.etRentAmount.setText(
+                        tenant.rent ?: ""
+                    )
+
+                    binding.llRentFinanceDetail.etDepositAmount.setText(
+                        tenant.room_deposit ?: ""
+                    )
+                    binding.llRentFinanceDetail.tvRentStartDate.text =
+                        tenant.rent_start_date ?: ""
+
+                    binding.llRentFinanceDetail.tvMoveInDate.text =
+                        tenant.checkin_date ?: ""
+
+                    binding.llElectricityFinanceDetail.etElectricityDefaultAmount.setText(
+                        tenant.fixed_electricity_amount ?: ""
+                    )
+
+                    binding.llWaterFinanceDetail.etWaterFixedAmount.setText(
+                        tenant.fixed_waterbill_amount ?: ""
+                    )
+
+                    binding.llWaterFinanceDetail.etWaterCostUnit.setText(
+                        tenant.cost_unit_water ?: ""
+                    )
+                    binding.llElectricityFinanceDetail.etElectricityCostUnit.setText(
+                        tenant.cost_per_unit ?: ""
+                    )
+                }
+            }
+        }
     }
+
+
 
     /**
      * Sets up click event listeners for the activity.

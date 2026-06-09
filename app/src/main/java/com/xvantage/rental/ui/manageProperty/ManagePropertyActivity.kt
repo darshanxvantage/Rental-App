@@ -21,6 +21,7 @@ import com.xvantage.rental.ui.dashboard.PropertyListViewModel
 import com.xvantage.rental.network.response.PropertyItem
 import android.content.Intent
 import com.xvantage.rental.ui.addProperty.activity.AddPropertyActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 @AndroidEntryPoint
 class ManagePropertyActivity :
@@ -143,34 +144,43 @@ class ManagePropertyActivity :
             "propertyRooms",
             property.no_of_room
         )
+        intent.putExtra(
+            "waNumber",
+            property.wa_number
+        )
 
         startActivity(intent)
     }
 
-    override fun onDeleteProperty(property: PropertyItem) {
+    override fun onDeleteProperty(
+        property: PropertyItem
+    ) {
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
-
+        MaterialAlertDialogBuilder(this)
             .setTitle("Delete Property")
-
             .setMessage(
                 "Are you sure you want to delete this property?"
             )
 
             .setPositiveButton(
-                "Delete"
-            ) { _, _ ->
+                "DELETE"
+            ) { dialog, _ ->
 
                 propertyViewModel.deleteProperty(
                     property.id
                 )
 
+                dialog.dismiss()
             }
 
             .setNegativeButton(
-                "Cancel",
-                null
-            )
+                "CANCEL"
+            ) { dialog, _ ->
+
+                dialog.dismiss()
+            }
+
+            .setCancelable(true)
 
             .show()
     }
