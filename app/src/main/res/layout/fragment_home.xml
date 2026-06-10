@@ -43,12 +43,14 @@
                 android:layout_height="wrap_content">
 
                 <include
+                    android:id="@+id/cardProperty"
                     layout="@layout/total_property_card"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
                 <include
+                    android:id="@+id/cardTenant"
                     layout="@layout/active_tenant_card"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -61,13 +63,14 @@
                 >
 
                 <include
-                    android:id="@+id/cv_total_payment"
+                    android:id="@+id/cardPayment"
                     layout="@layout/total_payment_card"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
                 <include
+                    android:id="@+id/cardDuePayment"
                     layout="@layout/due_payment_card"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

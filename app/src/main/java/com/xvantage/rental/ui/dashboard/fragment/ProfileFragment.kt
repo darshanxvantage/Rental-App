@@ -27,6 +27,11 @@ import java.io.File
 import java.io.FileOutputStream
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
+import com.xvantage.rental.ui.tenant.TenantListActivity
+import com.xvantage.rental.ui.dashboard.TenantListViewModel
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 
 
 @AndroidEntryPoint
@@ -36,6 +41,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var appPreference: AppPreference
     private val viewModel: AuthViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
 
     companion object {
 
@@ -73,6 +79,30 @@ class ProfileFragment : Fragment() {
         appPreference =
             AppPreference(requireContext())
 
+
+
+        profileViewModel.loadDashboardData()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            profileViewModel.propertyCount.collect {
+
+                binding.tvListedCount.text =
+                    it.toString()
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            profileViewModel.tenantCount.collect {
+
+                binding.tvRentedCount.text =
+                    it.toString()
+            }
+        }
+
+        binding.tvRevenue.text = "₹0"
+
         binding.cardProperties.setOnClickListener {
 
             startActivity(
@@ -85,11 +115,12 @@ class ProfileFragment : Fragment() {
 
         binding.cardTenants.setOnClickListener {
 
-            Toast.makeText(
-                requireContext(),
-                "Tenant Management Coming Soon",
-                Toast.LENGTH_SHORT
-            ).show()
+            startActivity(
+                Intent(
+                    requireContext(),
+                    TenantListActivity::class.java
+                )
+            )
         }
 
         binding.cardRevenue.setOnClickListener {
@@ -118,11 +149,6 @@ class ProfileFragment : Fragment() {
         binding.tvAge.text =
             appPreference.getAge()
 
-        binding.tvListedCount.text = "12"
-
-        binding.tvRentedCount.text = "48"
-
-        binding.tvRevenue.text = "₹1.25L"
 
         // PROFILE IMAGE
 

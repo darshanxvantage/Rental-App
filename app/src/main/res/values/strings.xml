@@ -206,6 +206,9 @@
 
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-
+    <string name="all_tenants">All Tenants</string>
+    <string name="search_tenant">Search tenant</string>
+    <string name="no_tenants_found">No Tenants Found</string>
+    <string name="filter">Filter</string>
 
 </resources>

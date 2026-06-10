@@ -89,6 +89,37 @@ class TenantDetailsActivity : AppCompatActivity() {
                     currentStatus =
                         data.status ?: "ACTIVE"
 
+                    android.util.Log.e(
+                        "TENANT_DETAILS_STATUS",
+                        "ID=$tenantId Status=${data.status}"
+                    )
+
+                    if (
+                        currentStatus.equals(
+                            "ACTIVE",
+                            true
+                        )
+                    ) {
+
+                        binding.tvStatus.text =
+                            "● ACTIVE TENANT"
+
+                        binding.tvStatus.setBackgroundResource(
+                            R.drawable.green_status_bg
+                        )
+
+                    } else {
+
+                        binding.tvStatus.text =
+                            "● INACTIVE TENANT"
+
+                        binding.tvStatus.setBackgroundResource(
+                            R.drawable.red_status_bg
+                        )
+                    }
+
+
+
 
                     binding.tvTenantName.text = data.tenant_name ?: "N/A"
                     binding.tvPhone.text     = data.phone_number ?: "N/A"

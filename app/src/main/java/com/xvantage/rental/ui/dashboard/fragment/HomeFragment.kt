@@ -28,6 +28,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import com.xvantage.rental.data.source.sample.PropertyDataRepository
 import com.xvantage.rental.ui.dashboard.TenantListViewModel
 import com.xvantage.rental.ui.tenant.TenantListActivity
+import android.widget.TextView
+import com.xvantage.rental.R
 
 @DelicateCoroutinesApi
 @AndroidEntryPoint
@@ -116,17 +118,24 @@ class HomeFragment : Fragment() {
         }
 
         propertyViewModel.loadProperties()
-
         lifecycleScope.launch {
 
             propertyViewModel.propertyList.collect {
 
                 android.util.Log.e(
-                    "HOME_PROPERTY_COUNT",
+                    "PROPERTY_LIST_SIZE",
                     it.size.toString()
                 )
 
                 propertiesAdapter.addItems(it)
+
+                val propertyCountTv =
+                    requireView().findViewById<TextView>(
+                        R.id.tvPropertyCount
+                    )
+
+                propertyCountTv.text =
+                    it.size.toString()
             }
         }
     }
@@ -152,12 +161,15 @@ class HomeFragment : Fragment() {
 
             tenantViewModel.tenantList.collect {
 
-                android.util.Log.e(
-                    "TENANT_COUNT",
-                    it.size.toString()
-                )
-
                 tenantsAdapter.addItems(it)
+
+                val tenantCountTv =
+                    requireView().findViewById<TextView>(
+                        R.id.tvTenantCount
+                    )
+
+                tenantCountTv.text =
+                    it.size.toString()
             }
         }
     }

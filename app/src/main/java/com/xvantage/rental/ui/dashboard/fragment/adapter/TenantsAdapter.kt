@@ -54,25 +54,17 @@ class TenantsAdapter(
                 .into(itemBinding.itemImage)
 
             android.util.Log.e(
-                "TENANT_STATUS",
-                "Tenant = ${data.tenant_name} Status = ${data.status}"
+                "TENANT_CARD",
+                "ID=${data.id} Name=${data.tenant_name} Status=${data.status}"
             )
 
-            // Status
-            if (
-                data.status.equals(
-                    "ACTIVE",
-                    true
-                )
-            ) {
+            if (data.status.equals("ACTIVE", true)) {
 
-                itemBinding.tvStatus.text =
-                    "🟢 Active"
+                itemBinding.tvStatus.text = "🟢 Active"
 
             } else {
 
-                itemBinding.tvStatus.text =
-                    "🔴 Inactive"
+                itemBinding.tvStatus.text = "🔴 Inactive"
             }
 
             itemBinding.moreButton.setOnClickListener {

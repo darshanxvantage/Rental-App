@@ -396,6 +396,110 @@ class AppPreference @Inject constructor(
 
     // CLEAR ALL
 
+
+
+
+
+
+    // ─── FONT SIZE ──────────────────────────────────────────────────────────────
+    fun setFontSize(size: String) {
+        editor.putString("font_size", size)
+        editor.apply()
+    }
+    fun getFontSize(): String {
+        return appSharedPrefs.getString("font_size", "Medium") ?: "Medium"
+    }
+
+    // ─── LANGUAGE ───────────────────────────────────────────────────────────────
+    fun setLanguage(language: String) {
+        editor.putString("language", language)
+        editor.apply()
+    }
+    fun getLanguage(): String {
+        return appSharedPrefs.getString("language", "English") ?: "English"
+    }
+
+    // ─── PUSH NOTIFICATIONS ─────────────────────────────────────────────────────
+    fun setPushNotifEnabled(enabled: Boolean) {
+        editor.putBoolean("push_notif", enabled)
+        editor.apply()
+    }
+    fun isPushNotifEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("push_notif", true)
+    }
+
+    // ─── EMAIL ALERTS ───────────────────────────────────────────────────────────
+    fun setEmailAlertsEnabled(enabled: Boolean) {
+        editor.putBoolean("email_alerts", enabled)
+        editor.apply()
+    }
+    fun isEmailAlertsEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("email_alerts", true)
+    }
+
+    // ─── WHATSAPP ALERTS ────────────────────────────────────────────────────────
+    fun setWhatsAppAlertsEnabled(enabled: Boolean) {
+        editor.putBoolean("whatsapp_alerts", enabled)
+        editor.apply()
+    }
+    fun isWhatsAppAlertsEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("whatsapp_alerts", false)
+    }
+
+    // ─── DO NOT DISTURB ─────────────────────────────────────────────────────────
+    fun setDNDEnabled(enabled: Boolean) {
+        editor.putBoolean("dnd_enabled", enabled)
+        editor.apply()
+    }
+    fun isDNDEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("dnd_enabled", false)
+    }
+
+    // ─── AUTO INVOICE ───────────────────────────────────────────────────────────
+    fun setAutoInvoiceEnabled(enabled: Boolean) {
+        editor.putBoolean("auto_invoice", enabled)
+        editor.apply()
+    }
+    fun isAutoInvoiceEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("auto_invoice", true)
+    }
+
+    // ─── RENT DUE DAY ───────────────────────────────────────────────────────────
+    fun setRentDueDay(day: Int) {
+        editor.putInt("rent_due_day", day)
+        editor.apply()
+    }
+    fun getRentDueDay(): Int {
+        return appSharedPrefs.getInt("rent_due_day", 1)
+    }
+
+    // ─── BIOMETRIC ──────────────────────────────────────────────────────────────
+    fun setBiometricEnabled(enabled: Boolean) {
+        editor.putBoolean("biometric_enabled", enabled)
+        editor.apply()
+    }
+    fun isBiometricEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("biometric_enabled", false)
+    }
+
+    // ─── TWO STEP VERIFY ────────────────────────────────────────────────────────
+    fun setTwoStepEnabled(enabled: Boolean) {
+        editor.putBoolean("two_step_enabled", enabled)
+        editor.apply()
+    }
+    fun isTwoStepEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("two_step_enabled", true)
+    }
+
+    // ─── CLOUD BACKUP ───────────────────────────────────────────────────────────
+    fun setCloudBackupEnabled(enabled: Boolean) {
+        editor.putBoolean("cloud_backup", enabled)
+        editor.apply()
+    }
+    fun isCloudBackupEnabled(): Boolean {
+        return appSharedPrefs.getBoolean("cloud_backup", false)
+    }
+
     fun logoutUser() {
 
         editor.remove("jwt_token")

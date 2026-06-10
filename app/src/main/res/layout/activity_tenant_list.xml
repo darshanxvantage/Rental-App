@@ -10,29 +10,30 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="@android:color/white"
-        app:title="All Tenants"
-        app:titleTextColor="@android:color/black"/>
+        app:title="@string/all_tenants"
+        app:titleTextColor="@android:color/black"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@android:color/black"
+        app:menu="@menu/menu_tenant_list"/>
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:queryHint="Search tenant"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTenants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false"/>
 
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Tenants Found"
+        android:text="@string/no_tenants_found"
         android:textSize="16sp"
         android:textStyle="bold"
         android:visibility="gone"
