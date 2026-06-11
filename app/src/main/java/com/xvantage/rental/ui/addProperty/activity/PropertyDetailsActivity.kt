@@ -45,6 +45,11 @@ class PropertyDetailsActivity : AppCompatActivity() {
         propertyId =
             intent.getStringExtra("propertyId") ?: ""
 
+        android.util.Log.e(
+            "OPEN_PROPERTY_ID",
+            propertyId
+        )
+
         setupToolbar()
         setupPropertyDetails()
         setupViewPager()
@@ -75,6 +80,13 @@ class PropertyDetailsActivity : AppCompatActivity() {
                             android.util.Log.e(
                                 "PROPERTY_DETAILS",
                                 Gson().toJson(state.details.data)
+                            )
+
+                            android.util.Log.e(
+                                "PROPERTY_ROOMS",
+                                Gson().toJson(
+                                    state.details.data?.rooms
+                                )
                             )
 
                             bindHeader(state.details)
@@ -182,13 +194,31 @@ class PropertyDetailsActivity : AppCompatActivity() {
     }
 
     private fun showAddTenantBottomSheet() {
-        val bottomSheet = AddTenantBottomSheetFragment()
-//        bottomSheet.setOnTenantAddedListener { tenant ->
-//            // Notify tenants fragment about the new tenant
-//            val tenantsFragment = supportFragmentManager.fragments.find { it is TenantsFragment } as? TenantsFragment
-//            tenantsFragment?.addRoom(tenant)
-//        }
-        bottomSheet.show(supportFragmentManager, "AddTenantBottomSheet")
+
+        val bottomSheet =
+            AddTenantBottomSheetFragment()
+
+        val currentData =
+
+            (viewModel.state.value
+                    as? PropertyDetailsViewModel.State.Success)
+                ?.details
+                ?.data
+
+        val bundle = Bundle()
+
+        bundle.putString(
+            "property_json",
+            Gson().toJson(currentData)
+        )
+
+        bottomSheet.arguments =
+            bundle
+
+        bottomSheet.show(
+            supportFragmentManager,
+            "AddTenantBottomSheet"
+        )
     }
 
     override fun onSupportNavigateUp(): Boolean {

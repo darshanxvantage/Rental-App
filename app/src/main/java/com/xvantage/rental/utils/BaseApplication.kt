@@ -10,6 +10,7 @@ class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        RentalNotificationHelper.createChannels(this)
         Logger.d("BaseApplication", "Application started")
         instance = this
     }

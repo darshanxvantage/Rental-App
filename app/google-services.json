@@ -1,0 +1,227 @@
+{
+  "project_info": {
+    "project_number": "226273600474",
+    "project_id": "xvantage-infotech",
+    "storage_bucket": "xvantage-infotech.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:6a64acad53ef5aeab956e3",
+        "android_client_info": {
+          "package_name": "com.xv.agecalc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:899f46c24712bcbfb956e3",
+        "android_client_info": {
+          "package_name": "com.xv.grad2048"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:990fd3d628afadb6b956e3",
+        "android_client_info": {
+          "package_name": "com.xv.puzzlegame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:dd5cf1345d1ce68bb956e3",
+        "android_client_info": {
+          "package_name": "com.xv.spygame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-3080894373828515~9240832949"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:914bf7ba55937f76b956e3",
+        "android_client_info": {
+          "package_name": "com.xv.tictactoe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226273600474:android:784b52e46093d26ab956e3",
+        "android_client_info": {
+          "package_name": "com.xvantage.rental"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP3_mD5MU8LElHYIFzdXFJ0yG40ascKHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226273600474-rht06lkor89hnbqadcvgg2js8klpg9dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "226273600474-3f6d5e669j750j8f6lt8tk6cbke3ktca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Xvantage.tracknshop"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

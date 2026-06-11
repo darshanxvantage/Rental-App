@@ -12,6 +12,7 @@ import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityReceivePaymentBinding
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
+import android.os.Build
 
 class ReceivePaymentActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityReceivePaymentBinding
@@ -112,7 +113,16 @@ class ReceivePaymentActivity : AppCompatActivity() {
             "storeValues: $rentAmount, $rentRcvDate, $fromDate, $toDate, $paymentMode, $note"
         )
 
+        // ✅ YEH ADD KARO — payment receive hone par notification
+        val tenantName = intent.getStringExtra("tenant_name") ?: "Tenant"
+        com.xvantage.rental.utils.RentalNotificationHelper.showPaymentReceived(
+            context = this,
+            tenantName = tenantName,
+            amount = rentAmount
+        )
     }
+
+
 
     private fun getSelectedPaymentMode(): String {
         return when (layoutBinding.rgPaymentMode.checkedRadioButtonId) {

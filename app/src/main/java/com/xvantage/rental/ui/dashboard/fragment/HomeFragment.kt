@@ -68,6 +68,13 @@ class HomeFragment : Fragment() {
         setupRecyclerViews()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+        tenantViewModel.loadTenants()
+        propertyViewModel.loadProperties()
+    }
+
     private fun initializeViews() {
         appPreference = AppPreference(requireContext())
     }

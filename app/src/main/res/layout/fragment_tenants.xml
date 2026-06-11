@@ -24,21 +24,22 @@
                 android:alpha="0.5" />
 
             <TextView
+                android:id="@+id/tvEmptyTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="No Rooms Added Yet"
-                android:textColor="@color/primary_blue"
-                android:textSize="18sp" />
+                android:text="No Tenants Yet"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_blue" />
 
             <TextView
+                android:id="@+id/tvEmptyMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="Tap the + button to add rooms to your property"
-                android:textColor="@color/grey_hint"
-                android:textSize="14sp" />
+                android:text="This property doesn't have any tenants yet. Tap the + button to add your first tenant."
+                android:textSize="14sp"
+                android:textAlignment="center" />
         </LinearLayout>
 
         <!-- Room list -->

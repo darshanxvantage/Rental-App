@@ -66,6 +66,21 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/roomId"
+                android:layout_marginStart="10dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Occupied"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                android:background="@drawable/green_status_bg"/>
+
+            <TextView
                 android:id="@+id/address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

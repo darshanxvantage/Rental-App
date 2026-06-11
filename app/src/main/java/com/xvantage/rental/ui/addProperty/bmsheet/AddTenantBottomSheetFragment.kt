@@ -12,11 +12,16 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
+import android.widget.ArrayAdapter
+import com.google.gson.Gson
+import com.xvantage.rental.network.response.PropertyDetailsData
 
 class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentAddTenantBottomSheetBinding? = null
     private val binding get() = _binding!!
+
+    private var propertyDetails: PropertyDetailsData? = null
 
     private var onTenantAddedListener: ((Tenant) -> Unit)? = null
     private val calendar = Calendar.getInstance()
@@ -39,11 +44,21 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
+
         setupDatePickers()
         setupActionButtons()
+
+        loadRoomsFromArguments()
     }
+
+
 
     private fun setupDatePickers() {
         binding.etRentStartDate.setOnClickListener { showDatePicker { date -> binding.etRentStartDate.setText(date) } }
@@ -71,14 +86,79 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private fun loadRoomsFromArguments() {
+
+        val json =
+            arguments?.getString(
+                "property_json"
+            ) ?: return
+
+        propertyDetails =
+            Gson().fromJson(
+                json,
+                PropertyDetailsData::class.java
+            )
+
+        val roomList =
+
+            propertyDetails?.rooms
+                ?.sortedBy {
+
+                    if (
+                        it.status.equals(
+                            "OCCUPED",
+                            true
+                        )
+                    ) 1 else 0
+                }
+                ?.map {
+
+                    val roomStatus =
+
+                        if (
+                            it.status.equals(
+                                "OCCUPED",
+                                true
+                            )
+                        ) {
+                            "Occupied"
+                        } else {
+                            "Vacant"
+                        }
+
+                    "Room ${it.room_no} - $roomStatus"
+                }
+
+                ?: emptyList()
+
+        android.util.Log.e(
+            "ROOM_SPINNER",
+            roomList.toString()
+        )
+
+        val adapter =
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                roomList
+            )
+
+        binding.spinnerRoomName.adapter =
+            adapter
+    }
+
     private fun validateFields(): Boolean {
         var valid = true
         if (binding.etTenantName.text.isNullOrBlank()) {
-            binding.etTenantName.error = "Tenant name required"
+
+            binding.etTenantName.error =
+                "Tenant name required"
+
             valid = false
         }
-        if (binding.etTenantName.text.isNullOrBlank()) {
-            binding.etTenantName.error = "Room name required"
+
+        if (binding.spinnerRoomName.selectedItem == null) {
+
             valid = false
         }
         return valid
@@ -89,7 +169,11 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
             id = UUID.randomUUID().toString(),
             roomId = roomId,
             propertyId = propertyId,
-            roomName = binding.etTenantName.text.toString(),
+            roomName =
+                binding.spinnerRoomName
+                    .selectedItem
+                    ?.toString()
+                    ?: "",
             tenantName = binding.etTenantName.text.toString(),
             aadhaarPhotoUri = "binding.ivAadharUpload.drawable?.toString()",
             tenantPhotoUri = "binding.ivTenantPhotoUpload.drawable?.toUri().toString()",

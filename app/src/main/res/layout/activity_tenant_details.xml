@@ -83,6 +83,7 @@
 
                     </FrameLayout>
 
+                    <!-- Tenant Name -->
                     <TextView
                         android:id="@+id/tvTenantName"
                         android:layout_width="wrap_content"
@@ -98,6 +99,11 @@
                         android:shadowDy="3"
                         android:shadowRadius="8" />
 
+                    <!--
+                        FIX: Status badge mein SIRF ek dot hai (View) aur ek TextView.
+                        Kotlin mein "● ACTIVE TENANT" mat likho — sirf "ACTIVE TENANT" likho.
+                        Dot View alag hai — isliye double dot aa raha tha.
+                    -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -110,12 +116,15 @@
                         android:paddingTop="7dp"
                         android:paddingBottom="7dp">
 
+                        <!-- YEH ANIMATED DOT HAI — TextView mein "●" mat add karo -->
                         <View
+                            android:id="@+id/statusDot"
                             android:layout_width="8dp"
                             android:layout_height="8dp"
                             android:background="@drawable/tenant_dot_pulse"
                             android:layout_marginEnd="6dp" />
 
+                        <!-- FIXED: Sirf text — no "●" symbol yahan -->
                         <TextView
                             android:id="@+id/tvStatus"
                             android:layout_width="wrap_content"
@@ -125,6 +134,7 @@
                             android:textColor="#FFFFFF"
                             android:textSize="11sp"
                             android:letterSpacing="0.08" />
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -217,14 +227,12 @@
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:layout_marginBottom="12dp">
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/icon_pin"
                                 android:textSize="15sp"
                                 android:layout_marginEnd="10dp" />
-
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -254,14 +262,12 @@
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:layout_marginBottom="12dp">
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/icon_door"
                                 android:textSize="15sp"
                                 android:layout_marginEnd="10dp" />
-
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -290,14 +296,12 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical">
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/icon_phone"
                                 android:textSize="15sp"
                                 android:layout_marginEnd="10dp" />
-
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -338,7 +342,6 @@
                         app:cardCornerRadius="20dp"
                         app:cardElevation="6dp"
                         app:strokeWidth="0dp">
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -346,7 +349,6 @@
                             android:gravity="center"
                             android:orientation="vertical"
                             android:padding="16dp">
-
                             <LinearLayout
                                 android:layout_width="44dp"
                                 android:layout_height="44dp"
@@ -359,7 +361,6 @@
                                     android:text="@string/icon_money"
                                     android:textSize="20sp" />
                             </LinearLayout>
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -367,7 +368,6 @@
                                 android:textColor="#FFFFFFCC"
                                 android:textSize="10sp"
                                 android:letterSpacing="0.08" />
-
                             <TextView
                                 android:id="@+id/tvRent"
                                 android:layout_width="wrap_content"
@@ -387,7 +387,6 @@
                         app:cardCornerRadius="20dp"
                         app:cardElevation="6dp"
                         app:strokeWidth="0dp">
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -395,7 +394,6 @@
                             android:gravity="center"
                             android:orientation="vertical"
                             android:padding="16dp">
-
                             <LinearLayout
                                 android:layout_width="44dp"
                                 android:layout_height="44dp"
@@ -408,7 +406,6 @@
                                     android:text="@string/icon_lock"
                                     android:textSize="20sp" />
                             </LinearLayout>
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -416,7 +413,6 @@
                                 android:textColor="#FFFFFFCC"
                                 android:textSize="10sp"
                                 android:letterSpacing="0.08" />
-
                             <TextView
                                 android:id="@+id/tvDeposit"
                                 android:layout_width="wrap_content"
@@ -452,19 +448,13 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:layout_marginBottom="16dp">
-
                             <LinearLayout
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:background="@drawable/tenant_icon_bg_amber"
                                 android:gravity="center">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/icon_lightning"
-                                    android:textSize="18sp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_lightning" android:textSize="18sp" />
                             </LinearLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -477,241 +467,76 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="#F1F5F9"
-                            android:layout_marginBottom="14dp" />
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F1F5F9" android:layout_marginBottom="14dp" />
 
                         <!-- Check In Date -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="14dp">
-
-                            <LinearLayout
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:background="@drawable/tenant_util_icon_bg"
-                                android:gravity="center"
-                                android:layout_marginEnd="12dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="12dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_calendar" android:textSize="14sp" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CHECK IN DATE" android:textColor="#94A3B8" android:textSize="11sp" android:letterSpacing="0.06" />
                                 <TextView android:id="@+id/tvCheckInDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
 
                         <!-- Rent Start Date -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="14dp">
-
-                            <LinearLayout
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:background="@drawable/tenant_util_icon_bg"
-                                android:gravity="center"
-                                android:layout_marginEnd="12dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="12dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_calendar2" android:textSize="14sp" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RENT START DATE" android:textColor="#94A3B8" android:textSize="11sp" android:letterSpacing="0.06" />
                                 <TextView android:id="@+id/tvRentStartDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Electricity Fixed -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="14dp">
-
-                            <LinearLayout
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:background="@drawable/tenant_util_icon_bg"
-                                android:gravity="center"
-                                android:layout_marginEnd="12dp">
+                        <!-- Electricity -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="12dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_bulb" android:textSize="14sp" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FIXED ELECTRICITY" android:textColor="#94A3B8" android:textSize="11sp" android:letterSpacing="0.06" />
                                 <TextView android:id="@+id/tvElectricity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Water Bill Fixed -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="14dp">
-
-                            <LinearLayout
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:background="@drawable/tenant_util_icon_bg"
-                                android:gravity="center"
-                                android:layout_marginEnd="12dp">
+                        <!-- Water Bill -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="12dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_water" android:textSize="14sp" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FIXED WATER BILL" android:textColor="#94A3B8" android:textSize="11sp" android:letterSpacing="0.06" />
                                 <TextView android:id="@+id/tvWater" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Unit Costs Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="14dp">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:layout_marginEnd="8dp">
-                                <LinearLayout
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/tenant_util_icon_bg"
-                                    android:gravity="center"
-                                    android:layout_marginEnd="10dp">
+                        <!-- Unit Costs -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="14dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginEnd="8dp">
+                                <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="10dp">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_lightning" android:textSize="14sp" />
                                 </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
+                                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ELEC/UNIT" android:textColor="#94A3B8" android:textSize="10sp" android:letterSpacing="0.05" />
                                     <TextView android:id="@+id/tvCostPerUnit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                                 </LinearLayout>
                             </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:layout_marginStart="8dp">
-                                <LinearLayout
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:background="@drawable/tenant_util_icon_bg"
-                                    android:gravity="center"
-                                    android:layout_marginEnd="10dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginStart="8dp">
+                                <LinearLayout android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/tenant_util_icon_bg" android:gravity="center" android:layout_marginEnd="10dp">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_water" android:textSize="14sp" />
                                 </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
+                                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
                                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="WATER/UNIT" android:textColor="#94A3B8" android:textSize="10sp" android:letterSpacing="0.05" />
                                     <TextView android:id="@+id/tvWaterUnit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#1E293B" android:textSize="14sp" android:textStyle="bold" />
                                 </LinearLayout>
                             </LinearLayout>
-
                         </LinearLayout>
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
-                <!-- NOTES CARD -->
-<!--                <com.google.android.material.card.MaterialCardView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginBottom="24dp"-->
-<!--                    app:cardBackgroundColor="#FFFFFF"-->
-<!--                    app:cardCornerRadius="20dp"-->
-<!--                    app:cardElevation="4dp"-->
-<!--                    app:strokeWidth="0dp">-->
-
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="vertical"-->
-<!--                        android:padding="20dp">-->
-
-<!--                        <LinearLayout-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:gravity="center_vertical"-->
-<!--                            android:orientation="horizontal"-->
-<!--                            android:layout_marginBottom="12dp">-->
-
-<!--                            <LinearLayout-->
-<!--                                android:layout_width="40dp"-->
-<!--                                android:layout_height="40dp"-->
-<!--                                android:background="@drawable/tenant_icon_bg_green"-->
-<!--                                android:gravity="center">-->
-<!--                                <TextView-->
-<!--                                    android:layout_width="wrap_content"-->
-<!--                                    android:layout_height="wrap_content"-->
-<!--                                    android:text="@string/icon_notes"-->
-<!--                                    android:textSize="18sp" />-->
-<!--                            </LinearLayout>-->
-
-<!--                            <TextView-->
-<!--                                android:layout_width="0dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_weight="1"-->
-<!--                                android:layout_marginStart="12dp"-->
-<!--                                android:fontFamily="@font/splinesans_semibold"-->
-<!--                                android:text="Notes"-->
-<!--                                android:textColor="#0F172A"-->
-<!--                                android:textSize="16sp"-->
-<!--                                android:textStyle="bold" />-->
-<!--                        </LinearLayout>-->
-
-<!--                        <View-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="1dp"-->
-<!--                            android:background="#F1F5F9"-->
-<!--                            android:layout_marginBottom="12dp" />-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/tvNotes"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/tenant_notes_bg"-->
-<!--                            android:padding="14dp"-->
-<!--                            android:textColor="#475569"-->
-<!--                            android:textSize="14sp"-->
-<!--                            android:lineSpacingMultiplier="1.5" />-->
-
-<!--                    </LinearLayout>-->
-<!--                </com.google.android.material.card.MaterialCardView>-->
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

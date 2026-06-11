@@ -1,7 +1,11 @@
 package com.xvantage.rental.ui.tenant
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -9,15 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityTenantDetailsBinding
+import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import android.view.Menu
-import android.view.MenuItem
-import android.content.Intent
-import com.xvantage.rental.ui.addTenant.AddTenantActivity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 @AndroidEntryPoint
 class TenantDetailsActivity : AppCompatActivity() {
@@ -26,24 +27,18 @@ class TenantDetailsActivity : AppCompatActivity() {
     private val viewModel by viewModels<TenantDetailsViewModel>()
 
     private var tenantId: String = ""
-
     private var currentStatus = "ACTIVE"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            statusBarColor = ContextCompat.getColor(
-                this@TenantDetailsActivity,
-                R.color.primary_blue
-            )
+            statusBarColor = ContextCompat.getColor(this@TenantDetailsActivity, R.color.primary_blue)
         }
 
         binding = ActivityTenantDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.apply {
@@ -53,95 +48,80 @@ class TenantDetailsActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-
         binding.toolbar.navigationIcon?.setTint(
             ContextCompat.getColor(this, android.R.color.black)
         )
 
         tenantId = intent.getStringExtra("tenantId") ?: return
-
         viewModel.loadTenant(tenantId)
 
+        // Status update result
         lifecycleScope.launch {
-
-            viewModel.statusUpdateState.collect {
-
-                if (it) {
-
-                    android.widget.Toast.makeText(
-                        this@TenantDetailsActivity,
-                        "Tenant Status Updated",
-                        android.widget.Toast.LENGTH_SHORT
-                    ).show()
-
-                    viewModel.loadTenant(
-                        tenantId
-                    )
+            viewModel.statusUpdateState.collect { success ->
+                if (success) {
+                    val msg = if (currentStatus.equals("ACTIVE", true))
+                        "Tenant Deactivated Successfully"
+                    else
+                        "Tenant Activated Successfully"
+                    Toast.makeText(this@TenantDetailsActivity, msg, Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
+                    viewModel.loadTenant(tenantId)
                 }
             }
         }
 
+        // Tenant data
         lifecycleScope.launch {
             viewModel.tenant.collect { response ->
                 response?.let {
                     val data = it.data
 
-                    currentStatus =
-                        data.status ?: "ACTIVE"
+                    currentStatus = data.status ?: "ACTIVE"
+                    invalidateOptionsMenu()
 
-                    android.util.Log.e(
-                        "TENANT_DETAILS_STATUS",
-                        "ID=$tenantId Status=${data.status}"
-                    )
+                    android.util.Log.e("TENANT_DETAILS_STATUS", "ID=$tenantId Status=${data.status}")
 
-                    if (
-                        currentStatus.equals(
-                            "ACTIVE",
-                            true
-                        )
-                    ) {
-
-                        binding.tvStatus.text =
-                            "● ACTIVE TENANT"
-
-                        binding.tvStatus.setBackgroundResource(
-                            R.drawable.green_status_bg
-                        )
-
+                    // ── STATUS BADGE FIX ─────────────────────────────────────
+                    // Layout mein pehle se ek animated dot (View) hai.
+                    // Isliye tvStatus mein SIRF text likho — "●" symbol mat add karo.
+                    // "● ACTIVE TENANT" likhne se double dot aata tha.
+                    if (currentStatus.equals("ACTIVE", true)) {
+                        binding.tvStatus.text = "ACTIVE TENANT"  // ← NO "●" here
+                        binding.statusDot.setBackgroundResource(R.drawable.tenant_dot_pulse)  // green animated dot
+                        binding.tvStatus.setTextColor(ContextCompat.getColor(this@TenantDetailsActivity, android.R.color.white))
+                        // Badge background — green
+                        binding.tvStatus.parent.let { parent ->
+                            if (parent is android.view.ViewGroup) {
+                                parent.setBackgroundResource(R.drawable.tenant_status_badge)
+                            }
+                        }
                     } else {
-
-                        binding.tvStatus.text =
-                            "● INACTIVE TENANT"
-
-                        binding.tvStatus.setBackgroundResource(
-                            R.drawable.red_status_bg
-                        )
+                        binding.tvStatus.text = "INACTIVE TENANT"  // ← NO "●" here
+                        binding.statusDot.setBackgroundResource(R.drawable.red_status_bg)  // red dot
+                        binding.tvStatus.setTextColor(ContextCompat.getColor(this@TenantDetailsActivity, android.R.color.white))
+                        // Badge background — red/dark
+                        binding.tvStatus.parent.let { parent ->
+                            if (parent is android.view.ViewGroup) {
+                                parent.setBackgroundResource(R.drawable.red_status_bg)
+                            }
+                        }
                     }
 
-
-
-
+                    // Basic info
                     binding.tvTenantName.text = data.tenant_name ?: "N/A"
-                    binding.tvPhone.text     = data.phone_number ?: "N/A"
-
-
-                    binding.tvProperty.text = data.tenant_details?.property?.name ?: "N/A"
-                    binding.tvRoom.text     = data.tenant_details?.room_no ?: "N/A"
-
-
-                    binding.tvRent.text    = "₹${data.rent ?: "0"}"
-                    binding.tvDeposit.text = "₹${data.room_deposit ?: "0"}"
-
-
+                    binding.tvPhone.text      = data.phone_number ?: "N/A"
+                    binding.tvProperty.text   = data.tenant_details?.property?.name ?: "N/A"
+                    binding.tvRoom.text       = data.tenant_details?.room_no ?: "N/A"
+                    binding.tvRent.text       = "₹${data.rent ?: "0"}"
+                    binding.tvDeposit.text    = "₹${data.room_deposit ?: "0"}"
                     binding.tvCheckInDate.text   = data.checkin_date ?: "N/A"
                     binding.tvRentStartDate.text = data.rent_start_date ?: "N/A"
                     binding.tvElectricity.text   = "₹${data.fixed_electricity_amount ?: "0"}"
                     binding.tvWater.text         = "₹${data.fixed_waterbill_amount ?: "0"}"
                     binding.tvCostPerUnit.text   = "₹${data.cost_per_unit ?: "0"}"
                     binding.tvWaterUnit.text     = "₹${data.cost_unit_water ?: "0"}"
-//                    binding.tvNotes.text         = data.note ?: "No notes available."
 
-                    // ── Profile Photo — Circle Round Shape ──
+                    // Profile Photo
                     Glide.with(this@TenantDetailsActivity)
                         .load(data.profile_pic)
                         .apply(
@@ -155,109 +135,59 @@ class TenantDetailsActivity : AppCompatActivity() {
             }
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-
-        menuInflater.inflate(
-            R.menu.menu_tenant_details,
-            menu
-        )
-
+        menuInflater.inflate(R.menu.menu_tenant_details, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Menu title — current status ke hisab se
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.action_status)?.title =
+            if (currentStatus.equals("ACTIVE", true)) "Deactivate Tenant"
+            else "Activate Tenant"
+        return super.onPrepareOptionsMenu(menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
             R.id.action_edit -> {
-
-                val intent = Intent(
-                    this,
-                    AddTenantActivity::class.java
-                )
-
-                intent.putExtra(
-                    "tenantId",
-                    tenantId
-                )
-
+                val intent = Intent(this, AddTenantActivity::class.java)
+                intent.putExtra("tenantId", tenantId)
                 startActivity(intent)
-
                 return true
             }
+
             R.id.action_status -> {
-
-                val newStatus =
-
-                    if (
-                        currentStatus.equals(
-                            "ACTIVE",
-                            true
-                        )
-                    ) {
-
-                        "INACTIVE"
-
-                    } else {
-
-                        "ACTIVE"
-                    }
-
+                val isActive = currentStatus.equals("ACTIVE", true)
+                val newStatus = if (isActive) "INACTIVE" else "ACTIVE"
                 MaterialAlertDialogBuilder(this)
-                    .setTitle(
-
-                        if (
-                            currentStatus.equals(
-                                "ACTIVE",
-                                true
-                            )
-                        )
-                            "Deactivate Tenant"
-                        else
-                            "Activate Tenant"
-
-                    )
+                    .setTitle(if (isActive) "Deactivate Tenant" else "Activate Tenant")
                     .setMessage(
-                        "Are you sure?"
+                        if (isActive) "This tenant will be marked as inactive."
+                        else "This tenant will be marked as active."
                     )
                     .setPositiveButton("Yes") { _, _ ->
-
-                        viewModel.updateTenantStatus(
-                            tenantId,
-                            newStatus
-                        )
+                        viewModel.updateTenantStatus(tenantId, newStatus)
                     }
-                    .setNegativeButton(
-                        "Cancel",
-                        null
-                    )
+                    .setNegativeButton("Cancel", null)
                     .show()
-
                 return true
             }
 
             R.id.action_delete -> {
-
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Delete Tenant")
-                    .setMessage(
-                        "Are you sure want to delete this tenant?"
-                    )
+                    .setMessage("Are you sure want to delete this tenant?")
                     .setPositiveButton("Delete") { _, _ ->
-
-                        viewModel.deleteTenant(
-                            tenantId
-                        )
+                        viewModel.deleteTenant(tenantId)
                     }
-                    .setNegativeButton("Cancel") { dialog, _ ->
-                        dialog.dismiss()
-                    }
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                     .show()
-
                 return true
             }
         }
-
         return super.onOptionsItemSelected(item)
     }
 }

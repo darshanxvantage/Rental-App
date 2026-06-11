@@ -1,0 +1,200 @@
+<resources>
+    <string name="app_name">રેન્ટલ એપ</string>
+    <string name="hello_blank_fragment">હેલો બ્લેન્ક ફ્રેગમેન્ટ</string>
+
+    <!-- Onboarding -->
+    <string name="boarding_1_title">સરળ પ્રોપર્ટી મેનેજમેન્ટ</string>
+    <string name="boarding_1_desc">એક જ ડેશબોર્ડ પરથી અનેક પ્રોપર્ટીઓ સરળતાથી મેનેજ કરો.</string>
+    <string name="boarding_2_title">ભાડૂત ટ્રેકિંગ અને અલર્ટ</string>
+    <string name="boarding_2_desc">ભાડૂત વિગતો, ચુકવણી સમયપત્રક અને ઓક્યુપન્સી સ્ટેટસ પર અપડેટ રહો.</string>
+    <string name="boarding_3_title">સ્વચાલિત ભાડું અને બિલિંગ</string>
+    <string name="boarding_3_desc">ભાડાની ચુકવણી આપોઆપ ટ્રેક કરો અને ઝડપી સંદર્ભ માટે બિલિંગ રેકોર્ડ બનાવો.</string>
+    <string name="boarding_4_title">વ્યક્તિગત રીમાઇન્ડર</string>
+    <string name="boarding_4_desc">લીઝ નવીકરણથી લઈને જાળવણી ચેક સુધી મહત્વની તારીખો માટે સમયસર રીમાઇન્ડર મેળવો.</string>
+    <string name="get_started_btn">શરૂ કરો</string>
+    <string name="next_btn">આગળ</string>
+    <string name="skip_btn">છોડો</string>
+    <string name="submit">સબમિટ કરો</string>
+    <string name="cancel">રદ કરો</string>
+
+    <!-- Permission screen onboarding -->
+    <string name="boarding_permission_title">તમારો અનુભવ સુધારવા માટે પરવાનગી જરૂરી છે</string>
+    <string name="boarding_permission_1_title">તમામ મીડિયા એક્સેસ પરવાનગી</string>
+    <string name="boarding_permission_1_desc">તમારી પ્રોપર્ટી અને ભાડૂત સંબંધિત દસ્તાવેજો અથવા મીડિયા ફાઇલો અપલોડ અને ગોઠવવા માટે મીડિયા એક્સેસ જરૂરી છે.</string>
+    <string name="boarding_permission_2_title">કોન્ટેક્ટ એક્સેસ પરવાનગી</string>
+    <string name="boarding_permission_2_desc">કોન્ટેક્ટ એક્સેસ આપો જેથી તમે ઝડપથી ભાડૂત માહિતી ઉમેરી શકો અને એપ દ્વારા તેમની સાથે વાતચીત કરી શકો.</string>
+    <string name="confirm_btn">પુષ્ટિ કરો</string>
+
+    <!-- Sign Up & In screen -->
+    <string name="get_started_txt">એકાઉન્ટ બનાવો</string>
+    <string name="welcome_back">પાછા આવ્યા!</string>
+    <string name="sign_in_desc">તમારી પ્રોપર્ટી મેનેજ કરવાનું ચાલુ રાખવા માટે સાઇન ઇન કરો.</string>
+    <string name="get_started_desc">તમારી પ્રોપર્ટી મેનેજ કરવાનું શરૂ કરવા માટે તમારું એકાઉન્ટ બનાવો.</string>
+    <string name="phone_number_input">ફોન નંબર</string>
+    <string name="phone_number_hint">ફોન નંબર દાખલ કરો</string>
+    <string name="send_otp">OTP મોકલો</string>
+    <string name="enter_valid_phone">માન્ય ફોન નંબર દાખલ કરો</string>
+    <string name="account_not_found">એકાઉન્ટ મળ્યું નથી</string>
+    <string name="please_signup_first">કૃપા કરી પહેલા સાઇન અપ કરો</string>
+    <string name="otp_sent">OTP સફળતાપૂર્વક મોકલ્યો</string>
+    <string name="enter_valid_otp">માન્ય OTP દાખલ કરો</string>
+    <string name="account_created">એકાઉન્ટ સફળતાપૂર્વક બનાવ્યું</string>
+    <string name="enter_first_name">પ્રથમ નામ દાખલ કરો</string>
+    <string name="otp_verfication">OTP ચકાસણી</string>
+    <string name="otp_verfication_title">તમારો ફોન નંબર ચકાસો</string>
+    <string name="enter_otp">કૃપા કરી તમારો OTP દાખલ કરો</string>
+    <string name="otp_msg">અમે તમારા ફોન નંબર પર OTP મોકલ્યો છે</string>
+    <string name="verify_otp">OTP ચકાસો</string>
+    <string name="sign_up">સાઇન અપ</string>
+    <string name="already_have_account">પહેલેથી એકાઉન્ટ છે?</string>
+    <string name="dont_have_account">એકાઉન્ટ નથી?</string>
+    <string name="sign_in">સાઇન ઇન</string>
+
+    <!-- Dashboard -->
+    <string name="more_apps">વધુ એપ્સ</string>
+    <string name="go_premium">પ્રીમિયમ લો</string>
+    <string name="share_app">એપ શેર કરો</string>
+    <string name="rate_us">અમને રેટ કરો</string>
+    <string name="privacy_policy">પ્રાઇવસી પોલિસી</string>
+    <string name="feedback">પ્રતિસાદ</string>
+    <string name="home">હોમ</string>
+    <string name="add_property">તમારી પ્રથમ મિલકત ઉમેરો</string>
+    <string name="add_property_bottom_n">મિલકત ઉમેરો</string>
+    <string name="due_payments">બાકી ચુકવણી</string>
+    <string name="add_your_property">તમારી પ્રથમ મિલકત ઉમેરો</string>
+    <string name="add_your_property_desc">ભાડૂત, બિલિંગ અને રીમાઇન્ડર એક જ જગ્યાએ ટ્રેક કરવા માટે મિલકતો ઉમેરો.</string>
+    <string name="add_your_property_btn">તમારી પ્રથમ મિલકત ઉમેરો</string>
+    <string name="active_tenant">સક્રિય ભાડૂત</string>
+    <string name="total_property">કુલ મિલકત</string>
+    <string name="total_payments">કુલ ચુકવણી</string>
+    <string name="take_rent">ભાડું લો</string>
+    <string name="no_properties_tip"><![CDATA[
+    <font color="#6E7800">ટિપ:</font> એકવાર તમે મિલકત ઉમેરો, પછી તમે ભાડૂત અને બિલિંગ મેનેજ કરવાનું શરૂ કરી શકો છો.
+]]></string>
+
+    <!-- Add Property -->
+    <string name="property_detail">મિલકત વિગત</string>
+    <string name="property_address">મિલકતનું સરનામું</string>
+    <string name="select_property_type">મિલકતનો પ્રકાર પસંદ કરો (દા.ત. એપાર્ટમેન્ટ, PG, મકાન, વગેરે)</string>
+    <string name="property_photos">મિલકતના ફોટા</string>
+    <string name="property_name">મિલકતનું નામ</string>
+    <string name="enter_property_name">અહીં મિલકતનું નામ દાખલ કરો</string>
+    <string name="enter_property_address">અહીં મિલકતનું સરનામું દાખલ કરો</string>
+    <string name="enter_home_number">ઘર નંબર દાખલ કરો</string>
+    <string name="home_number">ઘર નંબર</string>
+    <string name="number_of_flats">ફ્લેટ્સની સંખ્યા</string>
+    <string name="number_of_rooms">રૂમોની સંખ્યા</string>
+    <string name="type_rooms">રૂમ પ્રકાર</string>
+    <string name="select_flat_type">ફ્લેટ પ્રકાર પસંદ કરો</string>
+    <string name="area_unit">વિસ્તાર એકમ</string>
+    <string name="land_size">જમીનનું કદ</string>
+    <string name="number_of_pg">PG રૂમોની સંખ્યા</string>
+    <string name="number_of_bed_per_room">પથારી/રૂમ</string>
+    <string name="owner_name">માલિકનું નામ</string>
+    <string name="enter_owner_name">માલિકનું નામ દાખલ કરો</string>
+    <string name="whatsapp_number">વ્હોટ્સએપ નંબર</string>
+    <string name="enter_whatsapp_number">વ્હોટ્સએપ નંબર દાખલ કરો</string>
+
+    <!-- Manage Property -->
+    <string name="manage_property">મિલકત મેનેજ કરો</string>
+    <string name="add_tenant_to_property">મિલકતમાં ભાડૂત ઉમેરો</string>
+
+    <!-- Add A Tenant -->
+    <string name="add_tenant_property">ભાડૂત ઉમેરો</string>
+    <string name="tenant_detail">ભાડૂત વિગતો</string>
+    <string name="rent_detail">ભાડા વિગતો</string>
+    <string name="tenant_name">ભાડૂતનું નામ</string>
+    <string name="reference_name">સંદર્ભ નામ</string>
+    <string name="tenant_move_in">પ્રવેશ તારીખ</string>
+    <string name="rent_start_date">ભાડા શરૂ તારીખ</string>
+    <string name="start_date">શરૂ તારીખ</string>
+    <string name="end_date">સમાપ્તિ તારીખ</string>
+    <string name="rent_due_date">ભાડા બાકી તારીખ</string>
+    <string name="tenant_Photo">ભાડૂતનો ફોટો</string>
+    <string name="tenant_adhar_card_photo">ભાડૂતનો આધાર કાર્ડ ફોટો</string>
+    <string name="tenant_adhar_card_front">ભાડૂતનો આધાર કાર્ડ આગળ</string>
+    <string name="tenant_adhar_card_back">ભાડૂતનો આધાર કાર્ડ પાછળ</string>
+    <string name="tenant_phone">ભાડૂતનો ફોન નંબર</string>
+    <string name="enter_tenant_name">અહીં ભાડૂતનું નામ દાખલ કરો...</string>
+    <string name="enter_reference_name">સંદર્ભ નામ દાખલ કરો (વૈકલ્પિક)</string>
+    <string name="enter_tenant_move_in">પ્રવેશ તારીખ પસંદ કરો</string>
+    <string name="enter_start_date">શરૂ તારીખ પસંદ કરો</string>
+    <string name="enter_end_date">સમાપ્તિ તારીખ પસંદ કરો</string>
+    <string name="enter_rent_date">ભાડા તારીખ પસંદ કરો</string>
+    <string name="enter_rent_due_date">ભાડા બાકી તારીખ પસંદ કરો</string>
+    <string name="rent_amount">ભાડાની રકમ</string>
+    <string name="deposit_amount">થાપણ રકમ</string>
+    <string name="enter_amount">રકમ દાખલ કરો</string>
+    <string name="enter_reading">રીડિંગ દાખલ કરો</string>
+    <string name="water_details">પાણીની વિગતો</string>
+    <string name="water_plan">પાણી યોજના</string>
+    <string name="electricity_plan">વીજળી યોજના</string>
+    <string name="electricity_detail">વીજળી વિગતો</string>
+    <string name="no_cost">કોઈ ખર્ચ નહીં</string>
+    <string name="metered">મીટર્ડ</string>
+    <string name="water_meter_reading">પાણી મીટર રીડિંગ</string>
+    <string name="electricity_meter_reading">વીજળી રીડિંગ</string>
+    <string name="cost_per_unit">ખર્ચ/એકમ</string>
+    <string name="fixed_amount">નિશ્ચિત રકમ</string>
+    <string name="lease_type">લીઝ પ્રકાર</string>
+    <string name="fixed_define">નિશ્ચિત</string>
+    <string name="until_leave">છોડે ત્યાં સુધી</string>
+    <string name="electricity_water">વીજળી અને પાણીની વિગતો</string>
+
+    <!-- Take A Rent -->
+    <string name="monthly_rent_label">માસિક ભાડું:</string>
+    <string name="rent_start_date_label">ભાડા શરૂ તારીખ:</string>
+    <string name="security_amount_label">સુરક્ષા રકમ:</string>
+    <string name="rent_settled_till_label">ભાડું ભરાયું છે:</string>
+    <string name="next_due_date">આગળની બાકી તારીખ</string>
+    <string name="advance">એડવાન્સ</string>
+    <string name="payment_due">ચુકવણી બાકી</string>
+    <string name="receive_payment">ચુકવણી મેળવો</string>
+    <string name="generate_invoice">ઇન્વોઇસ બનાવો</string>
+    <string name="rent_rcv_date">ભાડું મળ્યાની તારીખ</string>
+    <string name="enter_rent_rcv">ભાડું મળ્યાની તારીખ પસંદ કરો</string>
+    <string name="enter_from_date">ભાડા શરૂ તારીખ પસંદ કરો</string>
+    <string name="enter_to_date">ભાડા સમાપ્તિ તારીખ પસંદ કરો</string>
+    <string name="from_date">શરૂ તારીખ</string>
+    <string name="to_date">સમાપ્તિ તારીખ</string>
+    <string name="payment_mode">ચુકવણી પદ્ધતિ</string>
+    <string name="cash">રોકડ</string>
+    <string name="upi">UPI</string>
+    <string name="net_banking">નેટ બેન્કિંગ</string>
+    <string name="note">નોંધ</string>
+    <string name="enter_note">અહીં નોંધ દાખલ કરો</string>
+    <string name="payment_received">ચુકવણી મળી</string>
+
+    <string name="invoice_history">ઇન્વોઇસ ઇતિહાસ</string>
+    <string name="rent_invoice">ભાડા ઇન્વોઇસ</string>
+    <string name="rent_amount_required">કૃપા કરી ભાડાની રકમ દાખલ કરો</string>
+    <string name="rent_receive_date_required">કૃપા કરી ભાડું મળ્યાની તારીખ દાખલ કરો</string>
+    <string name="from_date_required">કૃપા કરી શરૂ તારીખ દાખલ કરો</string>
+    <string name="to_date_required">કૃપા કરી સમાપ્તિ તારીખ દાખલ કરો</string>
+    <string name="note_required">કૃપા કરી નોંધ દાખલ કરો</string>
+
+    <string name="icon_home">&#127968;</string>
+    <string name="icon_pin">&#128205;</string>
+    <string name="icon_door">&#128682;</string>
+    <string name="icon_phone">&#128222;</string>
+    <string name="icon_lightning">&#9889;</string>
+    <string name="icon_money">&#128176;</string>
+    <string name="icon_lock">&#128274;</string>
+    <string name="icon_calendar">&#128197;</string>
+    <string name="icon_calendar2">&#128199;</string>
+    <string name="icon_bulb">&#128161;</string>
+    <string name="icon_water">&#128167;</string>
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <string name="edit">સંપાદિત કરો</string>
+    <string name="delete">કાઢી નાખો</string>
+    <string name="all_tenants">બધા ભાડૂત</string>
+    <string name="search_tenant">ભાડૂત શોધો</string>
+    <string name="no_tenants_found">કોઈ ભાડૂત મળ્યા નથી</string>
+    <string name="filter">ફિલ્ટર</string>
+
+</resources>

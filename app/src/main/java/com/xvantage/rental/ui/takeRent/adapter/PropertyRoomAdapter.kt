@@ -79,8 +79,29 @@ class PropertyRoomAdapter(
     inner class RoomViewHolder(private val binding: ItemPropertyCardBinding, private val context: Context) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(room: TakeRentActivity.RoomItem) {
+            android.util.Log.e(
+                "ROOM_UI",
+                "Room=${room.roomId} Occupied=${room.occupied}"
+            )
             binding.roomId.text = room.roomId
             binding.address.text = room.address
+
+            if (room.occupied) {
+
+                binding.tvStatus.text = "Occupied"
+
+                binding.tvStatus.setBackgroundResource(
+                    R.drawable.green_status_bg
+                )
+
+            } else {
+
+                binding.tvStatus.text = "Vacant"
+
+                binding.tvStatus.setBackgroundResource(
+                    R.drawable.orange_status_bg
+                )
+            }
             binding.monthlyRent.text = "₹${room.monthlyRent}"
             binding.tvDepositAmount.text = "₹${room.securityAmount}"
 

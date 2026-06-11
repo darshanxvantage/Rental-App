@@ -46,6 +46,13 @@ class PropertyGroupAdapter(
             binding.tvPropertyAddress.text =
                 property.address
 
+            property.property_room_no.forEach {
+
+                android.util.Log.e(
+                    "ROOM_DEBUG",
+                    "Property=${property.name} Room=${it.room_no} Status=${it.status}"
+                )
+            }
             binding.tvTotalRooms.text =
                 "Rooms : ${property.no_of_room}"
 
@@ -57,9 +64,7 @@ class PropertyGroupAdapter(
                 )
 
             roomAdapter.addItems(
-                property.property_room_no.map {
-                    it.room_no
-                }
+                property.property_room_no
             )
 
             binding.rvRooms.layoutManager =

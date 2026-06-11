@@ -248,6 +248,29 @@ class AddTenantActivity : AppCompatActivity() {
             }
         }
 
+        // YEH ADD KARO — toolbar save button ke liye
+        binding.toolbar.btnSave.setOnClickListener {
+            val tenantName = binding.etTenantName.text.toString().trim()
+            val rentAmount = binding.llRentFinanceDetail.etRentAmount.text.toString().trim()
+            val rentDueDate = binding.llRentFinanceDetail.tvRentDueDate.text.toString().trim()
+
+            if (tenantName.isEmpty()) {
+                binding.etTenantName.error = "Tenant name required"
+                return@setOnClickListener
+            }
+
+            // ✅ Rent due date se days calculate karo
+            val daysUntilDue = calculateDaysUntilDue(rentDueDate)
+
+            // ✅ Notification schedule karo
+            if (rentAmount.isNotEmpty() && daysUntilDue > 0) {
+                scheduleRentReminder(tenantName, rentAmount, daysUntilDue)
+            }
+
+            Toast.makeText(this, "Tenant saved!", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
         // Lease type radio group change listener
         binding.llRentFinanceDetail.rgLeaseType.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -489,5 +512,43 @@ class AddTenantActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permissions are required to proceed", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    // ✅ Rent due date se kitne din bache hain calculate karo
+    private fun calculateDaysUntilDue(dueDateStr: String): Long {
+        return try {
+            val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val dueDate = sdf.parse(dueDateStr) ?: return 1L
+            val today = java.util.Date()
+            val diff = dueDate.time - today.time
+            val days = diff / (1000 * 60 * 60 * 24)
+            if (days > 0) days else 1L
+        } catch (e: Exception) {
+            1L
+        }
+    }
+
+// ✅ WorkManager se reminder schedule karo
+    private fun scheduleRentReminder(
+        tenantName: String,
+        rentAmount: String,
+        daysUntilDue: Long
+    ) {
+        val data = androidx.work.Data.Builder()
+            .putString("tenant_name", tenantName)
+            .putString("amount", rentAmount)
+            .build()
+
+        val request = androidx.work.OneTimeWorkRequestBuilder<com.xvantage.rental.utils.RentReminderWorker>()
+            .setInitialDelay(daysUntilDue, java.util.concurrent.TimeUnit.DAYS)
+            .setInputData(data)
+            .build()
+
+        androidx.work.WorkManager.getInstance(this).enqueue(request)
+
+        Toast.makeText(
+            this,
+            "Rent reminder set for $tenantName",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

@@ -31,6 +31,7 @@ import com.xvantage.rental.ui.tenant.TenantListActivity
 import com.xvantage.rental.ui.dashboard.TenantListViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
 
 
 
@@ -79,7 +80,34 @@ class ProfileFragment : Fragment() {
         appPreference =
             AppPreference(requireContext())
 
+        viewLifecycleOwner.lifecycleScope.launch {
 
+            viewModel.authState.collect { state ->
+
+                when (state) {
+
+                    is AuthState.Success -> {
+
+                        Toast.makeText(
+                            requireContext(),
+                            state.message ?: "Success",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is AuthState.Error -> {
+
+                        Toast.makeText(
+                            requireContext(),
+                            state.error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    else -> {}
+                }
+            }
+        }
 
         profileViewModel.loadDashboardData()
 
@@ -495,10 +523,11 @@ class ProfileFragment : Fragment() {
                     appPreference.setProfileImage(
                         file.absolutePath
                     )
-//                    viewModel.updateProfileImage(
-//                        appPreference.getUserName() ?: "User",
-//                        file
-//                    )
+
+                    viewModel.updateProfileImage(
+                        appPreference.getUserName() ?: "User",
+                        file
+                    )
                 }
 
             } catch (e: Exception) {

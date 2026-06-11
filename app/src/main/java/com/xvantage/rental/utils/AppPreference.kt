@@ -57,8 +57,27 @@ class AppPreference @Inject constructor(
 
         private const val KEY_THEME =
             "theme"
+
+        private const val KEY_FONT_SIZE        = "font_size"
+        private const val KEY_LANGUAGE         = "language"
+        private const val KEY_PUSH_NOTIF       = "push_notif"
+        private const val KEY_EMAIL_ALERTS     = "email_alerts"
+        private const val KEY_WHATSAPP_ALERTS  = "whatsapp_alerts"
+        private const val KEY_DND              = "dnd_enabled"
+        private const val KEY_AUTO_INVOICE     = "auto_invoice"
+        private const val KEY_RENT_DUE_DAY     = "rent_due_day"
+        private const val KEY_BIOMETRIC        = "biometric_enabled"
+        private const val KEY_TWO_STEP         = "two_step_enabled"
+        private const val KEY_CLOUD_BACKUP     = "cloud_backup"
     }
 
+    fun setFcmToken(token: String) {
+        editor.putString("fcm_token", token)
+        editor.apply()
+    }
+    fun getFcmToken(): String {
+        return appSharedPrefs.getString("fcm_token", "") ?: ""
+    }
 
     fun setListedCount(count: Int) {
 

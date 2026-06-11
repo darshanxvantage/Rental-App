@@ -1,6 +1,6 @@
 package com.xvantage.rental.network.response
 
-data class SignupResponse(
+data class  SignupResponse(
     val status: Int,
     val success: Boolean,
     val message: String,

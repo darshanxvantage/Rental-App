@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.dagger.hilt.plugin)
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 
 }
 
@@ -105,4 +106,11 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
+// Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+// WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

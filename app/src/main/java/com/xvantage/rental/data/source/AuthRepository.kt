@@ -271,14 +271,19 @@ class AuthRepository @Inject constructor(
                     imagePart
                 )
 
-            Log.d(
+            Log.e(
                 "PROFILE_UPLOAD",
                 "Code = ${response.code()}"
             )
 
-            Log.d(
+            Log.e(
                 "PROFILE_UPLOAD",
                 "Body = ${response.body()}"
+            )
+
+            Log.e(
+                "PROFILE_UPLOAD",
+                "ErrorBody = ${response.errorBody()?.string()}"
             )
 
             NetworkHelper.handleApiResponse(response)

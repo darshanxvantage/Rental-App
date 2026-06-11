@@ -4,6 +4,7 @@
         alias(libs.plugins.org.jetbrains.kotlin.android) apply false
         alias(libs.plugins.org.jetbrains.kotlin.kapt) apply false
         alias(libs.plugins.dagger.hilt.plugin) apply false
+        id("com.google.gms.google-services") version "4.4.1" apply false
 
     }
 

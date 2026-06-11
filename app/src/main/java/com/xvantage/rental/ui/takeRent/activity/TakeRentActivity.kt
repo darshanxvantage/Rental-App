@@ -10,9 +10,15 @@ import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.databinding.ActivityTakeRentBinding
 import com.xvantage.rental.ui.takeRent.adapter.PropertyRoomAdapter
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class TakeRentActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityTakeRentBinding
+    private val viewModel: TakeRentViewModel by viewModels()
     lateinit var appPreference: AppPreference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,24 +31,52 @@ class TakeRentActivity : AppCompatActivity() {
         }
         layoutBinding.rvPropertyList.layoutManager = LinearLayoutManager(this)
 
-        val propertyData = listOf(
-            PropertyItem(
-                "Swastik Plaza",
-                listOf(
-                    RoomItem("Room 101", "101, Swastik Plaza", 10000.0, 10000.0),
-                    RoomItem("Room 105", "105, Swastik Plaza", 10000.0, 10000.0)
-                )
-            ),
-            PropertyItem(
-                "Platinum Tower",
-                listOf(
-                    RoomItem("Bed A", "Shop 303", 10000.0, 10000.0)
-                )
-            )
-        )
 
-        layoutBinding.rvPropertyList.adapter = PropertyRoomAdapter(propertyData,this)
-        onClickEvents()
+        viewModel.loadProperties()
+
+        lifecycleScope.launch {
+
+            viewModel.propertyList.collect { properties ->
+
+                val propertyData =
+
+                    properties.map { property ->
+
+                        PropertyItem(
+
+                            property.name,
+
+                            property.property_room_no.map { room ->
+
+                                android.util.Log.e(
+                                    "ROOM_STATUS",
+                                    "Room=${room.room_no}, Status=${room.status}"
+                                )
+
+                                RoomItem(
+
+                                    room.room_no,
+
+                                    property.address,
+
+                                    0.0,
+
+                                    0.0,
+                                    room.status.equals("OCCUPED", true)
+
+                                )
+                            }
+                        )
+                    }
+
+                layoutBinding.rvPropertyList.adapter =
+                    PropertyRoomAdapter(
+                        propertyData,
+                        this@TakeRentActivity
+                    )
+            }
+            onClickEvents()
+        }
     }
 
     private fun onClickEvents() {
@@ -57,6 +91,9 @@ class TakeRentActivity : AppCompatActivity() {
         val roomId: String,
         val address: String,
         val monthlyRent: Double,
-        val securityAmount: Double
+        val securityAmount: Double,
+
+        val occupied: Boolean = false,
+        val tenantName: String = ""
     ) : LauncherActivity.ListItem()
 }

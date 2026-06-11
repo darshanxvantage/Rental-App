@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.dashboard
 
 import android.os.Bundle
+import android.os.Build
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -22,30 +23,53 @@ import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
 import android.content.Intent
 import com.xvantage.rental.ui.auth.AuthActivity
+import com.xvantage.rental.ui.base.BaseActivity
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.ui.search.SearchPropertyActivity
 import com.xvantage.rental.ui.settings.SettingsActivity
+import com.xvantage.rental.utils.LocaleHelper
+import android.content.Context
 import dagger.hilt.android.AndroidEntryPoint
 
 
 
 
 @AndroidEntryPoint
-class DashboardActivity : AppCompatActivity() {
+class DashboardActivity : BaseActivity() {
     private lateinit var layoutBinding: ActivityDashboardBinding
     private lateinit var toolbarBinding: ToolbarLayoutBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appPreference: AppPreference
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleHelper.wrap(base))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupWindow()
+        askNotificationPermission()
         setupViews()
         setupToolbar()
         setupNavigationDrawer()
         setupBottomNavigation()
         initializeDefaultFragment(savedInstanceState)
     }
+
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+            }
+        }
+    }
+
 
     private fun setupWindow() {
         enableEdgeToEdge()

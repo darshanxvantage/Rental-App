@@ -6,17 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.xvantage.rental.databinding.FragmentTenantsBinding
-import com.xvantage.rental.ui.addProperty.tempFiles.Room
-import com.xvantage.rental.ui.addProperty.adapter.RoomAdapter
-import com.xvantage.rental.ui.addProperty.bmsheet.Tenant
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.xvantage.rental.ui.dashboard.TenantListViewModel
+import com.xvantage.rental.ui.dashboard.fragment.adapter.TenantsAdapter
+import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
-class TenantsFragment : Fragment() {
+@AndroidEntryPoint
+class TenantsFragment : Fragment(){
 
     private var _binding: FragmentTenantsBinding? = null
     private val binding get() = _binding!!
-    private val rooms = mutableListOf<Room>()
+    private val tenantViewModel: TenantListViewModel by activityViewModels()
 
-    private lateinit var roomAdapter: RoomAdapter
+    private lateinit var tenantsAdapter: TenantsAdapter
     private var propertyId: String = ""
 
     companion object {
@@ -49,31 +54,26 @@ class TenantsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        loadRooms()
+
+        tenantViewModel.loadTenants()
+
+        observeTenants()
     }
 
     private fun setupRecyclerView() {
-//        roomAdapter = RoomAdapter { room ->
-//            // Handle room click (show details, edit, etc.)
-//            showRoomDetails(room)
-//        }
-//        binding.rvRooms.adapter = roomAdapter
+
+        tenantsAdapter =
+            TenantsAdapter(
+                requireContext()
+            )
+
+        binding.rvRooms.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        binding.rvRooms.adapter =
+            tenantsAdapter
     }
 
-    private fun loadRooms() {
-        // TODO: Load rooms from database or API based on propertyId
-        // For now, show empty state or sample data
-
-        // Sample data for testing
-        if (rooms.isEmpty()) {
-            // Show empty state
-            showEmptyState(true)
-        } else {
-            // Show room list
-            showEmptyState(false)
-            roomAdapter.submitList(rooms)
-        }
-    }
 
     private fun showEmptyState(isEmpty: Boolean) {
         if (isEmpty) {
@@ -84,22 +84,47 @@ class TenantsFragment : Fragment() {
             binding.rvRooms.visibility = View.VISIBLE
         }
     }
+    private fun observeTenants() {
 
-    fun addRoom(room: Tenant) {
-//        // Add new room to the list
-//        rooms.add(room)
-//        roomAdapter.submitList(rooms.toList())
-//
-//        // Hide empty state if this is the first room
-//        if (rooms.size == 1) {
-//            showEmptyState(false)
-//        }
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            tenantViewModel.tenantList.collect { tenants ->
+
+                tenants.forEach {
+
+                    android.util.Log.e(
+                        "TENANT_DEBUG",
+                        "Tenant=${it.tenant_name} PropertyFk=${it.property_fk}"
+                    )
+                }
+
+                val propertyTenants =
+
+                    tenants.filter {
+
+                        it.property_fk == propertyId
+                    }
+
+                android.util.Log.e(
+                    "PROPERTY_TENANTS",
+                    "Property=$propertyId Count=${propertyTenants.size}"
+                )
+
+                if (propertyTenants.isEmpty()) {
+
+                    showEmptyState(true)
+
+                } else {
+
+                    showEmptyState(false)
+
+                    tenantsAdapter.addItems(
+                        propertyTenants
+                    )
+                }
+            }
+        }
     }
-
-    private fun showRoomDetails(room: Room) {
-        // TODO: Implement room details dialog or navigation
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
