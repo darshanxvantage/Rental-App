@@ -26,6 +26,37 @@ data class TenantItem(
 
     val profile_pic: String?,
 
+    // Rent Details
+    val rent: String?,
+    val room_deposit: String?,
+    val amount: String?,
+    val advance: String?,
+    val payment_due: String?,
+
+    // Date Details
+    val checkin_date: String?,
+    val rent_start_date: String?,
+    val rent_receive_date: String?,
+    val rent_end_date: String?,
+
+    // Electricity
+    val fixed_electricity_amount: String?,
+    val fixed_electricity: String?,
+    val last_meter_reading: String?,
+    val meter_reading: String?,
+    val cost_per_unit: String?,
+
+    // Water
+    val fixed_waterbill_amount: String?,
+    val fixed_waterbill: String?,
+    val last_meter_reading_water: String?,
+    val meter_reading_water: String?,
+    val cost_unit_water: String?,
+
+    // Other
+    val payment_mode: String?,
+    val note: String?,
+
     val documents: List<TenantDocument>,
 
     val property_fk: String,
@@ -51,3 +82,5 @@ data class TenantProperty(
 
     val name: String?
 )
+
+
