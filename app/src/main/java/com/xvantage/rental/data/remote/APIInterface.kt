@@ -15,6 +15,7 @@ import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
 import com.xvantage.rental.network.request.tenant.StatusRequest
+import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import retrofit2.http.Path
 import com.xvantage.rental.network.response.TenantDetailsResponse
 import retrofit2.http.DELETE
@@ -153,6 +154,14 @@ interface   APIInterface {
 
         @Body
         request: StatusRequest
+
+    ): Response<JsonObject>
+
+    @POST("landlord/tenant/payment")
+    suspend fun tenantPayment(
+
+        @Body
+        request: TenantPaymentRequest
 
     ): Response<JsonObject>
 

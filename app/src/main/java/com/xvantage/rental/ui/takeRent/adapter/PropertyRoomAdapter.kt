@@ -211,6 +211,8 @@ class PropertyRoomAdapter(
                         putExtra("roomId",       room.roomId)
                         putExtra("propertyName", room.propertyName)
                         putExtra("monthlyRent",  room.monthlyRent)
+                        putExtra("fixedElectricity", room.fixedElectricity)
+                        putExtra("fixedWater", room.fixedWater)
                     }
                     context.startActivity(intent)
                 }

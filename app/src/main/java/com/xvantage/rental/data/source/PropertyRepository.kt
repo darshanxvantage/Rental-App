@@ -16,6 +16,7 @@ import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
 import okhttp3.MediaType
+import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.response.PropertyListResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -372,6 +373,27 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             ResultWrapper.Error(
                 e.localizedMessage ?: "Status Update Failed"
+            )
+        }
+    }
+
+    suspend fun receivePayment(
+
+        request: TenantPaymentRequest
+
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            val response =
+                apiInterface.tenantPayment(request)
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Payment Failed"
             )
         }
     }

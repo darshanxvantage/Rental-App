@@ -73,7 +73,7 @@ class TakeRentActivity : AppCompatActivity() {
                         t.property_fk == property.id &&
                                 t.tenant_details?.room_no == room.room_no &&
                                 t.status.equals("ACTIVE", ignoreCase = true)
-                    } 
+                    }
                     RoomItem(
                         roomId          = room.room_no,
                         propertyName    = property.name,
@@ -85,7 +85,9 @@ class TakeRentActivity : AppCompatActivity() {
                         isOccupied      = tenant != null,
                         roomStatus      = if (tenant != null) "Occupied" else "Vacant",
                         monthlyRent =
-                            tenant?.rent?.toDoubleOrNull() ?: 0.0,
+                            (tenant?.rent?.toDoubleOrNull() ?: 0.0) +
+                                    (tenant?.fixed_electricity_amount?.toDoubleOrNull() ?: 0.0) +
+                                    (tenant?.fixed_waterbill_amount?.toDoubleOrNull() ?: 0.0),
 
                         securityAmount =
                             tenant?.room_deposit?.toDoubleOrNull() ?: 0.0,
