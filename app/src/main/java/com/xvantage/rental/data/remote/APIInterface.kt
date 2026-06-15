@@ -30,7 +30,6 @@ import retrofit2.http.Part
 import retrofit2.http.Url
 import retrofit2.http.PUT
 import retrofit2.http.Query
-
 interface   APIInterface {
 
     @GET
@@ -183,6 +182,72 @@ interface   APIInterface {
 
     ): Response<Unit>
 
+
+    @Multipart
+    @POST("landlord/tenant/create")
+    suspend fun createTenant(
+
+        @Part("roomId")
+        roomId: RequestBody,
+
+        @Part("tenant_name")
+        tenantName: RequestBody,
+
+        @Part("phone_number")
+        phoneNumber: RequestBody,
+
+        @Part("phone_code")
+        phoneCode: RequestBody,
+
+        @Part("rent")
+        rent: RequestBody,
+
+        @Part("room_deposit")
+        roomDeposit: RequestBody,
+
+        @Part("checkinDate")
+        checkinDate: RequestBody,
+
+        @Part("rent_start_date")
+        rentStartDate: RequestBody,
+
+        @Part("rent_submission_date")
+        rentSubmissionDate: RequestBody,
+
+        @Part("fixed_waterbill")
+        fixedWaterBill: RequestBody,
+
+        @Part("fixed_electricity")
+        fixedElectricity: RequestBody,
+
+        @Part("fixed_waterbill_amount")
+        fixedWaterBillAmount: RequestBody,
+
+        @Part("fixed_electricity_amount")
+        fixedElectricityAmount: RequestBody,
+
+        @Part("cost_per_unit")
+        costPerUnit: RequestBody,
+
+        @Part("meter_reading")
+        meterReading: RequestBody,
+
+        @Part("meter_reading_water")
+        meterReadingWater: RequestBody,
+
+        @Part("cost_unit_water")
+        costUnitWater: RequestBody,
+
+        @Part("refrence_name")
+        referenceName: RequestBody,
+
+        @Part
+        profilePic: MultipartBody.Part?,
+
+        @Part
+        document: List<MultipartBody.Part>?
+
+    ): Response<JsonObject>
 
 
 

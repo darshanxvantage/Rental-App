@@ -45,8 +45,7 @@ class TenantListActivity : AppCompatActivity() {
 
 
 
-        binding.rvTenants.layoutManager =
-            GridLayoutManager(this, 1)
+        binding.rvTenants.layoutManager = GridLayoutManager(this, 2)
 
         binding.rvTenants.adapter =
             tenantsAdapter

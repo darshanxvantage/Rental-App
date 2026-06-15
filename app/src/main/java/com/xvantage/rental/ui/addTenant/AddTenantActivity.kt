@@ -11,6 +11,8 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.xvantage.rental.network.response.PropertyItem
+import com.xvantage.rental.network.response.PropertyRoom
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -47,6 +49,12 @@ class AddTenantActivity : AppCompatActivity() {
     private var tenantId = ""
 
     private var isEditMode = false
+
+    private var propertyList = ArrayList<PropertyItem>()
+
+    private var selectedProperty: PropertyItem? = null
+
+    private var selectedRoom: PropertyRoom? = null
 
 
     // Future integration: Use TenantViewModel to manage tenant data dynamically
@@ -112,6 +120,9 @@ class AddTenantActivity : AppCompatActivity() {
         // Setup click events and UI interactions
         setupClickEvents()
         setupSpinners()
+
+        setupPropertySelection()
+        viewModel.loadPropertyList()
 
 
         if (isEditMode) {
@@ -179,7 +190,39 @@ class AddTenantActivity : AppCompatActivity() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+
+            viewModel.propertyListState.collect {
+
+                propertyList.clear()
+
+                propertyList.addAll(it)
+
+                val propertyNames =
+                    propertyList.map { item ->
+
+                        item.name
+
+                    }
+
+                val adapter = ArrayAdapter(
+
+                    this@AddTenantActivity,
+
+                    android.R.layout.simple_dropdown_item_1line,
+
+                    propertyNames
+
+                )
+
+                binding.actProperty.setAdapter(adapter)
+
+            }
+
+        }
     }
+
 
 
 
@@ -248,6 +291,8 @@ class AddTenantActivity : AppCompatActivity() {
             }
         }
 
+
+
         // YEH ADD KARO — toolbar save button ke liye
         binding.toolbar.btnSave.setOnClickListener {
             val tenantName = binding.etTenantName.text.toString().trim()
@@ -259,10 +304,8 @@ class AddTenantActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // ✅ Rent due date se days calculate karo
             val daysUntilDue = calculateDaysUntilDue(rentDueDate)
 
-            // ✅ Notification schedule karo
             if (rentAmount.isNotEmpty() && daysUntilDue > 0) {
                 scheduleRentReminder(tenantName, rentAmount, daysUntilDue)
             }
@@ -271,7 +314,6 @@ class AddTenantActivity : AppCompatActivity() {
             finish()
         }
 
-        // Lease type radio group change listener
         binding.llRentFinanceDetail.rgLeaseType.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_until_leave -> {
@@ -284,7 +326,6 @@ class AddTenantActivity : AppCompatActivity() {
             }
         }
 
-        // Toggle section listeners
         binding.tvTitleTenantDetail.setOnClickListener {
             tenantDetailExpanded = toggleSection(binding.llTenantDetail, binding.tvTitleTenantDetail, tenantDetailExpanded)
         }
@@ -293,6 +334,90 @@ class AddTenantActivity : AppCompatActivity() {
         }
         binding.tvTitleElectWaterDetail.setOnClickListener {
             waterBillDetailExpanded = toggleSection(binding.llEleWaterDetail, binding.tvTitleElectWaterDetail, waterBillDetailExpanded)
+        }
+    }
+
+    private fun setupPropertySelection() {
+
+        binding.actProperty.setOnItemClickListener { _, _, position, _ ->
+
+            selectedProperty = propertyList[position]
+
+            loadRooms()
+
+        }
+
+    }
+    private fun loadRooms() {
+
+        val rooms = selectedProperty?.property_room_no ?: return
+
+        if (rooms.isEmpty()) {
+
+            binding.actRoom.setText("")
+            binding.actRoom.setAdapter(null)
+
+            Toast.makeText(
+                this,
+                "No rooms found in this property",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+        // Room list banavo
+        val roomList = ArrayList<String>()
+
+        rooms.forEach { room ->
+
+            val status = if (
+                room.status.equals("VACANT", true)
+            ) {
+                "🟠 Vacant"
+            } else {
+                "🟢 Occupied"
+            }
+
+            roomList.add(
+                "Room ${room.room_no}   $status"
+            )
+        }
+
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            roomList
+        )
+
+        binding.actRoom.setAdapter(adapter)
+
+        binding.actRoom.setOnItemClickListener { _, _, position, _ ->
+
+            selectedRoom = rooms[position]
+
+            if (
+                selectedRoom?.status.equals("OCCUPIED", true)
+                ||
+                selectedRoom?.status.equals("OCCUPED", true)
+            ) {
+
+                Toast.makeText(
+                    this,
+                    "This room is already occupied",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                binding.actRoom.setText("")
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Selected Room ${selectedRoom?.room_no}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -478,7 +603,7 @@ class AddTenantActivity : AppCompatActivity() {
         }
     }
 
-    // ActivityResultLauncher for gallery selection
+
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             when (selectedPicker) {
@@ -513,7 +638,7 @@ class AddTenantActivity : AppCompatActivity() {
             }
         }
     }
-    // ✅ Rent due date se kitne din bache hain calculate karo
+
     private fun calculateDaysUntilDue(dueDateStr: String): Long {
         return try {
             val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
@@ -527,7 +652,6 @@ class AddTenantActivity : AppCompatActivity() {
         }
     }
 
-// ✅ WorkManager se reminder schedule karo
     private fun scheduleRentReminder(
         tenantName: String,
         rentAmount: String,

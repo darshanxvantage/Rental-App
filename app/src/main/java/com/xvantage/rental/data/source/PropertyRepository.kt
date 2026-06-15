@@ -15,6 +15,8 @@ import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.response.PropertyListResponse
@@ -395,6 +397,105 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             ResultWrapper.Error(
                 e.localizedMessage ?: "Payment Failed"
             )
+        }
+    }
+
+    suspend fun createTenant(
+
+        roomId: String,
+
+        tenantName: String,
+
+        phoneNumber: String,
+
+        phoneCode: String,
+
+        rent: String,
+
+        roomDeposit: String,
+
+        checkinDate: String,
+
+        rentStartDate: String,
+
+        rentSubmissionDate: String,
+
+        fixedWaterBill: String,
+
+        fixedElectricity: String,
+
+        fixedWaterBillAmount: String,
+
+        fixedElectricityAmount: String,
+
+        costPerUnit: String,
+
+        meterReading: String,
+
+        meterReadingWater: String,
+
+        costUnitWater: String,
+
+        referenceName: String,
+
+        profilePic: MultipartBody.Part?,
+
+        documents: List<MultipartBody.Part>?
+
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            val response = apiInterface.createTenant(
+
+                roomId.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                tenantName.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                phoneCode.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                rent.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                roomDeposit.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                checkinDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                rentStartDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                rentSubmissionDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                fixedWaterBill.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                fixedElectricity.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                fixedWaterBillAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                fixedElectricityAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                costPerUnit.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                meterReading.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                meterReadingWater.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                referenceName.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                profilePic,
+
+                documents
+
+            )
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(e.localizedMessage ?: "Tenant Create Failed")
+
         }
     }
 

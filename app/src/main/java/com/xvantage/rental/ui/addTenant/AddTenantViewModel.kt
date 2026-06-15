@@ -9,6 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
+import com.xvantage.rental.network.response.PropertyItem
+import com.google.gson.JsonObject
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +27,9 @@ class AddTenantViewModel @Inject constructor(
 
     val createTenantState =
         MutableStateFlow(false)
+
+    val propertyListState =
+        MutableStateFlow<List<PropertyItem>>(emptyList())
 
     fun loadTenantDetails(
         tenantId: String
@@ -47,6 +53,31 @@ class AddTenantViewModel @Inject constructor(
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    fun loadPropertyList() {
+
+        viewModelScope.launch {
+
+            when (
+
+                val response =
+                    repository.getPropertyList()
+
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    propertyListState.value =
+                        response.value.data.rows
+
+                }
+
+                else -> {
+
+                }
             }
         }
     }
@@ -76,6 +107,122 @@ class AddTenantViewModel @Inject constructor(
 
                     updateTenantState.value =
                         false
+                }
+            }
+        }
+    }
+
+
+    fun createTenant(
+
+        roomId: String,
+
+        tenantName: String,
+
+        phoneNumber: String,
+
+        phoneCode: String,
+
+        rent: String,
+
+        roomDeposit: String,
+
+        checkinDate: String,
+
+        rentStartDate: String,
+
+        rentSubmissionDate: String,
+
+        fixedWaterBill: String,
+
+        fixedElectricity: String,
+
+        fixedWaterBillAmount: String,
+
+        fixedElectricityAmount: String,
+
+        costPerUnit: String,
+
+        meterReading: String,
+
+        meterReadingWater: String,
+
+        costUnitWater: String,
+
+        referenceName: String,
+
+        profilePic: MultipartBody.Part?,
+
+        documents: List<MultipartBody.Part>?
+
+    ) {
+
+        viewModelScope.launch {
+
+            when (
+
+                repository.createTenant(
+
+                    roomId,
+
+                    tenantName,
+
+                    phoneNumber,
+
+                    phoneCode,
+
+                    rent,
+
+                    roomDeposit,
+
+                    checkinDate,
+
+                    rentStartDate,
+
+                    rentSubmissionDate,
+
+                    fixedWaterBill,
+
+                    fixedElectricity,
+
+                    fixedWaterBillAmount,
+
+                    fixedElectricityAmount,
+
+                    costPerUnit,
+
+                    meterReading,
+
+                    meterReadingWater,
+
+                    costUnitWater,
+
+                    referenceName,
+
+                    profilePic,
+
+                    documents
+
+                )
+
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    createTenantState.value = true
+
+                }
+
+                is ResultWrapper.Error -> {
+
+                    createTenantState.value = false
+
+                }
+
+                else -> {
+
+                    createTenantState.value = false
+
                 }
             }
         }

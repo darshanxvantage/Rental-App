@@ -12,16 +12,33 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
-import android.widget.ArrayAdapter
+import com.xvantage.rental.adapter.RoomSpinnerAdapter
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.google.gson.Gson
+import com.xvantage.rental.R
 import com.xvantage.rental.network.response.PropertyDetailsData
+import com.xvantage.rental.network.response.PropertyRoomItem
+import android.widget.AdapterView
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.app.Dialog
+import androidx.fragment.app.viewModels
+import com.xvantage.rental.ui.addTenant.AddTenantViewModel
+import android.widget.Button
+import android.widget.TextView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentAddTenantBottomSheetBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: AddTenantViewModel by viewModels()
+
     private var propertyDetails: PropertyDetailsData? = null
+    private var selectedRoomIndex = -1
 
     private var onTenantAddedListener: ((Tenant) -> Unit)? = null
     private val calendar = Calendar.getInstance()
@@ -56,6 +73,7 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         setupActionButtons()
 
         loadRoomsFromArguments()
+        observeCreateTenant()
     }
 
 
@@ -137,15 +155,100 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         )
 
         val adapter =
-            ArrayAdapter(
+            RoomSpinnerAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                roomList
+                propertyDetails?.rooms?.sortedBy {
+
+                    if (it.status.equals("OCCUPED", true))
+                        1
+                    else
+                        0
+
+                } ?: emptyList()
             )
 
         binding.spinnerRoomName.adapter =
             adapter
+
+        binding.spinnerRoomName.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+
+                    if (selectedRoomIndex == -1) {
+                        selectedRoomIndex = position
+                        return
+                    }
+
+                    val roomList = propertyDetails?.rooms
+                        ?.sortedBy {
+                            if (it.status.equals("OCCUPED", true)) 1 else 0
+                        } ?: return
+
+                    val room = roomList[position]
+
+                    if (room.status.equals("OCCUPED", true)) {
+
+                        showOccupiedRoomDialog(room)
+
+                    } else {
+
+                        selectedRoomIndex = position
+
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
     }
+
+    private fun showOccupiedRoomDialog(room: PropertyRoomItem) {
+
+        val dialog = Dialog(requireContext())
+
+        dialog.setContentView(R.layout.dialog_room_occupied)
+
+        dialog.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+
+        val roomNo = dialog.findViewById<TextView>(R.id.tvRoomNo)
+        val message = dialog.findViewById<TextView>(R.id.tvMessage)
+
+        roomNo.text = "Room ${room.room_no}"
+
+        message.text =
+            "This room is already occupied.\nPlease choose another room."
+
+        dialog.findViewById<Button>(R.id.btnAnotherRoom)
+            .setOnClickListener {
+
+                binding.spinnerRoomName.setSelection(selectedRoomIndex)
+
+                dialog.dismiss()
+            }
+
+        dialog.findViewById<Button>(R.id.btnCancel)
+            .setOnClickListener {
+
+                binding.spinnerRoomName.setSelection(selectedRoomIndex)
+
+                dialog.dismiss()
+            }
+
+        dialog.show()
+
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 90 / 100),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
+
 
     private fun validateFields(): Boolean {
         var valid = true
@@ -194,6 +297,35 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 //        if (rooms.size == 1) {
 //            showEmptyState(false)
 //        }
+    }
+
+    private fun observeCreateTenant() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            viewModel.createTenantState.collect { success ->
+
+                if (success) {
+
+                    onTenantAddedListener?.invoke(
+                        Tenant(
+                            id = "",
+                            roomId = roomId,
+                            propertyId = propertyId,
+                            roomName = "",
+                            tenantName = "",
+                            aadhaarPhotoUri = "",
+                            tenantPhotoUri = "",
+                            rentStartDate = "",
+                            roomDeposit = 0.0,
+                            rentSubmissionDate = ""
+                        )
+                    )
+
+                    dismiss()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
