@@ -74,6 +74,16 @@ class TakeRentActivity : AppCompatActivity() {
                                 t.tenant_details?.room_no == room.room_no &&
                                 t.status.equals("ACTIVE", ignoreCase = true)
                     }
+
+                    android.util.Log.d(
+                        "TENANT_IMAGE",
+                        "Tenant = ${tenant?.tenant_name}"
+                    )
+
+                    android.util.Log.d(
+                        "PROFILE_URL",
+                        "Profile = ${tenant?.profile_pic}"
+                    )
                     RoomItem(
                         roomId          = room.room_no,
                         propertyName    = property.name,

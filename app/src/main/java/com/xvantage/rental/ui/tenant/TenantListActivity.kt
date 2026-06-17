@@ -10,10 +10,9 @@ import com.xvantage.rental.ui.dashboard.TenantListViewModel
 import com.xvantage.rental.ui.dashboard.fragment.adapter.TenantsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import com.xvantage.rental.R
 import com.xvantage.rental.network.response.TenantItem
-import androidx.appcompat.widget.SearchView
-import android.view.Menu
+import android.view.View
+import androidx.core.widget.addTextChangedListener
 
 
 @AndroidEntryPoint
@@ -56,48 +55,20 @@ class TenantListActivity : AppCompatActivity() {
         observeData()
 
         viewModel.loadTenants()
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        binding.etSearch.addTextChangedListener { editable ->
 
-        menuInflater.inflate(
-            R.menu.menu_tenant_list,
-            menu
-        )
+            val query = editable?.toString().orEmpty()
 
-        val searchItem =
-            menu?.findItem(R.id.action_search)
+            binding.ivClear.visibility =
+                if (query.isEmpty()) View.GONE else View.VISIBLE
 
-        val searchView =
-            searchItem?.actionView as? SearchView
-                ?: return true
+            filterTenants(query)
+        }
 
-        searchView.queryHint =
-            "Search Tenant or Property"
-
-        searchView.setOnQueryTextListener(
-            object : SearchView.OnQueryTextListener {
-
-                override fun onQueryTextSubmit(
-                    query: String?
-                ): Boolean {
-                    return false
-                }
-
-                override fun onQueryTextChange(
-                    newText: String?
-                ): Boolean {
-
-                    filterTenants(
-                        newText ?: ""
-                    )
-
-                    return true
-                }
-            }
-        )
-
-        return true
+        binding.ivClear.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
     }
 
     private fun observeData() {

@@ -314,13 +314,26 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             )
         }
     }
-    suspend fun getTenantList():
-            ResultWrapper<TenantListResponse> {
+    suspend fun getTenantList(): ResultWrapper<TenantListResponse> {
 
         return try {
 
-            val response =
-                apiInterface.getTenantList()
+            val response = apiInterface.getTenantList()
+
+            android.util.Log.e(
+                "TENANT_API_URL",
+                response.raw().request.url.toString()
+            )
+
+            android.util.Log.e(
+                "TENANT_API_CODE",
+                response.code().toString()
+            )
+
+            android.util.Log.e(
+                "TENANT_API_BODY",
+                response.body().toString()
+            )
 
             NetworkHelper.handleApiResponse(response)
 

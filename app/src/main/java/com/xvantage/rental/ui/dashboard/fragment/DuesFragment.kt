@@ -1,60 +1,168 @@
 package com.xvantage.rental.ui.dashboard.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.R
+import com.xvantage.rental.databinding.FragmentDuesBinding
+import com.xvantage.rental.network.response.TenantItem
+import com.xvantage.rental.ui.dashboard.fragment.adapter.DuesAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DuesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class DuesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private var _binding: FragmentDuesBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: DuesViewModel by viewModels()
+    private lateinit var adapter: DuesAdapter
+
+    // Track which tab is active
+    private var currentTab = TAB_ALL
+
+    companion object {
+        private const val TAB_ALL     = 0
+        private const val TAB_OVERDUE = 1
+        private const val TAB_NO_DUE  = 2
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dues, container, false)
+    ): View {
+        _binding = FragmentDuesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DuesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DuesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupTabListeners()
+        observeData()
+
+        viewModel.loadDues()
+    }
+
+    // Reload fresh data when user comes back to this fragment
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadDues()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = DuesAdapter(requireContext())
+        binding.rvDues.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvDues.adapter = adapter
+    }
+
+    private fun setupTabListeners() {
+        binding.tabAll.setOnClickListener {
+            currentTab = TAB_ALL
+            updateTabUI()
+            showList(viewModel.allTenants.value)
+        }
+        binding.tabOverdue.setOnClickListener {
+            currentTab = TAB_OVERDUE
+            updateTabUI()
+            showList(viewModel.getOverdueTenants())
+        }
+        binding.tabNoDue.setOnClickListener {
+            currentTab = TAB_NO_DUE
+            updateTabUI()
+            showList(viewModel.getNoDueTenants())
+        }
+    }
+
+    private fun observeData() {
+        // Loading state
+        lifecycleScope.launch {
+            viewModel.isLoading.collect { loading ->
+                binding.progressBar.visibility =
+                    if (loading) View.VISIBLE else View.GONE
+                if (loading) {
+                    binding.rvDues.visibility    = View.GONE
+                    binding.layoutEmpty.visibility = View.GONE
                 }
             }
+        }
+
+        // Tenant list
+        lifecycleScope.launch {
+            viewModel.allTenants.collect { tenants ->
+                // Update summary card
+                updateSummaryCard(tenants)
+
+                // Show correct list based on active tab
+                val listToShow = when (currentTab) {
+                    TAB_OVERDUE -> viewModel.getOverdueTenants()
+                    TAB_NO_DUE  -> viewModel.getNoDueTenants()
+                    else        -> tenants
+                }
+                showList(listToShow)
+            }
+        }
+    }
+
+    private fun updateSummaryCard(tenants: List<TenantItem>) {
+        // Total dues
+        val totalDues = tenants.sumOf {
+            it.payment_due?.toDoubleOrNull() ?: 0.0
+        }
+        binding.tvTotalDues.text = "₹${totalDues.toLong()}"
+
+        // Overdue count (tenants with payment_due > 0)
+        val overdueCount = tenants.count {
+            (it.payment_due?.toDoubleOrNull() ?: 0.0) > 0.0
+        }
+        binding.tvOverdueCount.text = overdueCount.toString()
+
+        // Total active tenant count
+        binding.tvActiveTenants.text = tenants.size.toString()
+    }
+
+    private fun showList(list: List<TenantItem>) {
+        if (list.isEmpty()) {
+            binding.rvDues.visibility     = View.GONE
+            binding.layoutEmpty.visibility = View.VISIBLE
+        } else {
+            binding.rvDues.visibility     = View.VISIBLE
+            binding.layoutEmpty.visibility = View.GONE
+            adapter.submitList(list)
+        }
+    }
+
+    private fun updateTabUI() {
+        val blue  = ContextCompat.getColor(requireContext(), R.color.primary_blue)
+        val white = ContextCompat.getColor(requireContext(), android.R.color.white)
+
+        // Reset all tabs
+        listOf(binding.tabAll, binding.tabOverdue, binding.tabNoDue).forEach { tab ->
+            tab.setBackgroundResource(R.drawable.bg_tab_unselected)
+            tab.setTextColor(blue)
+        }
+
+        // Highlight selected tab
+        val selectedTab = when (currentTab) {
+            TAB_ALL     -> binding.tabAll
+            TAB_OVERDUE -> binding.tabOverdue
+            else        -> binding.tabNoDue
+        }
+        selectedTab.setBackgroundResource(R.drawable.bg_tab_selected)
+        selectedTab.setTextColor(white)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

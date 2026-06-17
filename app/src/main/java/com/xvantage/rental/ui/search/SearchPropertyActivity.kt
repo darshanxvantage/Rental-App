@@ -12,6 +12,8 @@ import com.xvantage.rental.ui.dashboard.PropertyListViewModel
 import com.xvantage.rental.ui.dashboard.fragment.adapter.PropertiesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import android.view.View
+
 
 @AndroidEntryPoint
 class SearchPropertyActivity : AppCompatActivity() {
@@ -37,8 +39,11 @@ class SearchPropertyActivity : AppCompatActivity() {
             finish()
         }
 
-        propertiesAdapter =
-            PropertiesAdapter(this)
+        binding.ivClear.setOnClickListener {
+            binding.etSearch.setText("")
+        }
+
+        propertiesAdapter = PropertiesAdapter(this)
 
         binding.rvProperties.layoutManager =
             LinearLayoutManager(this)
@@ -52,9 +57,15 @@ class SearchPropertyActivity : AppCompatActivity() {
 
         binding.etSearch.addTextChangedListener {
 
-            filterProperties(
-                it.toString()
-            )
+            val query = it.toString()
+
+            binding.ivClear.visibility =
+                if (query.isEmpty())
+                    View.GONE
+                else
+                    View.VISIBLE
+
+            filterProperties(query)
         }
     }
 
