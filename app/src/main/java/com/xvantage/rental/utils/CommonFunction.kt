@@ -17,6 +17,12 @@ import android.widget.RatingBar
 import com.xvantage.rental.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Locale
 
 class CommonFunction {
@@ -123,6 +129,60 @@ class CommonFunction {
         dialog.show()
     }
 
+    fun getMultipartFromUri(
+        context: Context,
+        uri: Uri?,
+        partName: String
+    ): MultipartBody.Part? {
 
+        if (uri == null) return null
+
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+
+        val file = File(
+            context.cacheDir,
+            getFileName(context, uri)
+        )
+
+        FileOutputStream(file).use { output ->
+            inputStream.copyTo(output)
+        }
+
+        val requestBody = file.asRequestBody(
+            "image/*".toMediaTypeOrNull()
+        )
+
+        return MultipartBody.Part.createFormData(
+            partName,
+            file.name,
+            requestBody
+        )
+    }
+
+    fun getMultipartListFromUris(
+        context: Context,
+        uris: List<Uri>,
+        partName: String
+    ): List<MultipartBody.Part> {
+
+        val parts = mutableListOf<MultipartBody.Part>()
+
+        uris.forEach { uri ->
+
+            val part = getMultipartFromUri(
+                context,
+                uri,
+                partName
+            )
+
+            part?.let {
+
+                parts.add(it)
+
+            }
+        }
+
+        return parts
+    }
 
 }

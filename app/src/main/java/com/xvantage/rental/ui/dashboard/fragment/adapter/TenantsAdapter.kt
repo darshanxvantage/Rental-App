@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.Glide
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.HomeTenantsItemBinding
@@ -40,7 +41,9 @@ class TenantsAdapter(
 
             // Profile Image
             Glide.with(context)
-                .load(data.profile_pic)
+                .load(data.profile_pic + "?t=" + System.currentTimeMillis())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .placeholder(R.drawable.image)
                 .error(R.drawable.image)
                 .into(itemBinding.itemImage)

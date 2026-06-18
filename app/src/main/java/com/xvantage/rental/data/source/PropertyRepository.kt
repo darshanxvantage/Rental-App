@@ -518,17 +518,138 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
         return try {
 
-            ResultWrapper.Success(
-                JsonObject()
+            val tenantIdPart =
+                request.tenantId.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val tenantNamePart =
+                request.tenantName.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val phoneNumberPart =
+                request.phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val phoneCodePart =
+                request.phoneCode.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val rentPart =
+                request.rent.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val roomDepositPart =
+                request.roomDeposit.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val rentStartDatePart =
+                request.rentStartDate.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val fixedWaterBillAmountPart =
+                request.fixedWaterBillAmount.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val fixedElectricityAmountPart =
+                request.fixedElectricityAmount.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val meterReadingPart =
+                request.meterReading.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val waterReadingPart =
+                request.waterReading.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val costPerUnitPart =
+                request.costPerUnit.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val costUnitWaterPart =
+                request.costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            var profilePicPart: MultipartBody.Part? = null
+
+            if (request.profilePic != null) {
+
+                val file = File(request.profilePic.path ?: "")
+
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
+
+                profilePicPart = MultipartBody.Part.createFormData(
+                    "profilePic",
+                    file.name,
+                    requestFile
+                )
+            }
+
+
+            val documentParts = mutableListOf<MultipartBody.Part>()
+
+            request.documents?.forEach { uri ->
+
+                val file = File(uri.path ?: "")
+
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
+
+                documentParts.add(
+
+                    MultipartBody.Part.createFormData(
+                        "document",
+                        file.name,
+                        requestFile
+                    )
+
+                )
+            }
+
+
+            val response = apiInterface.updateTenant(
+
+                tenantIdPart,
+
+                tenantNamePart,
+
+                phoneNumberPart,
+
+                phoneCodePart,
+
+                rentPart,
+
+                roomDepositPart,
+
+                rentStartDatePart,
+
+                fixedWaterBillAmountPart,
+
+                fixedElectricityAmountPart,
+
+                meterReadingPart,
+
+                waterReadingPart,
+
+                costPerUnitPart,
+
+                costUnitWaterPart,
+
+                profilePicPart,
+
+                if (documentParts.isEmpty()) null else documentParts
+
             )
+
+            return NetworkHelper.handleApiResponse(response)
 
         } catch (e: Exception) {
 
-            ResultWrapper.Error(
-                e.localizedMessage ?: "Update Failed"
+            return ResultWrapper.Error(
+                e.localizedMessage ?: "Tenant Update Failed"
             )
+
         }
     }
+
+
+
+
+
+
+
     suspend fun deleteTenant(
         tenantId: String
     ): ResultWrapper<Boolean> {

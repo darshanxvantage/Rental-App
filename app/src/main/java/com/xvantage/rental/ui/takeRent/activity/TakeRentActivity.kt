@@ -84,6 +84,20 @@ class TakeRentActivity : AppCompatActivity() {
                         "PROFILE_URL",
                         "Profile = ${tenant?.profile_pic}"
                     )
+
+                    android.util.Log.e(
+                        "PROFILE_CHECK",
+                        """
+Property = ${property.name}
+Room = ${room.room_no}
+
+Tenant = ${tenant?.tenant_name}
+Tenant Room = ${tenant?.tenant_details?.room_no}
+Tenant Property = ${tenant?.property_fk}
+
+Profile = ${tenant?.profile_pic}
+""".trimIndent()
+                    )
                     RoomItem(
                         roomId          = room.room_no,
                         propertyName    = property.name,

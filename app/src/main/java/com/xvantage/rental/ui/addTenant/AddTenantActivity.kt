@@ -26,8 +26,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xvantage.rental.BuildConfig
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityAddTenantBinding
+import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.widget.Button
+import android.widget.TextView
 import java.io.File
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -218,10 +224,79 @@ class AddTenantActivity : AppCompatActivity() {
 
                 binding.actProperty.setAdapter(adapter)
 
+                if (isEditMode) {
+
+                    val tenant = viewModel.tenantDetails.value?.data
+
+                    tenant?.let {
+
+                        val property = propertyList.firstOrNull { p ->
+                            p.id == it.property_fk
+                        }
+
+                        property?.let { selected ->
+
+                            selectedProperty = selected
+
+                            binding.actProperty.setText(
+                                selected.name,
+                                false
+                            )
+
+                            loadRooms()
+
+                        }
+
+                    }
+
+                }
+
             }
 
         }
+
+        lifecycleScope.launch {
+
+            viewModel.updateTenantState.collect { success ->
+
+                if (success) {
+
+                    Toast.makeText(
+                        this@AddTenantActivity,
+                        "Tenant updated successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    setResult(RESULT_OK)
+
+                    finish()
+
+                }
+
+            }
+
+        }
+        lifecycleScope.launch {
+
+            viewModel.createTenantState.collect { success ->
+
+                if (success) {
+
+                    Toast.makeText(
+                        this@AddTenantActivity,
+                        "Tenant created successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    setResult(RESULT_OK)
+                    finish()
+                }
+            }
+        }
     }
+
+
+
 
 
 
@@ -295,23 +370,17 @@ class AddTenantActivity : AppCompatActivity() {
 
         // YEH ADD KARO — toolbar save button ke liye
         binding.toolbar.btnSave.setOnClickListener {
-            val tenantName = binding.etTenantName.text.toString().trim()
-            val rentAmount = binding.llRentFinanceDetail.etRentAmount.text.toString().trim()
-            val rentDueDate = binding.llRentFinanceDetail.tvRentDueDate.text.toString().trim()
 
-            if (tenantName.isEmpty()) {
-                binding.etTenantName.error = "Tenant name required"
-                return@setOnClickListener
+            if (isEditMode) {
+
+                updateTenant()
+
+            } else {
+
+                createTenant()
+
             }
 
-            val daysUntilDue = calculateDaysUntilDue(rentDueDate)
-
-            if (rentAmount.isNotEmpty() && daysUntilDue > 0) {
-                scheduleRentReminder(tenantName, rentAmount, daysUntilDue)
-            }
-
-            Toast.makeText(this, "Tenant saved!", Toast.LENGTH_SHORT).show()
-            finish()
         }
 
         binding.llRentFinanceDetail.rgLeaseType.setOnCheckedChangeListener { _, checkedId ->
@@ -392,6 +461,33 @@ class AddTenantActivity : AppCompatActivity() {
 
         binding.actRoom.setAdapter(adapter)
 
+        if (isEditMode) {
+
+            val tenant = viewModel.tenantDetails.value?.data
+
+            tenant?.let {
+
+                val room = rooms.firstOrNull {
+
+                    it.room_no ==
+                            tenant.tenant_details?.room_no
+
+                }
+                room?.let {
+
+                    selectedRoom = it
+
+                    binding.actRoom.setText(
+                        "Room ${it.room_no}",
+                        false
+                    )
+
+                }
+
+            }
+
+        }
+
         binding.actRoom.setOnItemClickListener { _, _, position, _ ->
 
             selectedRoom = rooms[position]
@@ -402,13 +498,9 @@ class AddTenantActivity : AppCompatActivity() {
                 selectedRoom?.status.equals("OCCUPED", true)
             ) {
 
-                Toast.makeText(
-                    this,
-                    "This room is already occupied",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                binding.actRoom.setText("")
+                showOccupiedRoomDialog(
+                    selectedRoom?.room_no ?: ""
+                )
 
             } else {
 
@@ -650,6 +742,194 @@ class AddTenantActivity : AppCompatActivity() {
         } catch (e: Exception) {
             1L
         }
+    }
+
+    private fun createTenant() {
+
+        viewModel.createTenant(
+
+            roomId = selectedRoom?.id ?: "",
+
+            tenantName = binding.etTenantName.text.toString().trim(),
+
+            phoneNumber = binding.etPhoneNumber.text.toString().trim(),
+
+            phoneCode = "+91",
+
+            rent = binding.llRentFinanceDetail.etRentAmount.text.toString().trim(),
+
+            roomDeposit = binding.llRentFinanceDetail.etDepositAmount.text.toString().trim(),
+
+            checkinDate =
+                binding.llRentFinanceDetail.tvMoveInDate.text.toString().trim(),
+
+            rentStartDate =
+                binding.llRentFinanceDetail.tvRentStartDate.text.toString().trim(),
+
+            rentSubmissionDate =
+                binding.llRentFinanceDetail.tvRentDueDate.text.toString().trim(),
+
+            fixedWaterBill = when (
+                binding.llWaterFinanceDetail.spWater.selectedItemPosition
+            ) {
+                1 -> "fix"
+                2 -> "metered"
+                else -> ""
+            },
+
+            fixedElectricity = when (
+                binding.llElectricityFinanceDetail.spElectricity.selectedItemPosition
+            ) {
+                1 -> "fix"
+                2 -> "metered"
+                else -> ""
+            },
+
+            fixedWaterBillAmount =
+                binding.llWaterFinanceDetail.etWaterFixedAmount.text.toString().trim(),
+
+            fixedElectricityAmount =
+                binding.llElectricityFinanceDetail.etElectricityDefaultAmount.text.toString().trim(),
+
+            costPerUnit =
+                binding.llElectricityFinanceDetail.etElectricityCostUnit.text.toString().trim(),
+
+            meterReading = "",
+
+            meterReadingWater = "",
+
+            costUnitWater =
+                binding.llWaterFinanceDetail.etWaterCostUnit.text.toString().trim(),
+
+            referenceName =
+                binding.etReferenceName.text.toString().trim(),
+
+            profilePic =
+                CommonFunction().getMultipartFromUri(
+                    this,
+                    tenantImageUri,
+                    "profilePic"
+                ),
+
+            documents =
+                CommonFunction().getMultipartListFromUris(
+                    this,
+                    listOfNotNull(
+                        frontAdharImageUri,
+                        backAdharImageUri
+                    ),
+                    "document"
+                )
+
+        )
+
+    }
+
+    private fun updateTenant() {
+
+        val request = UpdateTenantRequest(
+
+            propertyId = selectedProperty?.id ?: "",
+
+            roomId = selectedRoom?.id ?: "",
+
+            deposit = binding.llRentFinanceDetail.etDepositAmount.text.toString().trim(),
+
+            tenantId = tenantId,
+
+            tenantName = binding.etTenantName.text.toString().trim(),
+
+            phoneNumber = binding.etPhoneNumber.text.toString().trim(),
+
+            phoneCode = "+91",
+
+            rent = binding.llRentFinanceDetail.etRentAmount.text.toString().trim(),
+
+            roomDeposit = binding.llRentFinanceDetail.etDepositAmount.text.toString().trim(),
+
+            rentStartDate = binding.llRentFinanceDetail.tvRentStartDate.text.toString().trim(),
+
+            fixedWaterBillAmount =
+                binding.llWaterFinanceDetail.etWaterFixedAmount.text.toString().trim(),
+
+            fixedElectricityAmount =
+                binding.llElectricityFinanceDetail.etElectricityDefaultAmount.text.toString().trim(),
+
+            meterReading = "",
+
+            waterReading = "",
+
+            costPerUnit =
+                binding.llElectricityFinanceDetail.etElectricityCostUnit.text.toString().trim(),
+
+            costUnitWater =
+                binding.llWaterFinanceDetail.etWaterCostUnit.text.toString().trim(),
+
+            profilePic = tenantImageUri,
+
+            documents = listOfNotNull(
+                frontAdharImageUri,
+                backAdharImageUri
+            )
+
+        )
+
+        viewModel.updateTenant(request)
+
+    }
+
+
+    private fun showOccupiedRoomDialog(roomNo: String) {
+
+        val dialog = android.app.Dialog(this)
+
+        dialog.setContentView(R.layout.dialog_room_occupied)
+
+        dialog.window?.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(
+                android.graphics.Color.TRANSPARENT
+            )
+        )
+
+        dialog.setCancelable(false)
+
+        val tvRoomNo =
+            dialog.findViewById<TextView>(R.id.tvRoomNo)
+
+        val tvMessage =
+            dialog.findViewById<TextView>(R.id.tvMessage)
+
+        val btnChoose =
+            dialog.findViewById<Button>(R.id.btnAnotherRoom)
+
+        val btnCancel =
+            dialog.findViewById<Button>(R.id.btnCancel)
+
+        tvRoomNo.text =
+            "Room $roomNo"
+
+        tvMessage.text =
+            "This room is already occupied.\nPlease choose another room."
+
+        btnChoose.setOnClickListener {
+
+            binding.actRoom.setText("")
+
+            dialog.dismiss()
+
+            binding.actRoom.showDropDown()
+
+        }
+
+        btnCancel.setOnClickListener {
+
+            binding.actRoom.setText("")
+
+            dialog.dismiss()
+
+        }
+
+        dialog.show()
     }
 
     private fun scheduleRentReminder(

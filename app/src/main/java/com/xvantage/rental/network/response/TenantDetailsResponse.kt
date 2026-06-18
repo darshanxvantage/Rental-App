@@ -54,6 +54,10 @@ data class TenantDetailsData(
     // Note
     val note: String?,
 
+    val property_fk: String?,
+
+    val room_name: String?,
+
     val documents: List<TenantDocument>,
 
     val tenant_details: TenantRoomDetails?

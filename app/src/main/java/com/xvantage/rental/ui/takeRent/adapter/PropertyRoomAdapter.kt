@@ -102,6 +102,17 @@ class PropertyRoomAdapter(
         fun bind(room: TakeRentActivity.RoomItem) {
 
 
+            android.util.Log.e(
+                "ROOM_IMAGE",
+                """
+Room Id     = ${room.roomId}
+Tenant Name = ${room.tenantName}
+Profile Pic = ${room.profilePic}
+Occupied    = ${room.isOccupied}
+""".trimIndent()
+            )
+
+
             binding.roomId.text = "Room ${room.roomId}"
             binding.address.text = room.propertyName
 

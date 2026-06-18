@@ -13,15 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.xvantage.rental.network.utils.ResultWrapper
 
-/**
- * Represents the gamified "Landlord Level" derived from how many
- * properties the user manages. Purely a motivational/UX layer on top
- * of real data — no extra backend calls needed.
- */
 data class LandlordTier(
     val title: String,
     val colorHex: String,
-    val progress: Int,   // 0-100, progress towards the next tier
+    val progress: Int,
     val hint: String
 )
 
@@ -34,10 +29,14 @@ class ProfileViewModel @Inject constructor(
 
     val tenantCount = MutableStateFlow(0)
 
-    // Sum of "rent" across the tenants returned by the tenant list call.
-    // Reflects the rent total of the currently loaded tenants (first page),
-    // not a dedicated "lifetime revenue" backend figure.
+    // Total monthly rent of all ACTIVE tenants (rent field)
     val revenueTotal = MutableStateFlow(0.0)
+
+    // Total collected amount from all tenants (amount field = actual payments received)
+    val collectedTotal = MutableStateFlow(0.0)
+
+    // Total pending due from all tenants
+    val pendingTotal = MutableStateFlow(0.0)
 
     val landlordTier: StateFlow<LandlordTier> =
         propertyCount.map { count -> computeTier(count) }
@@ -51,32 +50,44 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            when (val propertyResponse =
-                repository.getPropertyList()) {
+            // Load property count
+            when (val propertyResponse = repository.getPropertyList()) {
 
                 is ResultWrapper.Success -> {
-
-                    propertyCount.value =
-                        propertyResponse.value.data.totalItems
+                    propertyCount.value = propertyResponse.value.data.totalItems
                 }
 
                 else -> {}
             }
 
-            when (val tenantResponse =
-                repository.getTenantList()) {
+            // Load tenant data and calculate revenue stats
+            when (val tenantResponse = repository.getTenantList()) {
 
                 is ResultWrapper.Success -> {
 
-                    val data = tenantResponse.value.data
+                    val rows = tenantResponse.value.data.rows
 
-                    tenantCount.value =
-                        data.totalItems
+                    // Count only ACTIVE tenants
+                    val activeTenants = rows.filter {
+                        it.status?.uppercase() == "ACTIVE"
+                    }
 
-                    revenueTotal.value =
-                        data.rows.sumOf {
-                            it.rent?.toDoubleOrNull() ?: 0.0
-                        }
+                    tenantCount.value = activeTenants.size
+
+                    // Monthly rent total = sum of rent of all ACTIVE tenants
+                    revenueTotal.value = activeTenants.sumOf {
+                        it.rent?.toDoubleOrNull() ?: 0.0
+                    }
+
+                    // Total collected = sum of amount field (actual payments received)
+                    collectedTotal.value = rows.sumOf {
+                        it.amount?.toDoubleOrNull() ?: 0.0
+                    }
+
+                    // Total pending dues
+                    pendingTotal.value = rows.sumOf {
+                        it.payment_due?.toDoubleOrNull() ?: 0.0
+                    }
                 }
 
                 else -> {}
@@ -113,7 +124,7 @@ class ProfileViewModel @Inject constructor(
                 title = "Elite Landlord",
                 colorHex = "#7C3AED",
                 progress = 100,
-                hint = "You've reached the top tier"
+                hint = "You've reached the top tier 🏆"
             )
         }
     }
