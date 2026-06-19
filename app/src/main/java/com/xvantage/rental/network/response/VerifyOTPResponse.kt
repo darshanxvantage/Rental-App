@@ -8,10 +8,24 @@ data class VerifyOTPResponse(
     val err: Any?
 ) {
     data class Data(
-        val first_name: String,
-        val email: String,
-        val login_type: String,
+
+        val id: String?,
+
+        val first_name: String?,
+
+        val last_name: String?,
+
+        val phone_number: String?,
+
+        val email: String?,
+
+        val login_type: String?,
+
         val is_profile_complete: Boolean,
-        val token: String
+
+        val profile_pic: String?,
+
+        val token: String?
+
     )
 }

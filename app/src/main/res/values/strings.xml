@@ -29,8 +29,8 @@
     <!-- Sign Up & In screen -->
 
     <string name="get_started_txt">Create Account</string>
-    <string name="welcome_back">Welcome Back!</string>
-    <string name="sign_in_desc">Sign in to continue managing your properties.</string>
+    <string name="welcome_back">Welcome!</string>
+    <string name="sign_in_desc">Enter your phone number to continue managing your properties.</string>
     <string name="get_started_desc">Create your account to start managing your properties.</string>
     <string name="phone_number_input">Phone Number</string>
     <string name="phone_number_hint">Enter Phone Number</string>
@@ -53,7 +53,13 @@
     <string name="sign_in">Sign In</string>
 
 
-
+    <!-- Gender -->
+    <string name="gender">Gender</string>
+    <string name="select_gender">Select Gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+    <string name="gender_required">⚠ Please select your gender</string>
 
 
     <!-- Dashboard -->
@@ -197,7 +203,7 @@
     <string name="icon_calendar2">&#128199;</string>
     <string name="icon_bulb">&#128161;</string>
     <string name="icon_water">&#128167;</string>
-<!--    <string name="icon_notes">&#128221;</string>-->
+    <!--    <string name="icon_notes">&#128221;</string>-->
 
     <style name="CircleImage">
         <item name="cornerFamily">rounded</item>

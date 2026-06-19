@@ -50,99 +50,17 @@ class AuthActivity : BaseActivity() {
                     is AuthState.Success -> showLoading(false)
                     is AuthState.Error -> {
                         showLoading(false)
+
                         if (
-                            state.error.contains(
-                                "not found",
-                                true
-                            )
+                            !state.error.contains("already registered", true) &&
+                            !state.error.contains("exist", true)
                         ) {
-
-                            androidx.appcompat.app.AlertDialog.Builder(
-                                this@AuthActivity
-                            )
-                                .setTitle("Account Not Found")
-                                .setMessage(
-                                    "Please sign up first"
-                                )
-                                .setPositiveButton(
-                                    "OK",
-                                    null
-                                )
-                                .show()
-
-                        }
-
-                        else if (
-
-                            state.error.contains(
-                                "already registered",
-                                true
-                            )
-
-                            ||
-
-                            state.error.contains(
-                                "403",
-                                true
-                            )
-
-                            ||
-
-                            state.error.contains(
-                                "forbidden",
-                                true
-                            )
-                        )
-
-                        {
-
-                            val dialogView =
-                                layoutInflater.inflate(
-                                    R.layout.dialog_already_registered,
-                                    null
-                                )
-
-                            val dialog =
-                                androidx.appcompat.app.AlertDialog.Builder(
-                                    this@AuthActivity
-                                )
-                                    .setView(dialogView)
-                                    .create()
-
-                            dialog.window?.setBackgroundDrawableResource(
-                                android.R.color.transparent
-                            )
-
-                            dialog.show()
-
-                            viewModel.resetAuthState()
-
-
-                            val btnLoginNow =
-                                dialogView.findViewById<com.google.android.material.button.MaterialButton>(
-                                    R.id.btnLoginNow
-                                )
-
-                            btnLoginNow.setOnClickListener {
-
-                                dialog.dismiss()
-
-                                viewModel.setCurrentScreen(
-                                    AuthScreen.SignIn
-                                )
-                            }
-
-                        } else {
-
                             Toast.makeText(
                                 this@AuthActivity,
                                 state.error,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-
-
-
                     }
                     AuthState.Idle -> showLoading(false)
                 }
@@ -160,12 +78,6 @@ class AuthActivity : BaseActivity() {
                             navController.navigate(R.id.signInFragment)
                         }
                     }
-                    is AuthScreen.SignUp -> {
-                        if (navController.currentDestination?.id
-                            != R.id.signUpFragment) {
-                            navController.navigate(R.id.signUpFragment)
-                        }
-                    }
                     is AuthScreen.VerifyOtp -> {
                         if (navController.currentDestination?.id
                             != R.id.verifyOtpFragment) {
@@ -179,18 +91,18 @@ class AuthActivity : BaseActivity() {
                             navController.navigate(R.id.verifyOtpFragment, bundle)
                         }
                     }
-                        is AuthScreen.CreateProfile -> {
+                    is AuthScreen.CreateProfile -> {
 
-                    if (
-                        navController.currentDestination?.id
-                        != R.id.createProfileFragment
-                    ) {
+                        if (
+                            navController.currentDestination?.id
+                            != R.id.createProfileFragment
+                        ) {
 
-                        navController.navigate(
-                            R.id.createProfileFragment
-                        )
+                            navController.navigate(
+                                R.id.createProfileFragment
+                            )
+                        }
                     }
-                }
 
                     is AuthScreen.Dashboard -> {
                         startActivity(

@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import com.xvantage.rental.databinding.FragmentVerifyOtpBinding
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.utils.AppPreference
+import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,38 +45,19 @@ class VerifyOtpFragment : Fragment() {
             return
         }
         layoutBinding.btnNext.setOnClickListener {
+            val otp = layoutBinding.otpView.getStringFromFields()
 
-            val otp =
-                layoutBinding.otpView
-                    .getStringFromFields()
+            Log.e("OTP_DEBUG", "Phone = $phone")
+            Log.e("OTP_DEBUG", "OTP = $otp")
 
             if (otp.length == 6) {
-
-
-                val isFromLogin =
-                    arguments?.getBoolean(
-                        "isFromLogin"
-                    ) ?: false
-
                 appPreference.setPhone(phone)
-
-                if (!isFromLogin) {
-
-                    appPreference.setProfileImage("")
-                }
-
                 viewModel.verifyOtp(
                     phone = phone,
-                    otp = otp,
-                    isFromLogin = isFromLogin
+                    otp = otp
                 )
             } else {
-
-                Toast.makeText(
-                    context,
-                    "Enter valid OTP",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Enter valid OTP", Toast.LENGTH_SHORT).show()
             }
         }
 

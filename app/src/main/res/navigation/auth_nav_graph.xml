@@ -17,27 +17,7 @@
             app:destination="@id/dashboardActivity"
             app:launchSingleTop="true"
             app:popUpTo="@id/signInFragment" />
-        <action
-            android:id="@+id/action_signIn_to_forgotPassword"
-            />
     </fragment>
-
-    <!-- Sign Up Fragment -->
-    <fragment
-        android:id="@+id/signUpFragment"
-        tools:layout="@layout/fragment_sign_up"
-        android:name="com.xvantage.rental.ui.auth.fragment.SignUpFragment"
-        android:label="Sign Up">
-        <action
-            android:id="@+id/action_signUp_to_verifyOtp"
-            app:destination="@id/verifyOtpFragment" />
-        <action
-            android:id="@+id/action_signUp_to_dashboard"
-            app:destination="@id/dashboardActivity" />
-    </fragment>
-
-
-
 
     <!-- Verify OTP Fragment -->
     <fragment

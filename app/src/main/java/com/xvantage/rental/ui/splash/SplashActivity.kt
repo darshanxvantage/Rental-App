@@ -58,7 +58,17 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = when {
                 !appPreference.getToken().isNullOrEmpty() -> {
-                    Intent(this, DashboardActivity::class.java)
+                    if (
+                        appPreference.getUserName().isNullOrBlank() ||
+                        appPreference.getEmail().isNullOrBlank() ||
+                        appPreference.getCity().isNullOrBlank() ||
+                        appPreference.getState().isNullOrBlank() ||
+                        appPreference.getGender().isBlank()
+                    ) {
+                        Intent(this, AuthActivity::class.java)
+                    } else {
+                        Intent(this, DashboardActivity::class.java)
+                    }
                 }
                 !appPreference.isFirstTimePreview() -> {
                     Intent(this, BoardingScreenActivity::class.java)

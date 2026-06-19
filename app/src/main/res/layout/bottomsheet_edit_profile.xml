@@ -196,7 +196,10 @@
 
         <!-- AGE -->
 
+        <!-- GENDER (DROPDOWN) -->
+
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxBackgroundMode="outline"
@@ -209,21 +212,21 @@
             app:hintAnimationEnabled="false"
             app:boxStrokeWidthFocused="1dp"
             app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp">
+            app:boxCornerRadiusTopStart="16dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_drop_down_arrow">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAge"
+            <AutoCompleteTextView
+                android:id="@+id/etGender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Age"
-                android:inputType="number"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
+                android:hint="Gender"
+                android:inputType="none"
+                android:focusable="false"
+                android:cursorVisible="false"
                 android:textColor="@color/black"
                 android:textColorHint="@color/grey_hint"
-                android:textCursorDrawable="@drawable/black_cursor"/>
+                android:padding="16dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

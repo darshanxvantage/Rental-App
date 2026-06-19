@@ -19,8 +19,8 @@
 
     <!-- Auth -->
     <string name="get_started_txt">खाता बनाएं</string>
-    <string name="welcome_back">वापस स्वागत है!</string>
-    <string name="sign_in_desc">अपनी प्रॉपर्टी प्रबंधित करने के लिए साइन इन करें।</string>
+    <string name="welcome_back">स्वागत है!</string>
+    <string name="sign_in_desc">अपनी प्रॉपर्टी प्रबंधित करने के लिए अपना फ़ोन नंबर दर्ज करें।</string>
     <string name="phone_number_input">फोन नंबर</string>
     <string name="send_otp">OTP भेजें</string>
     <string name="verify_otp">OTP सत्यापित करें</string>

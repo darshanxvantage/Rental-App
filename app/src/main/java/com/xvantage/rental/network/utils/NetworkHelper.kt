@@ -13,7 +13,7 @@ object NetworkHelper {
         } else {
             val errorBody = response.errorBody()?.string()
             ResultWrapper.Error(
-                message = "Error: ${response.code()} - ${response.message()}",
+                message = errorBody ?: "Unknown Error",
                 statusCode = response.code(),
                 errorBody = errorBody
             )

@@ -49,7 +49,6 @@ AuthViewModel @Inject constructor(
         return !appPreference.getToken().isNullOrEmpty()
     }
 
-
     fun signIn(phone: String) {
 
         viewModelScope.launch {
@@ -87,106 +86,32 @@ AuthViewModel @Inject constructor(
         }
     }
 
-    fun signUp(phone: String) {
-
+    fun verifyOtp(phone: String, otp: String) {
         viewModelScope.launch {
+            authStateFlow.value = AuthState.Loading
 
-            authStateFlow.value =
-                AuthState.Loading
-
-            when (
-                val response =
-                    repository.signUp(phone)
-            ) {
-
-                is ResultWrapper.Success -> {
-
-                    authStateFlow.value =
-                        AuthState.Success("OTP Sent")
-
-                    currentScreenFlow.value =
-                        AuthScreen.VerifyOtp(
-                            phone = phone,
-                            isFromLogin = false
-                        )
-                }
-
-                is ResultWrapper.Error -> {
-
-                    authStateFlow.value =
-                        AuthState.Error(
-                            response.message
-                                ?: "Signup Failed"
-                        )
-                }
-
-                ResultWrapper.Loading -> Unit
-            }
-        }
-    }
-    fun verifyOtp(
-        phone: String,
-        otp: String,
-        isFromLogin: Boolean
-    ) {
-
-        viewModelScope.launch {
-
-            authStateFlow.value =
-                AuthState.Loading
-
-            val response =
-
-                if (isFromLogin) {
-
-                    repository.verifyLoginOtp(
-                        phone,
-                        otp
-                    )
-
-                } else {
-
-                    repository.verifyOtp(
-                        phone,
-                        otp
-                    )
-                }
+            val response = repository.verifyLoginOtp(phone, otp)
 
             when (response) {
-
                 is ResultWrapper.Success -> {
+                    authStateFlow.value = AuthState.Success("OTP Verified")
+                    storeJwtToken(response.value.data?.token ?: "")
 
-                    authStateFlow.value =
-                        AuthState.Success(
-                            "OTP Verified"
-                        )
+                    val data = response.value.data
 
-                    storeJwtToken(
-                        response.value.data?.token
-                            ?: ""
-                    )
+                    storeJwtToken(data?.token ?: "")
 
-                    if (isFromLogin) {
-
-                        currentScreenFlow.value =
-                            AuthScreen.Dashboard
-
+                    if (data?.is_profile_complete == true) {
+                        currentScreenFlow.value = AuthScreen.Dashboard
                     } else {
-
-                        currentScreenFlow.value =
-                            AuthScreen.CreateProfile
+                        currentScreenFlow.value = AuthScreen.CreateProfile
                     }
                 }
-
                 is ResultWrapper.Error -> {
-
-                    authStateFlow.value =
-                        AuthState.Error(
-                            response.message
-                                ?: "Invalid OTP"
-                        )
+                    authStateFlow.value = AuthState.Error(
+                        response.message ?: "Invalid OTP"
+                    )
                 }
-
                 ResultWrapper.Loading -> Unit
             }
         }
@@ -196,8 +121,7 @@ AuthViewModel @Inject constructor(
         lastName: String,
         email: String,
         state: String,
-        city: String,
-        age: Int
+        city: String
     )
     {
 
@@ -214,8 +138,7 @@ AuthViewModel @Inject constructor(
                         lastName,
                         email,
                         state,
-                        city,
-                        age
+                        city
                     )
 
             ) {
@@ -281,13 +204,3 @@ AuthViewModel @Inject constructor(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

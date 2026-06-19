@@ -27,8 +27,8 @@
 
     <!-- Sign Up & In screen -->
     <string name="get_started_txt">એકાઉન્ટ બનાવો</string>
-    <string name="welcome_back">પાછા આવ્યા!</string>
-    <string name="sign_in_desc">તમારી પ્રોપર્ટી મેનેજ કરવાનું ચાલુ રાખવા માટે સાઇન ઇન કરો.</string>
+    <string name="welcome_back">સ્વાગત છે!</string>
+    <string name="sign_in_desc">તમારી પ્રોપર્ટી મેનેજ કરવાનું ચાલુ રાખવા માટે તમારો ફોન નંબર દાખલ કરો.</string>
     <string name="get_started_desc">તમારી પ્રોપર્ટી મેનેજ કરવાનું શરૂ કરવા માટે તમારું એકાઉન્ટ બનાવો.</string>
     <string name="phone_number_input">ફોન નંબર</string>
     <string name="phone_number_hint">ફોન નંબર દાખલ કરો</string>

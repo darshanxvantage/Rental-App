@@ -4,11 +4,9 @@ package com.xvantage.rental.data.source
 import com.xvantage.rental.data.remote.APIInterface
 import com.xvantage.rental.network.request.auth.CreateProfileRequest
 import com.xvantage.rental.network.request.auth.LoginRequest
-import com.xvantage.rental.network.request.auth.SignupRequest
 import com.xvantage.rental.network.request.auth.VerifyOTPRequest
 import com.xvantage.rental.network.response.CreateProfileResponse
 import com.xvantage.rental.network.response.LoginResponse
-import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.utils.ApiLogger
 import com.xvantage.rental.utils.DeviceUtils
@@ -70,53 +68,6 @@ class AuthRepository @Inject constructor(
         }
     }
 
-
-    suspend fun signUp(
-        phone: String
-    ): ResultWrapper<SignupResponse> {
-
-        return try {
-
-
-            val request = SignupRequest(
-
-                phoneNumber = phone,
-
-                deviceType = "android",
-
-                deviceName =
-                    DeviceUtils.getDeviceName(),
-
-                androidVersion =
-                    DeviceUtils.getAndroidVersion()
-            )
-
-
-
-            val response =
-                apiInterface.signUp(request)
-
-            ApiLogger.logRequest(
-                request,
-                response.raw().request
-            )
-
-            ApiLogger.logResponse(
-                response,
-                response.raw().request
-            )
-
-            NetworkHelper.handleApiResponse(
-                response
-            )
-
-        } catch (e: Exception) {
-
-            ResultWrapper.Error(
-                "Network error: ${e.localizedMessage}"
-            )
-        }
-    }
 
     suspend fun verifyOtp(
         phone: String,
@@ -202,7 +153,6 @@ class AuthRepository @Inject constructor(
         email: String,
         state: String,
         city: String,
-        age: Int
     ): ResultWrapper<CreateProfileResponse> {
 
         return try {
@@ -213,7 +163,6 @@ class AuthRepository @Inject constructor(
                 email = email,
                 state = state,
                 city = city,
-                age = age
             )
 
             val response =

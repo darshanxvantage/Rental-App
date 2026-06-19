@@ -11,6 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -302,7 +304,7 @@ class ProfileFragment : Fragment() {
             appPreference.getEmail() to "your email",
             appPreference.getCity() to "your city",
             appPreference.getState() to "your state",
-            appPreference.getAge() to "your age"
+            appPreference.getGender() to "your gender"
         )
 
         val photoFilled = !appPreference.getProfileImage().isNullOrEmpty() &&
@@ -331,10 +333,11 @@ class ProfileFragment : Fragment() {
 
     // ───────────────────────── ACCOUNT INFO ─────────────────────────
 
+
     private fun bindAccountInfo() {
         binding.tvCity.text = appPreference.getCity()
         binding.tvState.text = appPreference.getState()
-        binding.tvAge.text = appPreference.getAge()
+        binding.tvGender.text = appPreference.getGender()
     }
 
     // ───────────────────────── QUICK ACTIONS ─────────────────────────
@@ -469,12 +472,18 @@ class ProfileFragment : Fragment() {
         bottomSheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         val etFirstName = view.findViewById<EditText>(R.id.etFirstName)
-        val etLastName = view.findViewById<EditText>(R.id.etLastName)
-        val etEmail = view.findViewById<EditText>(R.id.etEmail)
-        val etState = view.findViewById<EditText>(R.id.etState)
-        val etCity = view.findViewById<EditText>(R.id.etCity)
-        val etAge = view.findViewById<EditText>(R.id.etAge)
-        val btnSave = view.findViewById<MaterialButton>(R.id.btnSave)
+        val etLastName  = view.findViewById<EditText>(R.id.etLastName)
+        val etEmail     = view.findViewById<EditText>(R.id.etEmail)
+        val etState     = view.findViewById<EditText>(R.id.etState)
+        val etCity      = view.findViewById<EditText>(R.id.etCity)
+        val tilGender = view.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilGender)
+        val etGender = view.findViewById<android.widget.AutoCompleteTextView>(R.id.etGender)
+        val genders = listOf("Male", "Female", "Other")
+        val genderAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, genders)
+        etGender.setAdapter(genderAdapter)
+        etGender.setOnClickListener { etGender.showDropDown() }
+        tilGender.setEndIconOnClickListener { etGender.showDropDown() }
+        val btnSave     = view.findViewById<MaterialButton>(R.id.btnSave)
 
         // Auto-fill existing data
         val fullName = appPreference.getUserName()?.trim() ?: ""
@@ -484,37 +493,56 @@ class ProfileFragment : Fragment() {
 
         etEmail.setText(appPreference.getEmail())
         etCity.setText(appPreference.getCity())
-        etAge.setText(appPreference.getAge())
         etState.setText(appPreference.getState())
+        etGender.setText(appPreference.getGender(), false)
+
 
         btnSave.setOnClickListener {
 
             val firstName = etFirstName.text.toString().trim()
-            val lastName = etLastName.text.toString().trim()
-            val email = etEmail.text.toString().trim()
-            val state = etState.text.toString().trim()
-            val city = etCity.text.toString().trim()
-            val age = etAge.text.toString().trim()
+            val lastName  = etLastName.text.toString().trim()
+            val email     = etEmail.text.toString().trim()
+            val state     = etState.text.toString().trim()
+            val city      = etCity.text.toString().trim()
+            val gender    = etGender.text.toString().trim()
 
             when {
-                firstName.isEmpty() -> { etFirstName.error = "Enter First Name"; etFirstName.requestFocus() }
-                lastName.isEmpty() -> { etLastName.error = "Enter Last Name"; etLastName.requestFocus() }
-                email.isEmpty() -> { etEmail.error = "Enter Email"; etEmail.requestFocus() }
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    etEmail.error = "Enter Valid Email"; etEmail.requestFocus()
+                firstName.isEmpty() -> {
+                    etFirstName.error = "⚠ Enter First Name"
+                    etFirstName.requestFocus()
                 }
-                state.isEmpty() -> { etState.error = "Enter State"; etState.requestFocus() }
-                city.isEmpty() -> { etCity.error = "Enter City"; etCity.requestFocus() }
-                age.toIntOrNull() == null -> { etAge.error = "Enter Valid Age"; etAge.requestFocus() }
-                age.toInt() < 18 -> { etAge.error = "Age must be 18+"; etAge.requestFocus() }
+                lastName.isEmpty() -> {
+                    etLastName.error = "⚠ Enter Last Name"
+                    etLastName.requestFocus()
+                }
+                email.isEmpty() -> {
+                    etEmail.error = "⚠ Enter Email"
+                    etEmail.requestFocus()
+                }
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                    etEmail.error = "⚠ Enter Valid Email"
+                    etEmail.requestFocus()
+                }
+                state.isEmpty() -> {
+                    etState.error = "⚠ Enter State"
+                    etState.requestFocus()
+                }
+                city.isEmpty() -> {
+                    etCity.error = "⚠ Enter City"
+                    etCity.requestFocus()
+                }
+                gender.isEmpty() -> {
+                    etGender.error = "⚠ Select Gender"
+                    etGender.requestFocus()
+                }
                 else -> {
+
                     appPreference.setUserName("$firstName $lastName")
                     appPreference.setEmail(email)
                     appPreference.setState(state)
                     appPreference.setCity(city)
-                    appPreference.setAge(age)
+                    appPreference.setGender(gender)
 
-                    // Refresh UI
                     binding.tvUserName.text = "$firstName $lastName"
                     binding.tvEmail.text = email
                     bindAccountInfo()
@@ -530,6 +558,8 @@ class ProfileFragment : Fragment() {
 
         bottomSheet.show()
     }
+
+
 
     // ───────────────────── IMAGE PICK RESULT ─────────────────────
 

@@ -4,13 +4,11 @@ package com.xvantage.rental.data.remote
 import com.google.gson.JsonObject
 import com.xvantage.rental.network.request.auth.CreateProfileRequest
 import com.xvantage.rental.network.request.auth.LoginRequest
-import com.xvantage.rental.network.request.auth.SignupRequest
 import com.xvantage.rental.network.request.auth.VerifyOTPRequest
 import com.xvantage.rental.network.response.CreateProfileResponse
 import com.xvantage.rental.network.response.CreatePropertyResponse
 import com.xvantage.rental.network.response.LoginResponse
 import com.xvantage.rental.network.response.PropertyDetailsResponse
-import com.xvantage.rental.network.response.SignupResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
@@ -36,14 +34,6 @@ interface   APIInterface {
     suspend fun get(
         @Url url: String
     ): Response<JsonObject>
-
-
-
-    @POST("auth/sign-up")
-    suspend fun signUp(
-        @Body request: SignupRequest
-    ): Response<SignupResponse>
-
 
     @POST("auth/verify")
     suspend fun verifyOtp(

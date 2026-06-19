@@ -7,6 +7,5 @@ data class CreateProfileRequest(
     val email: String,
     val state: String,
     val city: String,
-    val age: Int
 )
 

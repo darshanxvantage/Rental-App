@@ -374,6 +374,16 @@ class AppPreference @Inject constructor(
         )
     }
 
+    // GENDER
+    fun setGender(gender: String) {
+        editor.putString("gender", gender)
+        editor.apply()
+    }
+
+    fun getGender(): String {
+        return appSharedPrefs.getString("gender", "") ?: ""
+    }
+
     // PROFILE IMAGE
 
     fun setProfileImage(path: String) {
