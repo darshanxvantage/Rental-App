@@ -99,12 +99,23 @@ AuthViewModel @Inject constructor(
 
                     val data = response.value.data
 
-                    storeJwtToken(data?.token ?: "")
+
+                    appPreference.setToken(data?.token ?: "")
+                    appPreference.setPhone(data?.phone_number ?: "")
+                    appPreference.setEmail(data?.email ?: "")
+                    appPreference.setUserName(
+                        "${data?.first_name ?: ""} ${data?.last_name ?: ""}".trim()
+                    )
+
 
                     if (data?.is_profile_complete == true) {
+
                         currentScreenFlow.value = AuthScreen.Dashboard
+
                     } else {
+
                         currentScreenFlow.value = AuthScreen.CreateProfile
+
                     }
                 }
                 is ResultWrapper.Error -> {
@@ -121,7 +132,8 @@ AuthViewModel @Inject constructor(
         lastName: String,
         email: String,
         state: String,
-        city: String
+        city: String,
+        gender: String
     )
     {
 
@@ -138,7 +150,8 @@ AuthViewModel @Inject constructor(
                         lastName,
                         email,
                         state,
-                        city
+                        city,
+                        gender
                     )
 
             ) {

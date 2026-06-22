@@ -61,6 +61,8 @@ data class TenantItem(
 
     val property_fk: String,
 
+    val room_fk: String,
+
     val tenant_details: TenantRoomDetails?
 )
 

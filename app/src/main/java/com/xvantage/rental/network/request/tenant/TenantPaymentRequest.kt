@@ -4,6 +4,8 @@ data class TenantPaymentRequest(
 
     val tenantId: String,
 
+    val roomId: String,
+
     val amount: String,
 
     val rent_receive_date: String,
@@ -15,4 +17,5 @@ data class TenantPaymentRequest(
     val payment_mode: String,
 
     val note: String
+
 )

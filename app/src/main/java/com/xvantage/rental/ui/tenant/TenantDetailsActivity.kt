@@ -19,6 +19,7 @@ import com.xvantage.rental.databinding.ActivityTenantDetailsBinding
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.xvantage.rental.ui.dashboard.DashboardActivity
 
 @AndroidEntryPoint
 class TenantDetailsActivity : AppCompatActivity() {
@@ -68,6 +69,37 @@ class TenantDetailsActivity : AppCompatActivity() {
                     viewModel.loadTenant(tenantId)
                 }
             }
+        }
+
+        lifecycleScope.launch {
+
+            viewModel.deleteState.collect { success ->
+
+                if (success) {
+
+                    Toast.makeText(
+                        this@TenantDetailsActivity,
+                        "Tenant deleted successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val intent = Intent(
+                        this@TenantDetailsActivity,
+                        DashboardActivity::class.java
+                    )
+
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_NEW_TASK
+
+                    startActivity(intent)
+
+                    finish()
+
+                }
+
+            }
+
         }
 
         // Tenant data
@@ -177,14 +209,19 @@ class TenantDetailsActivity : AppCompatActivity() {
             }
 
             R.id.action_delete -> {
+
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Delete Tenant")
-                    .setMessage("Are you sure want to delete this tenant?")
+                    .setMessage("Are you sure you want to delete this tenant?")
+                    .setCancelable(true)
                     .setPositiveButton("Delete") { _, _ ->
+
                         viewModel.deleteTenant(tenantId)
+
                     }
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .setNegativeButton("Cancel", null)
                     .show()
+
                 return true
             }
         }

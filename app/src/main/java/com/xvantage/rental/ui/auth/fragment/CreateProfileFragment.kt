@@ -108,7 +108,7 @@ class CreateProfileFragment : Fragment() {
                 }
 
                 else -> {
-                    viewModel.createProfile(firstName, lastName, email, state, city)
+                    viewModel.createProfile(firstName, lastName, email, state, city, gender)
                 }
             }
         }
@@ -236,6 +236,7 @@ class CreateProfileFragment : Fragment() {
                         appPreference.setEmail(binding.etEmail.text.toString())
                         appPreference.setCity(binding.etCity.text.toString())
                         appPreference.setState(binding.etState.text.toString())
+                        appPreference.setGender(binding.etGender.text.toString())
 
                         Toast.makeText(context, "Profile Created Successfully", Toast.LENGTH_SHORT).show()
 

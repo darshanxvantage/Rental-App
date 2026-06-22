@@ -21,6 +21,9 @@ class TenantDetailsViewModel @Inject constructor(
     val statusUpdateState =
         MutableStateFlow(false)
 
+    val deleteState =
+        MutableStateFlow(false)
+
     fun loadTenant(id: String) {
 
         viewModelScope.launch {
@@ -46,9 +49,24 @@ class TenantDetailsViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            repository.deleteTenant(
-                tenantId
-            )
+            when (
+                repository.deleteTenant(
+                    tenantId
+                )
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    deleteState.value = true
+
+                }
+
+                else -> {
+
+                    deleteState.value = false
+
+                }
+            }
         }
     }
 

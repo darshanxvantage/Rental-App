@@ -60,7 +60,7 @@ class DuesFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = DuesAdapter(requireContext())
+        adapter = DuesAdapter(requireContext(), viewModel)
         binding.rvDues.layoutManager = LinearLayoutManager(requireContext())
         binding.rvDues.adapter = adapter
     }

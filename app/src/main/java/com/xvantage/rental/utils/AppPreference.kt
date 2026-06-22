@@ -531,7 +531,11 @@ class AppPreference @Inject constructor(
 
     fun logoutUser() {
 
-        editor.remove("jwt_token")
+
+        editor.remove(KEY_JWT_TOKEN)
+
+
+        editor.remove("UId")
 
         editor.apply()
     }

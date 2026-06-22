@@ -16,14 +16,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- TOP ROW: Photo + Info + Due Badge -->
+        <!-- ── TOP ROW: Photo + Info + Due Badge ── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Profile Photo -->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ivProfile"
                 android:layout_width="52dp"
@@ -32,7 +31,6 @@
                 app:civ_border_width="2dp"
                 app:civ_border_color="#E8EEFF"/>
 
-            <!-- Name + Room + Property -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -96,25 +94,28 @@
 
         </LinearLayout>
 
-        <!-- DIVIDER -->
+        <!-- ── DIVIDER ── -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#F0F0F0"
-            android:layout_marginVertical="12dp"/>
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"/>
 
-        <!-- STATS ROW: Monthly Rent + Advance + Due -->
+        <!-- ── STATS ROW: Rent | Advance | Next Due Date ── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <!-- Monthly Rent -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
+
                 <TextView
                     android:id="@+id/tvMonthlyRent"
                     android:layout_width="wrap_content"
@@ -123,6 +124,7 @@
                     android:textColor="#111111"
                     android:textSize="13sp"
                     android:textStyle="bold"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -130,14 +132,17 @@
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"
                     android:layout_marginTop="2dp"/>
+
             </LinearLayout>
 
+            <!-- Advance -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
+
                 <TextView
                     android:id="@+id/tvAdvance"
                     android:layout_width="wrap_content"
@@ -146,6 +151,7 @@
                     android:textColor="#2E7D32"
                     android:textSize="13sp"
                     android:textStyle="bold"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -153,39 +159,191 @@
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"
                     android:layout_marginTop="2dp"/>
+
             </LinearLayout>
 
+            <!-- Next Due Date -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
+
                 <TextView
-                    android:id="@+id/tvRentStartDate"
+                    android:id="@+id/tvNextDueDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="—"
-                    android:textColor="#555555"
-                    android:textSize="12sp"
+                    android:textColor="#E65100"
+                    android:textSize="11sp"
                     android:textStyle="bold"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rent Start"
+                    android:text="Next Due"
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"
                     android:layout_marginTop="2dp"/>
+
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- COLLECT BUTTON -->
+        <!-- ── DIVIDER ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F0F0F0"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- ── ELECTRICITY ROW ── -->
+        <LinearLayout
+            android:id="@+id/rowElectricity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <!-- Icon + Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Electricity"
+                android:textColor="#555555"
+                android:textSize="12sp"/>
+
+            <!-- Charge type badge -->
+            <TextView
+                android:id="@+id/tvElectricityType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Cost"
+                android:textSize="10sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_badge_grey"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Charge amount -->
+            <TextView
+                android:id="@+id/tvElectricityCharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹0"
+                android:textColor="#1565C0"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- ── WATER ROW ── -->
+        <LinearLayout
+            android:id="@+id/rowWater"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <!-- Icon + Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Water"
+                android:textColor="#555555"
+                android:textSize="12sp"/>
+
+            <!-- Charge type badge -->
+            <TextView
+                android:id="@+id/tvWaterType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Cost"
+                android:textSize="10sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_badge_grey"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Charge amount -->
+            <TextView
+                android:id="@+id/tvWaterCharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹0"
+                android:textColor="#1565C0"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- ── DIVIDER ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F0F0F0"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- ── TOTAL ROW ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total Payable"
+                android:textColor="#111111"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvTotalPayable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹0"
+                android:textColor="#2962FF"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- ── COLLECT BUTTON ── -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCollect"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:layout_marginTop="12dp"
             android:text="Collect Rent"
             android:textSize="13sp"
             android:textColor="@android:color/white"

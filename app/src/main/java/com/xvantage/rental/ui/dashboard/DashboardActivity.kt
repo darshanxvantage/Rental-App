@@ -183,7 +183,7 @@ class DashboardActivity : BaseActivity() {
 
                     // CLEAR TOKEN
 
-                    appPreference.setToken("")
+                    appPreference.logoutUser()
 
                     // OPEN LOGIN SCREEN
 

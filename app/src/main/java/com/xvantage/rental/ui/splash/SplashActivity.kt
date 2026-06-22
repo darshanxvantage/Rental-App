@@ -25,7 +25,8 @@ class SplashActivity : AppCompatActivity() {
 
     companion object {
         private const val SPLASH_DELAY = 2000L
-        private const val INTENT_FLAGS = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        private const val INTENT_FLAGS =
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
     }
 
     override fun attachBaseContext(base: Context) {
@@ -54,31 +55,49 @@ class SplashActivity : AppCompatActivity() {
                 android.util.Log.d("FCM_TOKEN", "Token: $token")
                 appPreference.setFcmToken(token)
             }
-
         Handler(Looper.getMainLooper()).postDelayed({
+
             val intent = when {
+
+                // User already logged in
                 !appPreference.getToken().isNullOrEmpty() -> {
-                    if (
-                        appPreference.getUserName().isNullOrBlank() ||
-                        appPreference.getEmail().isNullOrBlank() ||
-                        appPreference.getCity().isNullOrBlank() ||
-                        appPreference.getState().isNullOrBlank() ||
-                        appPreference.getGender().isBlank()
-                    ) {
-                        Intent(this, AuthActivity::class.java)
-                    } else {
-                        Intent(this, DashboardActivity::class.java)
-                    }
+
+                    Intent(
+                        this,
+                        DashboardActivity::class.java
+                    )
+
                 }
+
+                // First time app open
                 !appPreference.isFirstTimePreview() -> {
-                    Intent(this, BoardingScreenActivity::class.java)
+
+                    Intent(
+                        this,
+                        BoardingScreenActivity::class.java
+                    )
+
                 }
+
+                // User not logged in
                 else -> {
-                    Intent(this, AuthActivity::class.java)
+
+                    Intent(
+                        this,
+                        AuthActivity::class.java
+                    )
+
                 }
             }
-            intent.flags = INTENT_FLAGS
+
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+
             startActivity(intent)
+
+            finish()
+
         }, SPLASH_DELAY)
     }
 }

@@ -53,9 +53,11 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
         propertyName = intent.getStringExtra("propertyName") ?: ""
 
-        monthlyRent = intent.getDoubleExtra("monthlyRent",0.0)
+        val totalPayable =
+            intent.getDoubleExtra("totalPayable", 0.0)
+
         layoutBinding.etRentAmount.setText(
-            monthlyRent.toInt().toString()
+            totalPayable.toInt().toString()
         )
 
 
@@ -105,6 +107,8 @@ class ReceivePaymentActivity : AppCompatActivity() {
                 val request = TenantPaymentRequest(
 
                     tenantId = tenantId,
+
+                    roomId = roomId,
 
                     amount = rentAmount,
 

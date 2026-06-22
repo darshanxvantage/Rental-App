@@ -153,6 +153,7 @@ class AuthRepository @Inject constructor(
         email: String,
         state: String,
         city: String,
+        gender: String
     ): ResultWrapper<CreateProfileResponse> {
 
         return try {
@@ -163,6 +164,7 @@ class AuthRepository @Inject constructor(
                 email = email,
                 state = state,
                 city = city,
+                gender = gender
             )
 
             val response =
