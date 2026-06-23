@@ -162,7 +162,7 @@
 
             </LinearLayout>
 
-            <!-- Next Due Date -->
+            <!-- Due Months Count (replaces the old single "Next Due Date" guess) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -182,12 +182,40 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Next Due"
+                    android:text="Due Status"
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"
                     android:layout_marginTop="2dp"/>
 
             </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ── MONTH-WISE DUE BREAKDOWN (shown only when 2+ months are pending) ── -->
+        <LinearLayout
+            android:id="@+id/llDueBreakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFF5F5"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending Months"
+                android:textColor="#C62828"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:id="@+id/llDueMonthsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
 
         </LinearLayout>
 

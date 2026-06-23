@@ -134,6 +134,8 @@
     <string name="metered">મીટર્ડ</string>
     <string name="water_meter_reading">પાણી મીટર રીડિંગ</string>
     <string name="electricity_meter_reading">વીજળી રીડિંગ</string>
+    <string name="electricity_units_charge">વીજળી ચાર્જ</string>
+    <string name="water_units_charge">પાણી ચાર્જ</string>
     <string name="cost_per_unit">ખર્ચ/એકમ</string>
     <string name="fixed_amount">નિશ્ચિત રકમ</string>
     <string name="lease_type">લીઝ પ્રકાર</string>

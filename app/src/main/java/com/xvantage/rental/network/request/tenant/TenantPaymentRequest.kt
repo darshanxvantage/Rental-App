@@ -16,6 +16,14 @@ data class TenantPaymentRequest(
 
     val payment_mode: String,
 
-    val note: String
+    val note: String,
+
+    val meter_reading: String? = null,
+
+    val cost_per_unit: String? = null,
+
+    val meter_reading_water: String? = null,
+
+    val cost_unit_water: String? = null
 
 )

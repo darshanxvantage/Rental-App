@@ -1,4 +1,3 @@
-
 package com.xvantage.rental.data.remote
 
 import com.google.gson.JsonObject
@@ -12,6 +11,8 @@ import com.xvantage.rental.network.response.PropertyDetailsResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
+import com.xvantage.rental.network.response.TenantDuesResponse
+import com.xvantage.rental.network.response.InvoiceHistoryResponse
 import com.xvantage.rental.network.request.tenant.StatusRequest
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import retrofit2.http.Path
@@ -76,6 +77,14 @@ interface   APIInterface {
         @Query("currentPage") page: Int = 1,
         @Query("pageSize") size: Int = 100
     ): Response<TenantListResponse>
+
+    @GET("landlord/tenant/dues")
+    suspend fun getTenantDues(): Response<TenantDuesResponse>
+
+    @GET("landlord/tenant/invoices")
+    suspend fun getInvoiceHistory(
+        @Query("tenantId") tenantId: String? = null
+    ): Response<InvoiceHistoryResponse>
 
     @GET("landlord/tenant/{id}")
     suspend fun getTenantDetails(
@@ -305,4 +314,3 @@ interface   APIInterface {
 
     ): Response<CreateProfileResponse>
 }
-

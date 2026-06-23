@@ -63,7 +63,38 @@ data class TenantItem(
 
     val room_fk: String,
 
-    val tenant_details: TenantRoomDetails?
+    val tenant_details: TenantRoomDetails?,
+
+    // Populated only by GET /landlord/tenant/dues — null/absent when
+    // this TenantItem comes from the regular tenant list endpoint.
+    val dueCycles: List<DueCycle>? = null,
+    val totalDue: Double? = null,
+    val hasOverdue: Boolean? = null,
+    val dueMonthsCount: Int? = null
+)
+
+data class DueCycle(
+    val id: String,
+    val cycleMonth: String,
+    val monthLabel: String,
+    val dueDate: String,
+    val totalAmount: Double,
+    val amountPaid: Double,
+    val amountDue: Double,
+    val status: String,
+    val isOverdue: Boolean,
+    val isProrated: Boolean
+)
+
+data class TenantDuesResponse(
+    val status: Int,
+    val success: Boolean,
+    val message: String,
+    val data: TenantDuesData
+)
+
+data class TenantDuesData(
+    val tenants: List<TenantItem>
 )
 
 data class TenantDocument(
@@ -84,5 +115,3 @@ data class TenantProperty(
 
     val name: String?
 )
-
-

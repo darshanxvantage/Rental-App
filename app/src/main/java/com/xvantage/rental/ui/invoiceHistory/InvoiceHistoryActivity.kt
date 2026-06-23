@@ -1,17 +1,22 @@
 package com.xvantage.rental.ui.invoiceHistory
 
 import android.os.Bundle
+import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityInvoiceHistoryBinding
 import com.xvantage.rental.utils.AppPreference
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class InvoiceHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInvoiceHistoryBinding
     private lateinit var appPreference: AppPreference
-    private lateinit var invoiceAdapter: InvoiceHistoryAdapter
-    private val invoiceList = mutableListOf<InvoiceHistoryItem>()
+    private val viewModel: InvoiceHistoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,35 +31,39 @@ class InvoiceHistoryActivity : AppCompatActivity() {
         }
 
         binding.rvInvoiceList.layoutManager = LinearLayoutManager(this)
-        invoiceAdapter = InvoiceHistoryAdapter(invoiceList,this)
-        binding.rvInvoiceList.adapter = invoiceAdapter
 
-        loadInvoiceHistory()
+        // If opened from a specific tenant's room card, this is set
+        // and the list shows only that tenant's invoices. Otherwise
+        // it's null and every invoice across all properties shows.
+        val tenantId = intent.getStringExtra("tenantId")
+
+        observeInvoices()
+        viewModel.loadInvoices(tenantId)
     }
 
-    private fun loadInvoiceHistory() {
-        invoiceList.addAll(
-            listOf(
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101","Vipul", "Swastik Plaza", "YogiChowk Surat", "$10000", "1 Jan, 2025","Including All Bills"),
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101","Vipul", "Swastik Plaza", "YogiChowk Surat", "$12000", "12 feb, 2025","Including All Bills"),
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101","Vipul", "Swastik Plaza", "YogiChowk Surat", "$22000", "18 Mar, 2025","Including All Bills"),
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101","Vipul", "Swastik Plaza", "YogiChowk Surat", "$33000", "10 Apr, 2025","Including All Bills"),
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101","Vipul", "Swastik Plaza", "YogiChowk Surat", "$16000", "11 May, 2025","Including All Bills"),
-                InvoiceHistoryItem(R.drawable.permisson_img, "Room 101", "Vipul","Swastik Plaza", "YogiChowk Surat", "$5000", "31 June, 2025","Including All Bills"),
+    private fun observeInvoices() {
+        lifecycleScope.launch {
+            viewModel.isLoading.collect { loading ->
+                binding.progressBar.visibility =
+                    if (loading) View.VISIBLE else View.GONE
+                if (loading) {
+                    binding.rvInvoiceList.visibility = View.GONE
+                    binding.layoutEmpty.visibility = View.GONE
+                }
+            }
+        }
 
-            )
-        )
-        invoiceAdapter.notifyDataSetChanged()
+        lifecycleScope.launch {
+            viewModel.invoices.collect { invoices ->
+                if (invoices.isEmpty()) {
+                    binding.rvInvoiceList.visibility = View.GONE
+                    binding.layoutEmpty.visibility = View.VISIBLE
+                } else {
+                    binding.rvInvoiceList.visibility = View.VISIBLE
+                    binding.layoutEmpty.visibility = View.GONE
+                    binding.rvInvoiceList.adapter = InvoiceHistoryAdapter(invoices, this@InvoiceHistoryActivity)
+                }
+            }
+        }
     }
-
-    data class InvoiceHistoryItem(
-        val roomImageResId: Int,
-        val roomId: String,
-        val tenantName: String,
-        val propertyName: String,
-        val address: String,
-        val paymentAmount: String,
-        val paymentDate: String,
-        val note:String
-    )
 }

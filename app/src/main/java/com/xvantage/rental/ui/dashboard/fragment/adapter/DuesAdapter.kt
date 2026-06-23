@@ -126,6 +126,12 @@ class DuesAdapter(
                     putExtra("electricityCharge", elecAmt)
                     putExtra("waterCharge",        waterAmt)
                     putExtra("totalPayable",       total.toDouble())
+                    putExtra("electricityMode", tenant.fixed_electricity ?: "")
+                    putExtra("waterMode", tenant.fixed_waterbill ?: "")
+                    putExtra("lastMeterReading", tenant.last_meter_reading ?: "")
+                    putExtra("lastWaterReading", tenant.last_meter_reading_water ?: "")
+                    putExtra("costPerUnit", tenant.cost_per_unit ?: "")
+                    putExtra("costUnitWater", tenant.cost_unit_water ?: "")
                 }
                 context.startActivity(intent)
             }

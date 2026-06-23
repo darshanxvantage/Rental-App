@@ -22,7 +22,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_total_due"
-             />
+            />
 
         <!-- Title Text -->
         <TextView
@@ -45,7 +45,7 @@
             android:layout_below="@id/tv_title"
             android:layout_marginTop="4dp"
             android:layout_marginStart="16dp"
-            android:text="$12000"
+            android:text="₹0"
             android:textColor="@color/royal_red"
             android:textSize="20sp"
             android:textStyle="bold"

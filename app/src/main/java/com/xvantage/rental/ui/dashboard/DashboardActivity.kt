@@ -1,11 +1,15 @@
 package com.xvantage.rental.ui.dashboard
 
-import android.os.Bundle
+import android.content.Intent
+import android.content.Context
+import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -13,33 +17,38 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityDashboardBinding
 import com.xvantage.rental.databinding.ToolbarLayoutBinding
 import com.xvantage.rental.ui.addProperty.activity.AddPropertyActivity
-import com.xvantage.rental.ui.dashboard.fragment.DuesFragment
-import com.xvantage.rental.ui.dashboard.fragment.HomeFragment
-import com.xvantage.rental.utils.CommonFunction
-import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
-import android.content.Intent
 import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.ui.base.BaseActivity
-import com.xvantage.rental.utils.AppPreference
+import com.xvantage.rental.ui.dashboard.fragment.DuesFragment
+import com.xvantage.rental.ui.dashboard.fragment.HomeFragment
+import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
 import com.xvantage.rental.ui.search.SearchPropertyActivity
 import com.xvantage.rental.ui.settings.SettingsActivity
+import com.xvantage.rental.utils.AppPreference
+import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.utils.LocaleHelper
-import android.content.Context
 import dagger.hilt.android.AndroidEntryPoint
-
-
-
 
 @AndroidEntryPoint
 class DashboardActivity : BaseActivity() {
+
     private lateinit var layoutBinding: ActivityDashboardBinding
     private lateinit var toolbarBinding: ToolbarLayoutBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appPreference: AppPreference
+
+    private val PKG_BOOKMYFARM = "com.app.bookmyfarm"
+    private val PKG_SPYGAME    = "com.xv.spygame"
+    private val PKG_AGECALC    = "com.xv.agecalc"
+    private val PKG_PUZZLE     = "com.XV.Puzzel"
+    private val DEVELOPER_URL  = "https://play.google.com/store/apps/developer?id=XV+Infotech+LLP"
+
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleHelper.wrap(base))
@@ -56,20 +65,14 @@ class DashboardActivity : BaseActivity() {
         initializeDefaultFragment(savedInstanceState)
     }
 
-
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    100
-                )
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
             }
         }
     }
-
 
     private fun setupWindow() {
         enableEdgeToEdge()
@@ -81,129 +84,161 @@ class DashboardActivity : BaseActivity() {
     private fun setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(layoutBinding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBarsInsets.bottom)
             insets
         }
     }
 
     private fun setupViews() {
-        drawerLayout = layoutBinding.drawerLayout
+        drawerLayout   = layoutBinding.drawerLayout
         toolbarBinding = layoutBinding.toolbar
-        appPreference = AppPreference(this)
+        appPreference  = AppPreference(this)
     }
 
     private fun setupToolbar() {
-
         with(toolbarBinding) {
-
-            home.visibility = View.VISIBLE
-            search.visibility = View.VISIBLE
+            home.visibility    = View.VISIBLE
+            search.visibility  = View.VISIBLE
             setting.visibility = View.VISIBLE
-
             btnSave.visibility = View.GONE
-            back.visibility = View.GONE
-
-            home.setOnClickListener {
-                toggleDrawer()
-            }
-
-            search.setOnClickListener {
-
-                startActivity(
-                    Intent(
-                        this@DashboardActivity,
-                        SearchPropertyActivity::class.java
-                    )
-                )
-            }
-
-            setting.setOnClickListener {
-
-                startActivity(
-                    Intent(
-                        this@DashboardActivity,
-                        SettingsActivity::class.java
-                    )
-                )
-            }
+            back.visibility    = View.GONE
+            home.setOnClickListener   { toggleDrawer() }
+            search.setOnClickListener { startActivity(Intent(this@DashboardActivity, SearchPropertyActivity::class.java)) }
+            setting.setOnClickListener { startActivity(Intent(this@DashboardActivity, SettingsActivity::class.java)) }
         }
     }
 
     private fun setupNavigationDrawer() {
         with(layoutBinding.navigationView) {
+            // ── More Apps → Premium BottomSheet ──
             findViewById<View>(R.id.more_apps_tv)?.setOnClickListener {
-                showToast("More Apps")
                 closeDrawer()
+                showMoreAppsBottomSheet()
             }
-
+            // ── Go Premium ──
             findViewById<View>(R.id.premium_tv)?.setOnClickListener {
-                showToast("Premium")
+                showToast("Coming Soon!")
                 closeDrawer()
             }
-
+            // ── Share App ──
             findViewById<View>(R.id.shaer_app_tv)?.setOnClickListener {
-
-                val appPackageName = packageName
-
-                val shareIntent = Intent(Intent.ACTION_SEND)
-
-                shareIntent.type = "text/plain"
-
-                shareIntent.putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    "RentMaster"
-                )
-
-                shareIntent.putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Download RentMaster App:\nhttps://play.google.com/store/apps/details?id=$appPackageName"
-                )
-
-                startActivity(
-                    Intent.createChooser(
-                        shareIntent,
-                        "Share RentMaster"
-                    )
-                )
-
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, "RentMaster")
+                    putExtra(Intent.EXTRA_TEXT,
+                        "Download RentMaster App:\nhttps://play.google.com/store/apps/details?id=$packageName")
+                }
+                startActivity(Intent.createChooser(shareIntent, "Share RentMaster"))
                 closeDrawer()
             }
-
+            // ── Rate Us ──
             findViewById<View>(R.id.rate_us_tv)?.setOnClickListener {
                 CommonFunction().showRatingDialog(this@DashboardActivity)
                 closeDrawer()
             }
-            findViewById<View>(R.id.logout_tv)
-                ?.setOnClickListener {
-
-                    // CLEAR TOKEN
-
-                    appPreference.logoutUser()
-
-                    // OPEN LOGIN SCREEN
-
-
-                    val intent = Intent(
-                        this@DashboardActivity,
-                        AuthActivity::class.java
-                    )
-
-                    intent.flags =
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-                    startActivity(intent)
-
-                    finish()
-                }
-
+            // ── Logout ──
+            findViewById<View>(R.id.logout_tv)?.setOnClickListener {
+                appPreference.logoutUser()
+                startActivity(Intent(this@DashboardActivity, AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                finish()
+            }
         }
     }
+
+    private fun showMoreAppsBottomSheet() {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val view   = layoutInflater.inflate(R.layout.bottomsheet_more_apps, null)
+        dialog.setContentView(view)
+
+        // Load real Play Store icons via Glide
+        loadAppIcon(view, R.id.ivBookMyFarm, PKG_BOOKMYFARM)
+        loadAppIcon(view, R.id.ivSpyGame,    PKG_SPYGAME)
+        loadAppIcon(view, R.id.ivAgeCalc,    PKG_AGECALC)
+        loadAppIcon(view, R.id.ivPuzzle,     PKG_PUZZLE)
+
+        // ── BookMyFarm ──
+        view.findViewById<LinearLayout>(R.id.cardBookMyFarm)?.setOnClickListener {
+            openApp(PKG_BOOKMYFARM); dialog.dismiss()
+        }
+        view.findViewById<MaterialButton>(R.id.btnOpenBookMyFarm)?.setOnClickListener {
+            openApp(PKG_BOOKMYFARM); dialog.dismiss()
+        }
+
+        // ── SpyGame ──
+        view.findViewById<LinearLayout>(R.id.cardSpyGame)?.setOnClickListener {
+            openApp(PKG_SPYGAME); dialog.dismiss()
+        }
+
+        // ── AgeCalc ──
+        view.findViewById<LinearLayout>(R.id.cardAgeCalc)?.setOnClickListener {
+            openApp(PKG_AGECALC); dialog.dismiss()
+        }
+
+        // ── Puzzle ──
+        view.findViewById<LinearLayout>(R.id.cardPuzzle)?.setOnClickListener {
+            openApp(PKG_PUZZLE); dialog.dismiss()
+        }
+
+        // ── View All ──
+        view.findViewById<LinearLayout>(R.id.tvViewAllApps)?.setOnClickListener {
+            openUrl(DEVELOPER_URL); dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun loadAppIcon(
+        view: View,
+        imageViewId: Int,
+        packageName: String
+    ) {
+
+        val iv = view.findViewById<ImageView>(imageViewId) ?: return
+
+        try {
+
+            val icon = packageManager.getApplicationIcon(packageName)
+            iv.setImageDrawable(icon)
+
+        } catch (e: Exception) {
+
+            when (packageName) {
+
+                PKG_BOOKMYFARM -> iv.setImageResource(R.drawable.bookmyfarm_logo)
+
+                PKG_SPYGAME -> iv.setImageResource(R.drawable.spygame_logo)
+
+                PKG_AGECALC -> iv.setImageResource(R.drawable.agecalc_logo)
+
+                PKG_PUZZLE -> iv.setImageResource(R.drawable.puzzle_logo)
+
+                else -> iv.setImageResource(R.drawable.ic_launcher_foreground)
+            }
+        }
+    }
+    private fun openApp(packageName: String) {
+        try {
+            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            if (launchIntent != null) {
+                startActivity(launchIntent)
+            } else {
+                openUrl("https://play.google.com/store/apps/details?id=$packageName")
+            }
+        } catch (e: Exception) {
+            openUrl("https://play.google.com/store/apps/details?id=$packageName")
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: Exception) {
+            showToast("Unable to open")
+        }
+    }
+
 
     private fun setupBottomNavigation() {
         with(layoutBinding.bottomNavigation) {
@@ -218,22 +253,10 @@ class DashboardActivity : BaseActivity() {
     private fun handleBottomNavigationItemSelected(itemId: Int): Boolean {
         updateBottomNavigationIcons(itemId)
         return when (itemId) {
-            R.id.home -> {
-                loadFragment(HomeFragment())
-                true
-            }
-            R.id.property -> {
-                CommonFunction().navigation(this, AddPropertyActivity::class.java)
-                true
-            }
-            R.id.settings -> {
-                loadFragment(DuesFragment())
-                true
-            }
-                    R.id.profile -> {
-                loadFragment(ProfileFragment())
-                true
-            }
+            R.id.home     -> { loadFragment(HomeFragment()); true }
+            R.id.property -> { CommonFunction().navigation(this, AddPropertyActivity::class.java); true }
+            R.id.settings -> { loadFragment(DuesFragment()); true }
+            R.id.profile  -> { loadFragment(ProfileFragment()); true }
             else -> false
         }
     }
@@ -248,19 +271,10 @@ class DashboardActivity : BaseActivity() {
     private fun updateBottomNavigationIcons(selectedItemId: Int) {
         val menu = layoutBinding.bottomNavigation.menu
         menu.findItem(R.id.home).setIcon(
-            if (selectedItemId == R.id.home) R.drawable.home_nav_selected 
-            else R.drawable.home_nav_unselected
-        )
+            if (selectedItemId == R.id.home) R.drawable.home_nav_selected else R.drawable.home_nav_unselected)
         menu.findItem(R.id.settings).setIcon(
-            if (selectedItemId == R.id.settings) R.drawable.due_nav_selected 
-            else R.drawable.due_nav_unselected
-        )
-        menu.findItem(R.id.profile).setIcon(
-            if (selectedItemId == R.id.profile)
-                R.drawable.ic_profile_nav
-            else
-                R.drawable.ic_profile_nav
-        )
+            if (selectedItemId == R.id.settings) R.drawable.due_nav_selected else R.drawable.due_nav_unselected)
+        menu.findItem(R.id.profile).setIcon(R.drawable.ic_profile_nav)
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -270,30 +284,15 @@ class DashboardActivity : BaseActivity() {
     }
 
     private fun toggleDrawer() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            closeDrawer()
-        } else {
-            openDrawer()
-        }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) closeDrawer() else openDrawer()
     }
 
-    private fun openDrawer() {
-        drawerLayout.openDrawer(GravityCompat.START)
-    }
-
-    private fun closeDrawer() {
-        drawerLayout.closeDrawer(GravityCompat.START)
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
+    private fun openDrawer()  = drawerLayout.openDrawer(GravityCompat.START)
+    private fun closeDrawer() = drawerLayout.closeDrawer(GravityCompat.START)
+    private fun showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            closeDrawer()
-        } else {
-            super.onBackPressed()
-        }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) closeDrawer()
+        else super.onBackPressed()
     }
 }

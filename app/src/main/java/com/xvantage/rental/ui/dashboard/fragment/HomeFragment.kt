@@ -7,29 +7,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.viewModels
-import com.xvantage.rental.ui.dashboard.PropertyListViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentHomeBinding
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import com.xvantage.rental.ui.dashboard.DashboardActivity
+import com.xvantage.rental.ui.dashboard.HomeViewModel
+import com.xvantage.rental.ui.dashboard.PropertyListViewModel
+import com.xvantage.rental.ui.dashboard.TenantListViewModel
 import com.xvantage.rental.ui.dashboard.fragment.adapter.PropertiesAdapter
 import com.xvantage.rental.ui.dashboard.fragment.adapter.TenantsAdapter
 import com.xvantage.rental.ui.manageProperty.ManagePropertyActivity
 import com.xvantage.rental.ui.takeRent.activity.TakeRentActivity
+import com.xvantage.rental.ui.tenant.TenantListActivity
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
-import com.xvantage.rental.data.source.sample.PropertyDataRepository
-import com.xvantage.rental.ui.dashboard.TenantListViewModel
-import com.xvantage.rental.ui.tenant.TenantListActivity
-import android.widget.TextView
-import com.xvantage.rental.R
+import kotlinx.coroutines.launch
 
 @DelicateCoroutinesApi
 @AndroidEntryPoint
@@ -42,8 +42,8 @@ class HomeFragment : Fragment() {
     private lateinit var dashboardActivity: DashboardActivity
 
     private val propertyViewModel: PropertyListViewModel by viewModels()
-
     private val tenantViewModel: TenantListViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -66,6 +66,7 @@ class HomeFragment : Fragment() {
         initializeViews()
         setupClickListeners()
         setupRecyclerViews()
+        observeHomeStats()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -73,15 +74,38 @@ class HomeFragment : Fragment() {
         super.onResume()
         tenantViewModel.loadTenants()
         propertyViewModel.loadProperties()
+        homeViewModel.loadHomeStats()
     }
 
     private fun initializeViews() {
         appPreference = AppPreference(requireContext())
     }
+    private fun observeHomeStats() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            homeViewModel.homeStats.collect { stats ->
+
+                // Total Payments → tvPaymentCount in total_payment_card
+                requireView().findViewById<TextView>(R.id.tvPaymentCount)
+                    ?.text = formatRupees(stats.totalPayments)
+
+                // Due Payments → tvDueCount in due_payment_card
+                requireView().findViewById<TextView>(R.id.tvDueCount)
+                    ?.text = formatRupees(stats.totalDues)
+            }
+        }
+    }
+
+    private fun formatRupees(amount: Double): String {
+        return when {
+            amount >= 100_000 -> "₹${"%.1f".format(amount / 100_000)}L"
+            amount >= 1_000   -> "₹${"%,.0f".format(amount)}"
+            else              -> "₹${amount.toInt()}"
+        }
+    }
+
+    // ─────────── CLICK LISTENERS ───────────
 
     private fun setupClickListeners() {
-
-
         binding.tvViewAllPropperty.setOnClickListener {
             CommonFunction().navigation(requireContext(), ManagePropertyActivity::class.java)
         }
@@ -95,18 +119,11 @@ class HomeFragment : Fragment() {
             CommonFunction().navigation(requireContext(), ManagePropertyActivity::class.java)
         }
         binding.tvViewAllTenant.setOnClickListener {
-
-            CommonFunction().navigation(
-                requireContext(),
-                TenantListActivity::class.java
-            )
+            CommonFunction().navigation(requireContext(), TenantListActivity::class.java)
         }
-
     }
 
-    private fun navigateToTakeRent() {
-        CommonFunction().navigation(requireContext(), TakeRentActivity::class.java)
-    }
+    // ─────────── RECYCLER VIEWS ───────────
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupRecyclerViews() {
@@ -116,67 +133,38 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupPropertiesRecyclerView() {
-
         propertiesAdapter = PropertiesAdapter(requireContext())
-
         binding.horizontalRecyclerView1.apply {
             adapter = propertiesAdapter
             layoutManager = createHorizontalLayoutManager()
         }
-
         propertyViewModel.loadProperties()
         lifecycleScope.launch {
-
             propertyViewModel.propertyList.collect {
-
-                android.util.Log.e(
-                    "PROPERTY_LIST_SIZE",
-                    it.size.toString()
-                )
-
                 propertiesAdapter.addItems(it)
-
-                val propertyCountTv =
-                    requireView().findViewById<TextView>(
-                        R.id.tvPropertyCount
-                    )
-
-                propertyCountTv.text =
-                    it.size.toString()
+                requireView().findViewById<TextView>(R.id.tvPropertyCount)
+                    ?.text = it.size.toString()
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupTenantsRecyclerView() {
-
-        tenantsAdapter =
-            TenantsAdapter(requireContext())
-
+        tenantsAdapter = TenantsAdapter(requireContext())
         binding.horizontalRecyclerView2.apply {
-
-            adapter =
-                tenantsAdapter
-
-            layoutManager =
-                createHorizontalLayoutManager()
+            adapter = tenantsAdapter
+            layoutManager = createHorizontalLayoutManager()
         }
-
         tenantViewModel.loadTenants()
-
         lifecycleScope.launch {
-
             tenantViewModel.tenantList.collect {
-
                 tenantsAdapter.addItems(it)
-
-                val tenantCountTv =
-                    requireView().findViewById<TextView>(
-                        R.id.tvTenantCount
-                    )
-
-                tenantCountTv.text =
-                    it.size.toString()
+                // Active tenants only count
+                val activeCount = it.count { t ->
+                    t.status.equals("ACTIVE", ignoreCase = true)
+                }
+                requireView().findViewById<TextView>(R.id.tvTenantCount)
+                    ?.text = activeCount.toString()
             }
         }
     }

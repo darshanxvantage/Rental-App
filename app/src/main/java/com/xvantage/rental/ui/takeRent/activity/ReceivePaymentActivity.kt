@@ -31,6 +31,8 @@ class ReceivePaymentActivity : AppCompatActivity() {
     private lateinit var toDate: String
     private lateinit var note: String
     private lateinit var paymentMode: String
+    private var electricityMeterReading: String? = null
+    private var waterMeterReading: String? = null
 
     private lateinit var tenantId: String
 
@@ -38,6 +40,12 @@ class ReceivePaymentActivity : AppCompatActivity() {
     private var tenantName: String = ""
     private var roomId: String = ""
     private var propertyName: String = ""
+    private var electricityMode: String = ""
+    private var waterMode: String = ""
+    private var lastElectricityReading: Double = 0.0
+    private var lastWaterReading: Double = 0.0
+    private var electricityCostPerUnit: Double = 0.0
+    private var waterCostPerUnit: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +67,19 @@ class ReceivePaymentActivity : AppCompatActivity() {
         layoutBinding.etRentAmount.setText(
             totalPayable.toInt().toString()
         )
+
+        electricityMode = intent.getStringExtra("electricityMode") ?: ""
+        waterMode = intent.getStringExtra("waterMode") ?: ""
+        lastElectricityReading =
+            intent.getStringExtra("lastMeterReading")?.toDoubleOrNull() ?: 0.0
+        lastWaterReading =
+            intent.getStringExtra("lastWaterReading")?.toDoubleOrNull() ?: 0.0
+        electricityCostPerUnit =
+            intent.getStringExtra("costPerUnit")?.toDoubleOrNull() ?: 0.0
+        waterCostPerUnit =
+            intent.getStringExtra("costUnitWater")?.toDoubleOrNull() ?: 0.0
+
+        setupMeterReadingSections()
 
 
         val today = java.text.SimpleDateFormat(
@@ -86,8 +107,62 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
         setupListeners()
     }
+    private fun setupMeterReadingSections() {
 
+        if (electricityMode.equals("metered", ignoreCase = true)) {
+            layoutBinding.llElectricityMeterSection.visibility = android.view.View.VISIBLE
+            layoutBinding.tvLastElectricityReading.text =
+                getString(R.string.last_reading_format, lastElectricityReading.toString())
 
+            layoutBinding.etElectricityMeterReading.addTextChangedListener(
+                object : android.text.TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: android.text.Editable?) {
+                        updateElectricityCharge()
+                    }
+                }
+            )
+        } else {
+            layoutBinding.llElectricityMeterSection.visibility = android.view.View.GONE
+        }
+
+        if (waterMode.equals("metered", ignoreCase = true)) {
+            layoutBinding.llWaterMeterSection.visibility = android.view.View.VISIBLE
+            layoutBinding.tvLastWaterReading.text =
+                getString(R.string.last_reading_format, lastWaterReading.toString())
+
+            layoutBinding.etWaterMeterReading.addTextChangedListener(
+                object : android.text.TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: android.text.Editable?) {
+                        updateWaterCharge()
+                    }
+                }
+            )
+        } else {
+            layoutBinding.llWaterMeterSection.visibility = android.view.View.GONE
+        }
+    }
+
+    private fun updateElectricityCharge() {
+        val current =
+            layoutBinding.etElectricityMeterReading.text.toString().toDoubleOrNull() ?: 0.0
+        val units = (current - lastElectricityReading).coerceAtLeast(0.0)
+        val charge = units * electricityCostPerUnit
+        layoutBinding.tvElectricityCalculatedCharge.text =
+            getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+    }
+
+    private fun updateWaterCharge() {
+        val current =
+            layoutBinding.etWaterMeterReading.text.toString().toDoubleOrNull() ?: 0.0
+        val units = (current - lastWaterReading).coerceAtLeast(0.0)
+        val charge = units * waterCostPerUnit
+        layoutBinding.tvWaterCalculatedCharge.text =
+            getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+    }
 
 
     private fun setupListeners() {
@@ -120,7 +195,15 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
                     payment_mode = paymentMode,
 
-                    note = note
+                    note = note,
+
+                    meter_reading = electricityMeterReading,
+
+                    cost_per_unit = if (electricityMeterReading != null) electricityCostPerUnit.toString() else null,
+
+                    meter_reading_water = waterMeterReading,
+
+                    cost_unit_water = if (waterMeterReading != null) waterCostPerUnit.toString() else null
 
                 )
                 layoutBinding.btnRcvPayment.isEnabled = false
@@ -162,10 +245,49 @@ class ReceivePaymentActivity : AppCompatActivity() {
     }
 
     private fun validateFields(): Boolean {
-        return validateEditText(layoutBinding.etRentAmount, getString(R.string.rent_amount_required)) &&
-                validateEditText(layoutBinding.etRentRcvDate, getString(R.string.rent_receive_date_required)) &&
-                validateEditText(layoutBinding.etFromDate, getString(R.string.from_date_required)) &&
-                validateEditText(layoutBinding.etToDate, getString(R.string.to_date_required))
+        val basicValid =
+            validateEditText(layoutBinding.etRentAmount, getString(R.string.rent_amount_required)) &&
+                    validateEditText(layoutBinding.etRentRcvDate, getString(R.string.rent_receive_date_required)) &&
+                    validateEditText(layoutBinding.etFromDate, getString(R.string.from_date_required)) &&
+                    validateEditText(layoutBinding.etToDate, getString(R.string.to_date_required))
+
+        if (!basicValid) return false
+
+        if (electricityMode.equals("metered", ignoreCase = true)) {
+            val reading = layoutBinding.etElectricityMeterReading.text.toString().trim()
+            if (reading.isEmpty()) {
+                layoutBinding.etElectricityMeterReading.error =
+                    getString(R.string.meter_reading_required)
+                layoutBinding.etElectricityMeterReading.requestFocus()
+                return false
+            }
+            val readingValue = reading.toDoubleOrNull()
+            if (readingValue == null || readingValue < lastElectricityReading) {
+                layoutBinding.etElectricityMeterReading.error =
+                    getString(R.string.meter_reading_invalid)
+                layoutBinding.etElectricityMeterReading.requestFocus()
+                return false
+            }
+        }
+
+        if (waterMode.equals("metered", ignoreCase = true)) {
+            val reading = layoutBinding.etWaterMeterReading.text.toString().trim()
+            if (reading.isEmpty()) {
+                layoutBinding.etWaterMeterReading.error =
+                    getString(R.string.meter_reading_required)
+                layoutBinding.etWaterMeterReading.requestFocus()
+                return false
+            }
+            val readingValue = reading.toDoubleOrNull()
+            if (readingValue == null || readingValue < lastWaterReading) {
+                layoutBinding.etWaterMeterReading.error =
+                    getString(R.string.meter_reading_invalid)
+                layoutBinding.etWaterMeterReading.requestFocus()
+                return false
+            }
+        }
+
+        return true
     }
 
     private fun validateEditText(editText: EditText, message: String): Boolean {
@@ -185,6 +307,16 @@ class ReceivePaymentActivity : AppCompatActivity() {
         toDate = layoutBinding.etToDate.text.toString().trim()
         paymentMode = getSelectedPaymentMode()
         note = layoutBinding.etNote.text.toString().trim()
+
+        electricityMeterReading =
+            if (electricityMode.equals("metered", ignoreCase = true))
+                layoutBinding.etElectricityMeterReading.text.toString().trim()
+            else null
+
+        waterMeterReading =
+            if (waterMode.equals("metered", ignoreCase = true))
+                layoutBinding.etWaterMeterReading.text.toString().trim()
+            else null
 
         Log.d(
             "ReceivePaymentActivity",

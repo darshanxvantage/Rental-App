@@ -131,13 +131,19 @@ Profile = ${tenant?.profile_pic}
                         paymentDue =
                             tenant?.payment_due?.toDoubleOrNull() ?: 0.0,
 
-                            fixedElectricity =
+                        fixedElectricity =
                             tenant?.fixed_electricity_amount
-                            ?.toDoubleOrNull() ?: 0.0,
+                                ?.toDoubleOrNull() ?: 0.0,
 
                         fixedWater =
                             tenant?.fixed_waterbill_amount
                                 ?.toDoubleOrNull() ?: 0.0,
+
+                        electricityMode =
+                            tenant?.fixed_electricity ?: "",
+
+                        waterMode =
+                            tenant?.fixed_waterbill ?: "",
 
                         paymentMode =
                             tenant?.payment_mode ?: "",
@@ -152,7 +158,13 @@ Profile = ${tenant?.profile_pic}
                             tenant?.last_meter_reading ?: "",
 
                         lastWaterReading =
-                            tenant?.last_meter_reading_water ?: ""
+                            tenant?.last_meter_reading_water ?: "",
+
+                        costPerUnit =
+                            tenant?.cost_per_unit ?: "",
+
+                        costUnitWater =
+                            tenant?.cost_unit_water ?: ""
                     )
                 }
             )
@@ -184,10 +196,14 @@ Profile = ${tenant?.profile_pic}
         val paymentDue      : Double,
         val fixedElectricity : Double,
         val fixedWater : Double,
+        val electricityMode : String, // "fix" / "metered" / "" (no cost)
+        val waterMode : String,       // "fix" / "metered" / "" (no cost)
         val paymentMode : String,
         val meterReading : String,
         val waterReading : String,
         val lastMeterReading : String,
-        val lastWaterReading : String
+        val lastWaterReading : String,
+        val costPerUnit : String,
+        val costUnitWater : String
     )
 }

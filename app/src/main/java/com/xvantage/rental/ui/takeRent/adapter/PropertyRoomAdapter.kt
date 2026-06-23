@@ -224,6 +224,12 @@ Occupied    = ${room.isOccupied}
                         putExtra("monthlyRent",  room.monthlyRent)
                         putExtra("fixedElectricity", room.fixedElectricity)
                         putExtra("fixedWater", room.fixedWater)
+                        putExtra("electricityMode", room.electricityMode)
+                        putExtra("waterMode", room.waterMode)
+                        putExtra("lastMeterReading", room.lastMeterReading)
+                        putExtra("lastWaterReading", room.lastWaterReading)
+                        putExtra("costPerUnit", room.costPerUnit)
+                        putExtra("costUnitWater", room.costUnitWater)
                     }
                     context.startActivity(intent)
                 }

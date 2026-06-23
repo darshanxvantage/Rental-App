@@ -2,13 +2,21 @@ package com.xvantage.rental.ui.invoiceHistory
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.xvantage.rental.databinding.PaymentHistoryCardBinding
-import com.xvantage.rental.ui.rentInvoice.RentInvoiceActivity
+import com.xvantage.rental.network.response.InvoiceHistoryEntry
+import com.xvantage.rental.utils.constants.Constant
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class InvoiceHistoryAdapter(private val invoiceList: List<InvoiceHistoryActivity.InvoiceHistoryItem>,val context: Context) : RecyclerView.Adapter<InvoiceHistoryAdapter.InvoiceViewHolder>() {
+class InvoiceHistoryAdapter(
+    private val invoiceList: List<InvoiceHistoryEntry>,
+    val context: Context
+) : RecyclerView.Adapter<InvoiceHistoryAdapter.InvoiceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceViewHolder {
         val binding = PaymentHistoryCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,16 +25,66 @@ class InvoiceHistoryAdapter(private val invoiceList: List<InvoiceHistoryActivity
 
     override fun onBindViewHolder(holder: InvoiceViewHolder, position: Int) {
         val invoice = invoiceList[position]
-        holder.binding.roomImage.setImageResource(invoice.roomImageResId)
-        holder.binding.roomId.text = invoice.roomId+" "+invoice.tenantName
-        holder.binding.tvAddress.text = invoice.address
-        holder.binding.tvPayment.text = invoice.paymentAmount
-        holder.binding.tvPaymentDate.text = invoice.paymentDate
-        holder.binding.tvNote.text = invoice.note
-        holder.binding.paymentHistoryCard.setOnClickListener {
-            context.startActivity(Intent(context, RentInvoiceActivity::class.java))
-        }
 
+        holder.binding.roomId.text =
+            listOf(invoice.roomNo, invoice.tenantName)
+                .filter { !it.isNullOrBlank() }
+                .joinToString(" • ")
+                .ifEmpty { invoice.invoiceNumber }
+
+        holder.binding.tvAddress.text =
+            invoice.propertyName ?: invoice.propertyAddress ?: "—"
+
+        holder.binding.tvPayment.text = "₹${invoice.amount.toLong()}"
+        holder.binding.tvPaymentDate.text = formatDate(invoice.createdAt)
+
+        // Re-use the "Note:" row to show the month this invoice
+        // covers and its invoice number — e.g. "April 2026 • INV-00012"
+        holder.binding.labelNote.text = "Invoice:"
+        holder.binding.tvNote.text =
+            listOfNotNull(invoice.monthLabel, invoice.invoiceNumber)
+                .joinToString(" • ")
+
+        holder.binding.paymentHistoryCard.setOnClickListener {
+            openInvoicePdf(invoice.filePath)
+        }
+    }
+
+    private fun openInvoicePdf(relativePath: String) {
+        try {
+            val fullUrl = Constant.SERVER_ROOT_URL + relativePath
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(Uri.parse(fullUrl), "application/pdf")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // No PDF viewer installed, or the link couldn't be
+            // opened directly — fall back to a plain browser view,
+            // which can usually render the PDF inline anyway.
+            try {
+                val fullUrl = Constant.SERVER_ROOT_URL + relativePath
+                context.startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
+                )
+            } catch (e2: Exception) {
+                Toast.makeText(
+                    context,
+                    "Couldn't open the invoice. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun formatDate(isoDate: String): String {
+        return try {
+            val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            val output = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+            output.format(input.parse(isoDate) ?: return isoDate)
+        } catch (e: Exception) {
+            isoDate
+        }
     }
 
     override fun getItemCount(): Int = invoiceList.size

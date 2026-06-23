@@ -27,6 +27,8 @@ import okhttp3.RequestBody
 import com.xvantage.rental.network.request.tenant.StatusRequest
 import java.io.File
 import com.xvantage.rental.network.response.TenantListResponse
+import com.xvantage.rental.network.response.TenantDuesResponse
+import com.xvantage.rental.network.response.InvoiceHistoryResponse
 import com.google.gson.JsonObject
 import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
@@ -334,6 +336,43 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 "TENANT_API_BODY",
                 response.body().toString()
             )
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+
+    // Backed by the tenant_billing_cycles table — returns each
+    // tenant along with a month-wise breakdown (dueCycles) of every
+    // pending/partial month, instead of a single accumulated number.
+    suspend fun getTenantDues(): ResultWrapper<TenantDuesResponse> {
+
+        return try {
+
+            val response = apiInterface.getTenantDues()
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+
+    suspend fun getInvoiceHistory(
+        tenantId: String? = null
+    ): ResultWrapper<InvoiceHistoryResponse> {
+
+        return try {
+
+            val response = apiInterface.getInvoiceHistory(tenantId)
 
             NetworkHelper.handleApiResponse(response)
 

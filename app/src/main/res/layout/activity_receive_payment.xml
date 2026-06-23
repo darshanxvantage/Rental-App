@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,248 +14,387 @@
             android:layout_height="?attr/actionBarSize" />
 
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
-            android:layout_margin="16dp">
+            android:fillViewport="true">
 
-            <androidx.cardview.widget.CardView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:elevation="@dimen/_5sdp"
-                app:cardCornerRadius="12dp"
-                app:cardUseCompatPadding="true">
+                android:layout_margin="16dp">
 
-                <LinearLayout
-                    android:paddingHorizontal="@dimen/_10sdp"
+                <androidx.cardview.widget.CardView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:elevation="@dimen/_5sdp"
+                    app:cardCornerRadius="12dp"
+                    app:cardUseCompatPadding="true">
 
                     <LinearLayout
+                        android:paddingHorizontal="@dimen/_10sdp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_5sdp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_height="wrap_content">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginVertical="8dp"
-                                android:text="@string/rent_amount"
-                                android:textColor="@color/text_dark_blue"
-                                android:textSize="16sp" />
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_rent_amount"
-                                style="@style/EditText"
-                                android:background="@drawable/grey_border_background"
-                                android:hint="@string/enter_amount"
-                                android:inputType="number"
-                                android:padding="16dp"
-                                android:textColorHint="@color/grey_hint" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/rent_amount"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_rent_amount"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:hint="@string/enter_amount"
+                                    android:inputType="number"
+                                    android:padding="16dp"
+                                    android:textColorHint="@color/grey_hint" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/rent_rcv_date"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_rent_rcv_date"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:drawableEnd="@drawable/ic_calender"
+                                    android:focusable="false"
+                                    android:gravity="center_vertical"
+                                    android:hint="@string/enter_rent_rcv"
+                                    android:padding="@dimen/space8"
+                                    android:textColorHint="@color/grey_hint" />
+
+
+                            </LinearLayout>
+
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_5sdp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="horizontal">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginVertical="8dp"
-                                android:text="@string/rent_rcv_date"
-                                android:textColor="@color/text_dark_blue"
-                                android:textSize="16sp" />
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_rent_rcv_date"
-                                style="@style/EditText"
-                                android:background="@drawable/grey_border_background"
-                                android:drawableEnd="@drawable/ic_calender"
-                                android:focusable="false"
-                                android:gravity="center_vertical"
-                                android:hint="@string/enter_rent_rcv"
-                                android:padding="@dimen/space8"
-                                android:textColorHint="@color/grey_hint" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/from_date"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_from_date"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:drawableEnd="@drawable/ic_calender"
+                                    android:focusable="false"
+                                    android:gravity="center_vertical"
+                                    android:hint="@string/enter_from_date"
+                                    android:padding="@dimen/space8"
+                                    android:textColorHint="@color/grey_hint" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/to_date"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_to_date"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:drawableEnd="@drawable/ic_calender"
+                                    android:focusable="false"
+                                    android:gravity="center_vertical"
+                                    android:hint="@string/enter_to_date"
+                                    android:padding="@dimen/space8"
+                                    android:textColorHint="@color/grey_hint" />
+
+
+                            </LinearLayout>
 
 
                         </LinearLayout>
+
+
+
+                        <!-- Electricity meter reading — only shown when tenant's electricity billing mode is "metered" -->
+                        <LinearLayout
+                            android:id="@+id/ll_electricity_meter_section"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/electricity_meter_reading"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_electricity_meter_reading"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:hint="@string/enter_reading"
+                                    android:inputType="numberDecimal"
+                                    android:padding="16dp"
+                                    android:textColorHint="@color/grey_hint" />
+
+                                <TextView
+                                    android:id="@+id/tv_last_electricity_reading"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/grey_hint"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/electricity_units_charge"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_electricity_calculated_charge"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/grey_border_background"
+                                    android:padding="16dp"
+                                    android:textColor="@color/text_dark_blue" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Water meter reading — only shown when tenant's water billing mode is "metered" -->
+                        <LinearLayout
+                            android:id="@+id/ll_water_meter_section"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/water_meter_reading"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/et_water_meter_reading"
+                                    style="@style/EditText"
+                                    android:background="@drawable/grey_border_background"
+                                    android:hint="@string/enter_reading"
+                                    android:inputType="numberDecimal"
+                                    android:padding="16dp"
+                                    android:textColorHint="@color/grey_hint" />
+
+                                <TextView
+                                    android:id="@+id/tv_last_water_reading"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/grey_hint"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="8dp"
+                                    android:text="@string/water_units_charge"
+                                    android:textColor="@color/text_dark_blue"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_water_calculated_charge"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/grey_border_background"
+                                    android:padding="16dp"
+                                    android:textColor="@color/text_dark_blue" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_payment_mode_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="8dp"
+                            android:text="@string/payment_mode"
+                            android:textColor="@color/text_dark_blue"
+                            android:textSize="16sp" />
+
+                        <RadioGroup
+                            android:id="@+id/rg_payment_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/grey_border_background"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_5sdp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rb_cash"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="@string/cash"
+                                android:textColor="@color/text_dark_blue"
+                                android:theme="@style/RadioButtonStyle" />
+
+                            <RadioButton
+                                android:id="@+id/rb_upi"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="@string/upi"
+                                android:textColor="@color/text_dark_blue"
+                                android:theme="@style/RadioButtonStyle" />
+                            <RadioButton
+                                android:id="@+id/rb_net_banking"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/net_banking"
+                                android:textColor="@color/text_dark_blue"
+                                android:theme="@style/RadioButtonStyle" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/note"
+                            android:textColor="@color/text_dark_blue"
+                            android:textSize="16sp" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/et_note"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/et_text"
+                            android:imeOptions="actionNext"
+                            android:fontFamily="@font/outfit_regular"
+                            android:background="@drawable/grey_border_background"
+                            android:hint="@string/enter_note"
+                            android:minLines="4"
+                            android:padding="@dimen/space8"
+                            android:gravity="start"
+                            android:textColorHint="@color/grey_hint" />
+
+
+                        <Button
+                            android:id="@+id/btn_rcv_payment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="8dp"
+                            android:backgroundTint="@android:color/black"
+                            android:padding="10dp"
+                            android:text="@string/payment_received"
+                            android:textColor="@android:color/white" />
+
+
+
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_5sdp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginVertical="8dp"
-                                android:text="@string/from_date"
-                                android:textColor="@color/text_dark_blue"
-                                android:textSize="16sp" />
-
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_from_date"
-                                style="@style/EditText"
-                                android:background="@drawable/grey_border_background"
-                                android:drawableEnd="@drawable/ic_calender"
-                                android:focusable="false"
-                                android:gravity="center_vertical"
-                                android:hint="@string/enter_from_date"
-                                android:padding="@dimen/space8"
-                                android:textColorHint="@color/grey_hint" />
+                </androidx.cardview.widget.CardView>
 
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_5sdp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginVertical="8dp"
-                                android:text="@string/to_date"
-                                android:textColor="@color/text_dark_blue"
-                                android:textSize="16sp" />
-
-                            <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/et_to_date"
-                                style="@style/EditText"
-                                android:background="@drawable/grey_border_background"
-                                android:drawableEnd="@drawable/ic_calender"
-                                android:focusable="false"
-                                android:gravity="center_vertical"
-                                android:hint="@string/enter_to_date"
-                                android:padding="@dimen/space8"
-                                android:textColorHint="@color/grey_hint" />
-
-
-                        </LinearLayout>
-
-
-                    </LinearLayout>
-
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
-                        android:text="@string/payment_mode"
-                        android:textColor="@color/text_dark_blue"
-                        android:textSize="16sp" />
-
-                    <RadioGroup
-                        android:id="@+id/rg_payment_mode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:background="@drawable/grey_border_background"
-                        android:gravity="center"
-                        android:paddingHorizontal="@dimen/_5sdp"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/rb_cash"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:checked="true"
-                            android:gravity="center"
-                            android:text="@string/cash"
-                            android:textColor="@color/text_dark_blue"
-                            android:theme="@style/RadioButtonStyle" />
-
-                        <RadioButton
-                            android:id="@+id/rb_upi"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:paddingVertical="@dimen/_10sdp"
-                            android:text="@string/upi"
-                            android:textColor="@color/text_dark_blue"
-                            android:theme="@style/RadioButtonStyle" />
-                        <RadioButton
-                            android:id="@+id/rb_net_banking"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="@string/net_banking"
-                            android:textColor="@color/text_dark_blue"
-                            android:theme="@style/RadioButtonStyle" />
-                    </RadioGroup>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/note"
-                        android:textColor="@color/text_dark_blue"
-                        android:textSize="16sp" />
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/et_note"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/et_text"
-                        android:imeOptions="actionNext"
-                        android:fontFamily="@font/outfit_regular"
-                        android:background="@drawable/grey_border_background"
-                        android:hint="@string/enter_note"
-                        android:minLines="4"
-                        android:padding="@dimen/space8"
-                        android:gravity="start"
-                        android:textColorHint="@color/grey_hint" />
-
-
-                    <Button
-                        android:id="@+id/btn_rcv_payment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="8dp"
-                        android:backgroundTint="@android:color/black"
-                        android:padding="10dp"
-                        android:text="@string/payment_received"
-                        android:textColor="@android:color/white" />
-
-
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-        </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </RelativeLayout>
 </layout>

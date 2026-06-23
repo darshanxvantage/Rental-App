@@ -148,6 +148,10 @@
     <string name="metered">Metered</string>
     <string name="water_meter_reading">Water Meter Reading</string>
     <string name="electricity_meter_reading">Electricity Reading</string>
+    <string name="electricity_units_charge">Electricity Charge</string>
+    <string name="water_units_charge">Water Charge</string>
+    <string name="last_reading_format">Last reading: %1$s</string>
+    <string name="charge_units_format">₹%1$d (%2$d units)</string>
     <string name="cost_per_unit">Cost/Unit</string>
     <string name="fixed_amount">Fixed Amount</string>
     <string name="lease_type">Lease Type</string>
@@ -184,9 +188,12 @@
 
 
     <string name="invoice_history">Invoice History</string>
+    <string name="no_invoices_yet">No invoices yet. They\'ll show up here once a payment is collected.</string>
     <string name="rent_invoice">Rent Invoice</string>
     <string name="rent_amount_required">Please enter the rent amount</string>
     <string name="rent_receive_date_required">Please enter the rent receive date</string>
+    <string name="meter_reading_required">Please enter the current meter reading</string>
+    <string name="meter_reading_invalid">Reading can\'t be less than the last recorded reading</string>
     <string name="from_date_required">Please enter the from date</string>
     <string name="to_date_required">Please enter the to date</string>
     <string name="note_required">Please enter a note</string>
