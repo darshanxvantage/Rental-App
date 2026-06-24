@@ -29,6 +29,7 @@ import java.io.File
 import com.xvantage.rental.network.response.TenantListResponse
 import com.xvantage.rental.network.response.TenantDuesResponse
 import com.xvantage.rental.network.response.InvoiceHistoryResponse
+import com.xvantage.rental.network.response.StatementResponse
 import com.google.gson.JsonObject
 import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
@@ -373,6 +374,24 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
         return try {
 
             val response = apiInterface.getInvoiceHistory(tenantId)
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+
+    suspend fun generateCompleteStatement(
+        tenantId: String
+    ): ResultWrapper<StatementResponse> {
+
+        return try {
+
+            val response = apiInterface.generateCompleteStatement(tenantId)
 
             NetworkHelper.handleApiResponse(response)
 

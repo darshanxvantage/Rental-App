@@ -13,6 +13,7 @@ import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
 import com.xvantage.rental.network.response.TenantDuesResponse
 import com.xvantage.rental.network.response.InvoiceHistoryResponse
+import com.xvantage.rental.network.response.StatementResponse
 import com.xvantage.rental.network.request.tenant.StatusRequest
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import retrofit2.http.Path
@@ -85,6 +86,11 @@ interface   APIInterface {
     suspend fun getInvoiceHistory(
         @Query("tenantId") tenantId: String? = null
     ): Response<InvoiceHistoryResponse>
+
+    @GET("landlord/tenant/statement/{tenantId}")
+    suspend fun generateCompleteStatement(
+        @Path("tenantId") tenantId: String
+    ): Response<StatementResponse>
 
     @GET("landlord/tenant/{id}")
     suspend fun getTenantDetails(

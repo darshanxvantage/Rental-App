@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemPropertyCardBinding
 import com.xvantage.rental.databinding.ItemPropertyHeaderBinding
-import com.xvantage.rental.ui.invoiceHistory.InvoiceHistoryActivity
 import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
 import com.xvantage.rental.ui.takeRent.activity.TakeRentActivity
 import java.text.NumberFormat
@@ -20,7 +19,8 @@ import java.util.Locale
 
 class PropertyRoomAdapter(
     private val propertyList: List<TakeRentActivity.PropertyItem>,
-    private val context: Context
+    private val context: Context,
+    private val onGenerateStatement: (tenantId: String) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -235,11 +235,7 @@ Occupied    = ${room.isOccupied}
                 }
 
                 binding.btnGenerateInvoice.setOnClickListener {
-                    val intent = Intent(context, InvoiceHistoryActivity::class.java).apply {
-                        putExtra("tenantId",   room.tenantId)
-                        putExtra("tenantName", room.tenantName)
-                    }
-                    context.startActivity(intent)
+                    onGenerateStatement(room.tenantId)
                 }
             } else {
                 // Vacant room — disable buttons

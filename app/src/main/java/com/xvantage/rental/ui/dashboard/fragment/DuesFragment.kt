@@ -114,16 +114,10 @@ class DuesFragment : Fragment() {
     }
 
     private fun updateSummaryCard(tenants: List<TenantItem>) {
-        // Total dues
-        val totalDues = tenants.sumOf {
-            it.payment_due?.toDoubleOrNull() ?: 0.0
-        }
+        val totalDues = tenants.sumOf { it.totalDue ?: 0.0 }
         binding.tvTotalDues.text = "₹${totalDues.toLong()}"
 
-        // Overdue count (tenants with payment_due > 0)
-        val overdueCount = tenants.count {
-            (it.payment_due?.toDoubleOrNull() ?: 0.0) > 0.0
-        }
+        val overdueCount = tenants.count { it.hasOverdue == true }
         binding.tvOverdueCount.text = overdueCount.toString()
 
         // Total active tenant count
@@ -142,23 +136,12 @@ class DuesFragment : Fragment() {
     }
 
     private fun updateTabUI() {
-        val blue  = ContextCompat.getColor(requireContext(), R.color.primary_blue)
-        val white = ContextCompat.getColor(requireContext(), android.R.color.white)
+        val activeColor   = ContextCompat.getColor(requireContext(), R.color.royal_blue)
+        val inactiveColor = ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
 
-        // Reset all tabs
-        listOf(binding.tabAll, binding.tabOverdue, binding.tabNoDue).forEach { tab ->
-            tab.setBackgroundResource(R.drawable.bg_tab_unselected)
-            tab.setTextColor(blue)
-        }
-
-        // Highlight selected tab
-        val selectedTab = when (currentTab) {
-            TAB_ALL     -> binding.tabAll
-            TAB_OVERDUE -> binding.tabOverdue
-            else        -> binding.tabNoDue
-        }
-        selectedTab.setBackgroundResource(R.drawable.bg_tab_selected)
-        selectedTab.setTextColor(white)
+        binding.tabAll.setTextColor(if (currentTab == TAB_ALL) activeColor else inactiveColor)
+        binding.tabOverdue.setTextColor(if (currentTab == TAB_OVERDUE) activeColor else inactiveColor)
+        binding.tabNoDue.setTextColor(if (currentTab == TAB_NO_DUE) activeColor else inactiveColor)
     }
 
     override fun onDestroyView() {

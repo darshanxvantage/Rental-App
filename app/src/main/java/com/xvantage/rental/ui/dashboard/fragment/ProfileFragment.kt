@@ -188,56 +188,76 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // ─────────────────────── REVENUE DIALOG ───────────────────────
-
     private fun showRevenueDialog() {
-
         viewLifecycleOwner.lifecycleScope.launch {
 
-            val monthly = profileViewModel.revenueTotal.value
+            val monthly   = profileViewModel.revenueTotal.value
             val collected = profileViewModel.collectedTotal.value
-            val pending = profileViewModel.pendingTotal.value
+            val pending   = profileViewModel.pendingTotal.value
 
-            val dialog = AlertDialog.Builder(requireContext())
-                .setTitle("Revenue Breakdown")
-                .setMessage(
-                    "📊 Monthly Rent Total\n${formatRupees(monthly)}\n\n" +
-                            "✅ Total Collected\n${formatRupees(collected)}\n\n" +
-                            "⏳ Total Pending\n${formatRupees(pending)}"
-                )
-                .setCancelable(true)
-                .setPositiveButton("View Due Payments", null)
-                .setNegativeButton("Close", null)
-                .create()
 
-            dialog.setOnShowListener {
+            val rate = if (monthly > 0)
+                ((collected / monthly) * 100).toInt().coerceIn(0, 100)
+            else 0
 
-                val btnView = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                val btnClose = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
 
-                btnView.isAllCaps = false
-                btnClose.isAllCaps = false
-                btnView.setTextColor(Color.parseColor("#2962FF"))
-                btnClose.setTextColor(Color.parseColor("#888888"))
+            val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(
+                requireContext(),
+                R.style.BottomSheetDialogTheme
+            )
+            val view = layoutInflater.inflate(R.layout.bottomsheet_revenue, null)
+            dialog.setContentView(view)
+            dialog.behavior.state =
+                com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 
-                btnView.setOnClickListener {
-                    dialog.dismiss()
-                    // Navigate to Due Payments tab in bottom nav
-                    requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(
+
+            val monthName = java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault())
+                .format(java.util.Date())
+            view.findViewById<android.widget.TextView>(R.id.tvMonthBadge)?.text = monthName
+
+
+            view.findViewById<android.widget.TextView>(R.id.tvMonthlyRent)
+                ?.text = formatRupees(monthly)
+            view.findViewById<android.widget.TextView>(R.id.tvCollected)
+                ?.text = formatRupees(collected)
+            view.findViewById<android.widget.TextView>(R.id.tvPending)
+                ?.text = formatRupees(pending)
+            view.findViewById<android.widget.TextView>(R.id.tvCollectionRate)
+                ?.text = "$rate%"
+
+
+            val pb = view.findViewById<android.widget.ProgressBar>(R.id.pbCollection)
+            pb?.max = 100
+            pb?.progress = rate
+
+
+            view.findViewById<android.widget.TextView>(R.id.tvProgressPercent)
+                ?.text = "$rate%"
+            view.findViewById<android.widget.TextView>(R.id.tvCollectedLabel)
+                ?.text = "${formatRupees(collected)} collected"
+            view.findViewById<android.widget.TextView>(R.id.tvRemainingLabel)
+                ?.text = "${formatRupees(pending)} remaining"
+
+
+            view.findViewById<com.google.android.material.button.MaterialButton>(
+                R.id.btnCloseRevenue
+            )?.setOnClickListener { dialog.dismiss() }
+
+            view.findViewById<com.google.android.material.button.MaterialButton>(
+                R.id.btnViewDues
+            )?.setOnClickListener {
+                dialog.dismiss()
+                requireActivity()
+                    .findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(
                         R.id.bottom_navigation
                     )?.selectedItemId = R.id.settings
-                }
-
-                btnClose.setOnClickListener {
-                    dialog.dismiss()
-                }
             }
 
             dialog.show()
         }
     }
 
-    // ───────────────────────── AVATAR ─────────────────────────
+
 
     private fun bindAvatar() {
 

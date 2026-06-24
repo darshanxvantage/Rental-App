@@ -22,6 +22,32 @@ class TakeRentViewModel @Inject constructor(
     val isLoading    = MutableStateFlow(false)
     val errorMsg     = MutableStateFlow<String?>(null)
 
+    // Set whenever a "Generate Invoice" tap successfully produces the
+    // complete tenant statement PDF — the Activity observes this to
+    // open/download the file, then resets it back to null.
+    val statementFilePath = MutableStateFlow<String?>(null)
+    val isGeneratingStatement = MutableStateFlow(false)
+
+    fun generateCompleteStatement(tenantId: String) {
+        viewModelScope.launch {
+            isGeneratingStatement.value = true
+            when (val result = repository.generateCompleteStatement(tenantId)) {
+                is ResultWrapper.Success -> {
+                    statementFilePath.value = result.value.data.filePath
+                }
+                is ResultWrapper.Error -> {
+                    errorMsg.value = result.message
+                }
+                else -> {}
+            }
+            isGeneratingStatement.value = false
+        }
+    }
+
+    fun clearStatementFilePath() {
+        statementFilePath.value = null
+    }
+
     fun loadData() {
         viewModelScope.launch {
             isLoading.value = true

@@ -18,10 +18,7 @@ class InvoiceHistoryViewModel @Inject constructor(
     val invoices = MutableStateFlow<List<InvoiceHistoryEntry>>(emptyList())
     val isLoading = MutableStateFlow(false)
     val errorMsg = MutableStateFlow<String?>(null)
-
-    // tenantId is optional — pass it to show only one tenant's
-    // invoices (e.g. opened from a specific tenant's room card),
-    // or leave null to show every invoice across all properties.
+    
     fun loadInvoices(tenantId: String? = null) {
         viewModelScope.launch {
             isLoading.value = true

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemDueCardBinding
+import com.xvantage.rental.databinding.ItemDueMonthRowBinding
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.ui.dashboard.fragment.DuesViewModel
 import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
@@ -51,8 +52,9 @@ class DuesAdapter(
                 binding.ivProfile.setImageResource(R.drawable.ic_profile_nav)
             }
 
-            // ── Due amount ──
-            val due = tenant.payment_due?.toDoubleOrNull() ?: 0.0
+            // ── Due amount — straight from the backend's billing
+            // cycles, never recalculated here. ──
+            val due = viewModel.getTotalDue(tenant)
             binding.tvDueAmount.text = "₹${due.toLong()}"
             binding.tvDueAmount.setTextColor(
                 if (due > 0) Color.parseColor("#C62828")
@@ -67,21 +69,19 @@ class DuesAdapter(
             val advance = tenant.advance?.toDoubleOrNull() ?: 0.0
             binding.tvAdvance.text = "₹${advance.toLong()}"
 
-            // ── Next Due Date (payment cycle logic) ──
-            val nextDue    = viewModel.getNextDueDate(tenant)
-            val isOverdue  = viewModel.isOverdue(tenant)
-            binding.tvNextDueDate.text      = nextDue
+            // ── Next Due (the oldest pending month, since FIFO
+            // clears the oldest cycle first) ──
+            val isOverdue = viewModel.isOverdue(tenant)
+            binding.tvNextDueDate.text = viewModel.getNextDueLabel(tenant)
             binding.tvNextDueDate.setTextColor(
                 if (isOverdue) Color.parseColor("#C62828")   // red = overdue
                 else           Color.parseColor("#E65100")   // orange = upcoming
             )
 
-            // ── Electricity ──
+            // ── Electricity (billing mode badge only — not the
+            // amount owed, that's part of totalDue) ──
             val (elecType, elecAmt) = viewModel.getElectricityInfo(tenant)
-            binding.tvElectricityType.text   = elecType
-            binding.tvElectricityCharge.text = elecAmt
-
-            // Badge color: No Cost=grey, Fixed=blue, Metered=orange
+            binding.tvElectricityType.text = elecType
             binding.tvElectricityType.setBackgroundColor(
                 when (elecType) {
                     "Fixed"   -> Color.parseColor("#1565C0")
@@ -89,15 +89,12 @@ class DuesAdapter(
                     else      -> Color.parseColor("#9E9E9E")
                 }
             )
-            // Hide amount row if no cost
             binding.tvElectricityCharge.text =
                 if (elecType == "No Cost") "Owner pays" else elecAmt
 
             // ── Water ──
             val (waterType, waterAmt) = viewModel.getWaterInfo(tenant)
-            binding.tvWaterType.text   = waterType
-            binding.tvWaterCharge.text = waterAmt
-
+            binding.tvWaterType.text = waterType
             binding.tvWaterType.setBackgroundColor(
                 when (waterType) {
                     "Fixed"   -> Color.parseColor("#1565C0")
@@ -108,9 +105,14 @@ class DuesAdapter(
             binding.tvWaterCharge.text =
                 if (waterType == "No Cost") "Owner pays" else waterAmt
 
-            // ── Total Payable ──
-            val total = viewModel.getTotalPayable(tenant)
-            binding.tvTotalPayable.text = "₹$total"
+            // ── Total Payable — same number as the due amount,
+            // since totalDue already covers every outstanding cycle. ──
+            binding.tvTotalPayable.text = "₹${due.toLong()}"
+
+            // ── Month-wise breakdown — only shown when 2+ months
+            // are pending, so a tenant who's just one month behind
+            // doesn't see redundant duplicate info. ──
+            bindMonthBreakdown(tenant)
 
             // ── Collect Rent button ──
             binding.btnCollect.setOnClickListener {
@@ -125,7 +127,7 @@ class DuesAdapter(
                     putExtra("monthlyRent",   rent)
                     putExtra("electricityCharge", elecAmt)
                     putExtra("waterCharge",        waterAmt)
-                    putExtra("totalPayable",       total.toDouble())
+                    putExtra("totalPayable",       due)
                     putExtra("electricityMode", tenant.fixed_electricity ?: "")
                     putExtra("waterMode", tenant.fixed_waterbill ?: "")
                     putExtra("lastMeterReading", tenant.last_meter_reading ?: "")
@@ -134,6 +136,33 @@ class DuesAdapter(
                     putExtra("costUnitWater", tenant.cost_unit_water ?: "")
                 }
                 context.startActivity(intent)
+            }
+        }
+
+        private fun bindMonthBreakdown(tenant: TenantItem) {
+            val cycles = viewModel.getDueCyclesSorted(tenant)
+
+            if (cycles.size < 2) {
+                binding.llDueBreakdown.visibility = android.view.View.GONE
+                binding.llDueMonthsList.removeAllViews()
+                return
+            }
+
+            binding.llDueBreakdown.visibility = android.view.View.VISIBLE
+            binding.llDueMonthsList.removeAllViews()
+
+            cycles.forEach { cycle ->
+                val rowBinding = ItemDueMonthRowBinding.inflate(
+                    LayoutInflater.from(context),
+                    binding.llDueMonthsList,
+                    false
+                )
+                rowBinding.tvMonthLabel.text = cycle.monthLabel
+                rowBinding.tvMonthAmount.text = "₹${cycle.amountDue.toLong()}"
+                rowBinding.tvMonthOverdueTag.visibility =
+                    if (cycle.isOverdue) android.view.View.VISIBLE else android.view.View.GONE
+
+                binding.llDueMonthsList.addView(rowBinding.root)
             }
         }
     }

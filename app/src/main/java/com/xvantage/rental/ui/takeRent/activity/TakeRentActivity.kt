@@ -52,10 +52,69 @@ class TakeRentActivity : AppCompatActivity() {
                     PropertyRoomAdapter(
                         propertyData,
                         this@TakeRentActivity
-                    )
+                    ) { tenantId ->
+                        viewModel.generateCompleteStatement(tenantId)
+                    }
 
             }
 
+        }
+
+        lifecycleScope.launch {
+            viewModel.isGeneratingStatement.collect { generating ->
+                if (generating) {
+                    android.widget.Toast.makeText(
+                        this@TakeRentActivity,
+                        "Generating statement…",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.statementFilePath.collect { filePath ->
+                if (filePath != null) {
+                    openStatementPdf(filePath)
+                    viewModel.clearStatementFilePath()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.errorMsg.collect { msg ->
+                if (msg != null) {
+                    android.widget.Toast.makeText(
+                        this@TakeRentActivity,
+                        msg,
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun openStatementPdf(relativePath: String) {
+        try {
+            val fullUrl = com.xvantage.rental.utils.constants.Constant.SERVER_ROOT_URL + relativePath
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                setDataAndType(android.net.Uri.parse(fullUrl), "application/pdf")
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            try {
+                val fullUrl = com.xvantage.rental.utils.constants.Constant.SERVER_ROOT_URL + relativePath
+                startActivity(
+                    android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(fullUrl))
+                )
+            } catch (e2: Exception) {
+                android.widget.Toast.makeText(
+                    this,
+                    "Couldn't open the statement. Please try again.",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
