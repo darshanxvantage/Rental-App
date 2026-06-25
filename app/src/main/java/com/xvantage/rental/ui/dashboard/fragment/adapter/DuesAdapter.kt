@@ -4,15 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemDueCardBinding
 import com.xvantage.rental.databinding.ItemDueMonthRowBinding
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.ui.dashboard.fragment.DuesViewModel
 import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
+import android.widget.LinearLayout
+import android.widget.TextView
 
 class DuesAdapter(
     private val context: Context,
@@ -33,10 +38,10 @@ class DuesAdapter(
         fun bind(tenant: TenantItem) {
 
             // ── Tenant basic info ──
-            binding.tvTenantName.text   = tenant.tenant_name
-            binding.tvPhone.text        = tenant.phone_number ?: ""
+            binding.tvTenantName.text = tenant.tenant_name
+            binding.tvPhone.text = tenant.phone_number ?: ""
 
-            val room     = tenant.tenant_details?.room_no ?: "—"
+            val room = tenant.tenant_details?.room_no ?: "—"
             val property = tenant.tenant_details?.property?.name ?: "—"
             binding.tvRoomProperty.text = "Room $room • $property"
 
@@ -52,13 +57,12 @@ class DuesAdapter(
                 binding.ivProfile.setImageResource(R.drawable.ic_profile_nav)
             }
 
-            // ── Due amount — straight from the backend's billing
-            // cycles, never recalculated here. ──
+            // ── Due amount ──
             val due = viewModel.getTotalDue(tenant)
             binding.tvDueAmount.text = "₹${due.toLong()}"
             binding.tvDueAmount.setTextColor(
                 if (due > 0) Color.parseColor("#C62828")
-                else         Color.parseColor("#2E7D32")
+                else Color.parseColor("#2E7D32")
             )
 
             // ── Monthly rent ──
@@ -69,24 +73,37 @@ class DuesAdapter(
             val advance = tenant.advance?.toDoubleOrNull() ?: 0.0
             binding.tvAdvance.text = "₹${advance.toLong()}"
 
-            // ── Next Due (the oldest pending month, since FIFO
-            // clears the oldest cycle first) ──
+            // ── Due Status (oldest pending month) ──
             val isOverdue = viewModel.isOverdue(tenant)
             binding.tvNextDueDate.text = viewModel.getNextDueLabel(tenant)
             binding.tvNextDueDate.setTextColor(
-                if (isOverdue) Color.parseColor("#C62828")   // red = overdue
-                else           Color.parseColor("#E65100")   // orange = upcoming
+                if (isOverdue) Color.parseColor("#C62828")
+                else Color.parseColor("#E65100")
             )
 
-            // ── Electricity (billing mode badge only — not the
-            // amount owed, that's part of totalDue) ──
+            // ── History hint — show only when 2+ months pending ──
+            val cycles = viewModel.getDueCyclesSorted(tenant)
+            if (cycles.size >= 2) {
+                binding.llHistoryHint.visibility = View.VISIBLE
+                binding.tvPendingMonthsCount.text =
+                    "${cycles.size} months pending — tap to view history"
+
+                // Click → open history bottom sheet
+                binding.llHistoryHint.setOnClickListener {
+                    showHistoryBottomSheet(tenant)
+                }
+            } else {
+                binding.llHistoryHint.visibility = View.GONE
+            }
+
+            // ── Electricity ──
             val (elecType, elecAmt) = viewModel.getElectricityInfo(tenant)
             binding.tvElectricityType.text = elecType
             binding.tvElectricityType.setBackgroundColor(
                 when (elecType) {
-                    "Fixed"   -> Color.parseColor("#1565C0")
+                    "Fixed" -> Color.parseColor("#1565C0")
                     "Metered" -> Color.parseColor("#E65100")
-                    else      -> Color.parseColor("#9E9E9E")
+                    else -> Color.parseColor("#9E9E9E")
                 }
             )
             binding.tvElectricityCharge.text =
@@ -97,37 +114,28 @@ class DuesAdapter(
             binding.tvWaterType.text = waterType
             binding.tvWaterType.setBackgroundColor(
                 when (waterType) {
-                    "Fixed"   -> Color.parseColor("#1565C0")
+                    "Fixed" -> Color.parseColor("#1565C0")
                     "Metered" -> Color.parseColor("#E65100")
-                    else      -> Color.parseColor("#9E9E9E")
+                    else -> Color.parseColor("#9E9E9E")
                 }
             )
             binding.tvWaterCharge.text =
                 if (waterType == "No Cost") "Owner pays" else waterAmt
 
-            // ── Total Payable — same number as the due amount,
-            // since totalDue already covers every outstanding cycle. ──
+            // ── Total Payable ──
             binding.tvTotalPayable.text = "₹${due.toLong()}"
-
-            // ── Month-wise breakdown — only shown when 2+ months
-            // are pending, so a tenant who's just one month behind
-            // doesn't see redundant duplicate info. ──
-            bindMonthBreakdown(tenant)
 
             // ── Collect Rent button ──
             binding.btnCollect.setOnClickListener {
                 val intent = Intent(context, ReceivePaymentActivity::class.java).apply {
-                    putExtra("tenantId",      tenant.id)
-                    putExtra("tenantName",    tenant.tenant_name)
-                    putExtra(
-                        "roomId",
-                        tenant.room_fk
-                    )
-                    putExtra("propertyName",  tenant.tenant_details?.property?.name ?: "")
-                    putExtra("monthlyRent",   rent)
+                    putExtra("tenantId", tenant.id)
+                    putExtra("tenantName", tenant.tenant_name)
+                    putExtra("roomId", tenant.room_fk)
+                    putExtra("propertyName", tenant.tenant_details?.property?.name ?: "")
+                    putExtra("monthlyRent", rent)
                     putExtra("electricityCharge", elecAmt)
-                    putExtra("waterCharge",        waterAmt)
-                    putExtra("totalPayable",       due)
+                    putExtra("waterCharge", waterAmt)
+                    putExtra("totalPayable", due)
                     putExtra("electricityMode", tenant.fixed_electricity ?: "")
                     putExtra("waterMode", tenant.fixed_waterbill ?: "")
                     putExtra("lastMeterReading", tenant.last_meter_reading ?: "")
@@ -139,31 +147,83 @@ class DuesAdapter(
             }
         }
 
-        private fun bindMonthBreakdown(tenant: TenantItem) {
+        // ════════════════════════════════════════
+        // HISTORY BOTTOM SHEET
+        // ════════════════════════════════════════
+        private fun showHistoryBottomSheet(tenant: TenantItem) {
+            val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(context)
+                .inflate(R.layout.bottomsheet_due_history, null)
+            dialog.setContentView(view)
+
+            // Header
+            view.findViewById<TextView>(R.id.tvHistoryTenantName)?.text =
+                tenant.tenant_name
+            view.findViewById<TextView>(R.id.tvHistoryRoomProperty)?.text =
+                "Room ${tenant.tenant_details?.room_no ?: "—"} • ${tenant.tenant_details?.property?.name ?: "—"}"
+            view.findViewById<TextView>(R.id.tvHistoryTotalDue)?.text =
+                "₹${viewModel.getTotalDue(tenant).toLong()}"
+
+            // Month list
+            val llMonthList = view.findViewById<LinearLayout>(R.id.llHistoryMonthList)
+            llMonthList?.removeAllViews()
+
             val cycles = viewModel.getDueCyclesSorted(tenant)
 
-            if (cycles.size < 2) {
-                binding.llDueBreakdown.visibility = android.view.View.GONE
-                binding.llDueMonthsList.removeAllViews()
-                return
-            }
-
-            binding.llDueBreakdown.visibility = android.view.View.VISIBLE
-            binding.llDueMonthsList.removeAllViews()
-
             cycles.forEach { cycle ->
-                val rowBinding = ItemDueMonthRowBinding.inflate(
-                    LayoutInflater.from(context),
-                    binding.llDueMonthsList,
-                    false
-                )
-                rowBinding.tvMonthLabel.text = cycle.monthLabel
-                rowBinding.tvMonthAmount.text = "₹${cycle.amountDue.toLong()}"
-                rowBinding.tvMonthOverdueTag.visibility =
-                    if (cycle.isOverdue) android.view.View.VISIBLE else android.view.View.GONE
+                val rowView = LayoutInflater.from(context)
+                    .inflate(R.layout.item_due_month_row, llMonthList, false)
 
-                binding.llDueMonthsList.addView(rowBinding.root)
+                // Month label
+                rowView.findViewById<TextView>(R.id.tvMonthLabel)?.text =
+                    cycle.monthLabel
+
+                // Amount
+                rowView.findViewById<TextView>(R.id.tvMonthAmount)?.text =
+                    "₹${cycle.amountDue.toLong()}"
+
+                // Overdue tag
+                val overdueTag = rowView.findViewById<TextView>(R.id.tvMonthOverdueTag)
+                overdueTag?.visibility =
+                    if (cycle.isOverdue) View.VISIBLE else View.GONE
+
+                // Status badge + dot color
+                val statusBadge = rowView.findViewById<TextView>(R.id.tvMonthStatus)
+                val dot = rowView.findViewById<View>(R.id.viewMonthDot)
+
+                when (cycle.status.lowercase()) {
+                    "pending" -> {
+                        statusBadge?.text = "Pending"
+                        statusBadge?.setTextColor(Color.parseColor("#E65100"))
+                        statusBadge?.setBackgroundColor(Color.parseColor("#FFF3E0"))
+                        dot?.setBackgroundColor(Color.parseColor("#E65100"))
+                    }
+                    "partial" -> {
+                        statusBadge?.text = "Partial"
+                        statusBadge?.setTextColor(Color.parseColor("#1565C0"))
+                        statusBadge?.setBackgroundColor(Color.parseColor("#E3F2FD"))
+                        dot?.setBackgroundColor(Color.parseColor("#1565C0"))
+                    }
+                    "paid" -> {
+                        statusBadge?.text = "Paid ✓"
+                        statusBadge?.setTextColor(Color.parseColor("#2E7D32"))
+                        statusBadge?.setBackgroundColor(Color.parseColor("#E8F5E9"))
+                        dot?.setBackgroundColor(Color.parseColor("#2E7D32"))
+                    }
+                    else -> {
+                        statusBadge?.text = cycle.status
+                        dot?.setBackgroundColor(Color.parseColor("#9E9E9E"))
+                    }
+                }
+
+                llMonthList?.addView(rowView)
             }
+
+            // Close button
+            view.findViewById<MaterialButton>(R.id.btnCloseHistory)
+                ?.setOnClickListener { dialog.dismiss() }
+
+            dialog.show()
         }
     }
 

@@ -113,15 +113,12 @@ class TenantDetailsActivity : AppCompatActivity() {
 
                     android.util.Log.e("TENANT_DETAILS_STATUS", "ID=$tenantId Status=${data.status}")
 
-                    // ── STATUS BADGE FIX ─────────────────────────────────────
-                    // Layout mein pehle se ek animated dot (View) hai.
-                    // Isliye tvStatus mein SIRF text likho — "●" symbol mat add karo.
-                    // "● ACTIVE TENANT" likhne se double dot aata tha.
+
                     if (currentStatus.equals("ACTIVE", true)) {
                         binding.tvStatus.text = "ACTIVE TENANT"  // ← NO "●" here
                         binding.statusDot.setBackgroundResource(R.drawable.tenant_dot_pulse)  // green animated dot
                         binding.tvStatus.setTextColor(ContextCompat.getColor(this@TenantDetailsActivity, android.R.color.white))
-                        // Badge background — green
+                    
                         binding.tvStatus.parent.let { parent ->
                             if (parent is android.view.ViewGroup) {
                                 parent.setBackgroundResource(R.drawable.tenant_status_badge)
@@ -212,11 +209,11 @@ class TenantDetailsActivity : AppCompatActivity() {
 
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Delete Tenant")
-                    .setMessage("Are you sure you want to delete this tenant?")
+                    .setMessage("This will permanently delete this tenant and all their payment history, billing records, and documents. This cannot be undone. Are you sure?")
                     .setCancelable(true)
                     .setPositiveButton("Delete") { _, _ ->
 
-                        viewModel.deleteTenant(tenantId)
+                        viewModel.deleteTenantPermanent(tenantId)
 
                     }
                     .setNegativeButton("Cancel", null)

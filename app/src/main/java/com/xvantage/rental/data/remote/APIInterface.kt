@@ -188,6 +188,15 @@ interface   APIInterface {
     ): Response<Unit>
 
 
+    @DELETE("landlord/tenant/{tenantId}/permanent")
+    suspend fun deleteTenantPermanent(
+
+        @Path("tenantId")
+        tenantId: String
+
+    ): Response<Unit>
+
+
     @Multipart
     @POST("landlord/tenant/create")
     suspend fun createTenant(

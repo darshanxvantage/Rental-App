@@ -70,6 +70,33 @@ class TenantDetailsViewModel @Inject constructor(
         }
     }
 
+    fun deleteTenantPermanent(
+        tenantId: String
+    ) {
+
+        viewModelScope.launch {
+
+            when (
+                repository.deleteTenantPermanent(
+                    tenantId
+                )
+            ) {
+
+                is ResultWrapper.Success -> {
+
+                    deleteState.value = true
+
+                }
+
+                else -> {
+
+                    deleteState.value = false
+
+                }
+            }
+        }
+    }
+
     fun updateTenantStatus(
         tenantId: String,
         status: String

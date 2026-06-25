@@ -739,4 +739,36 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             )
         }
     }
+
+    suspend fun deleteTenantPermanent(
+        tenantId: String
+    ): ResultWrapper<Boolean> {
+
+        return try {
+
+            val response =
+                apiInterface.deleteTenantPermanent(
+                    tenantId
+                )
+
+            if (response.isSuccessful) {
+
+                ResultWrapper.Success(
+                    true
+                )
+
+            } else {
+
+                ResultWrapper.Error(
+                    "Delete Failed"
+                )
+            }
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Error"
+            )
+        }
+    }
 }

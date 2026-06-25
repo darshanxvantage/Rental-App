@@ -16,7 +16,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- ── TOP ROW: Photo + Info + Due Badge ── -->
+        <!-- TOP ROW: Photo + Info + Due Badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
 
             </LinearLayout>
 
-            <!-- Due Amount Badge -->
+            <!-- Due Amount -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
 
         </LinearLayout>
 
-        <!-- ── DIVIDER ── -->
+        <!-- DIVIDER -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -102,13 +102,12 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"/>
 
-        <!-- ── STATS ROW: Rent | Advance | Next Due Date ── -->
+        <!-- STATS ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Monthly Rent -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -135,7 +134,6 @@
 
             </LinearLayout>
 
-            <!-- Advance -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -162,7 +160,6 @@
 
             </LinearLayout>
 
-            <!-- Due Months Count (replaces the old single "Next Due Date" guess) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -191,35 +188,48 @@
 
         </LinearLayout>
 
-        <!-- ── MONTH-WISE DUE BREAKDOWN (shown only when 2+ months are pending) ── -->
+        <!-- HISTORY HINT — clickable, only visible when 2+ months pending -->
         <LinearLayout
-            android:id="@+id/llDueBreakdown"
+            android:id="@+id/llHistoryHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="#FFF5F5"
             android:layout_marginTop="10dp"
             android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
             android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pending Months"
+                android:text="📋"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvPendingMonthsCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="2 months pending — tap to view"
+                android:textColor="#C62828"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View History ›"
                 android:textColor="#C62828"
                 android:textSize="11sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
-
-            <LinearLayout
-                android:id="@+id/llDueMonthsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:textStyle="bold"/>
 
         </LinearLayout>
 
-        <!-- ── DIVIDER ── -->
+        <!-- DIVIDER -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -227,7 +237,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="10dp"/>
 
-        <!-- ── ELECTRICITY ROW ── -->
+        <!-- ELECTRICITY ROW -->
         <LinearLayout
             android:id="@+id/rowElectricity"
             android:layout_width="match_parent"
@@ -236,7 +246,6 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="6dp">
 
-            <!-- Icon + Label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -252,7 +261,6 @@
                 android:textColor="#555555"
                 android:textSize="12sp"/>
 
-            <!-- Charge type badge -->
             <TextView
                 android:id="@+id/tvElectricityType"
                 android:layout_width="wrap_content"
@@ -267,7 +275,6 @@
                 android:paddingBottom="2dp"
                 android:layout_marginEnd="8dp"/>
 
-            <!-- Charge amount -->
             <TextView
                 android:id="@+id/tvElectricityCharge"
                 android:layout_width="wrap_content"
@@ -279,7 +286,7 @@
 
         </LinearLayout>
 
-        <!-- ── WATER ROW ── -->
+        <!-- WATER ROW -->
         <LinearLayout
             android:id="@+id/rowWater"
             android:layout_width="match_parent"
@@ -288,7 +295,6 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="4dp">
 
-            <!-- Icon + Label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -304,7 +310,6 @@
                 android:textColor="#555555"
                 android:textSize="12sp"/>
 
-            <!-- Charge type badge -->
             <TextView
                 android:id="@+id/tvWaterType"
                 android:layout_width="wrap_content"
@@ -319,7 +324,6 @@
                 android:paddingBottom="2dp"
                 android:layout_marginEnd="8dp"/>
 
-            <!-- Charge amount -->
             <TextView
                 android:id="@+id/tvWaterCharge"
                 android:layout_width="wrap_content"
@@ -331,7 +335,7 @@
 
         </LinearLayout>
 
-        <!-- ── DIVIDER ── -->
+        <!-- DIVIDER -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -339,7 +343,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"/>
 
-        <!-- ── TOTAL ROW ── -->
+        <!-- TOTAL ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -367,7 +371,7 @@
 
         </LinearLayout>
 
-        <!-- ── COLLECT BUTTON ── -->
+        <!-- COLLECT BUTTON -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCollect"
             android:layout_width="match_parent"

@@ -49,7 +49,7 @@ class ProfileFragment : Fragment() {
     private val profileViewModel: ProfileViewModel by viewModels()
 
     private val supportEmail = "support@xvantage.app"
-    private val supportPhone = "+91 90000 00000"
+    private val supportPhone = "+91 98798 99654"
 
     private val avatarColors = listOf(
         "#2962FF", "#16A34A", "#F59E0B", "#7C3AED", "#E11D48", "#0EA5E9"
