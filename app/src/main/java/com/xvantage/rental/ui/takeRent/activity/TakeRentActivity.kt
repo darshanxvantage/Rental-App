@@ -1,6 +1,6 @@
 package com.xvantage.rental.ui.takeRent.activity
 
-import android.os.Bundle
+import   android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -167,10 +167,10 @@ Profile = ${tenant?.profile_pic}
                         profilePic      = tenant?.profile_pic ?: "",
                         isOccupied      = tenant != null,
                         roomStatus      = if (tenant != null) "Occupied" else "Vacant",
+
+
                         monthlyRent =
-                            (tenant?.rent?.toDoubleOrNull() ?: 0.0) +
-                                    (tenant?.fixed_electricity_amount?.toDoubleOrNull() ?: 0.0) +
-                                    (tenant?.fixed_waterbill_amount?.toDoubleOrNull() ?: 0.0),
+                            tenant?.rent?.toDoubleOrNull() ?: 0.0,
 
                         securityAmount =
                             tenant?.room_deposit?.toDoubleOrNull() ?: 0.0,
@@ -255,8 +255,8 @@ Profile = ${tenant?.profile_pic}
         val paymentDue      : Double,
         val fixedElectricity : Double,
         val fixedWater : Double,
-        val electricityMode : String, // "fix" / "metered" / "" (no cost)
-        val waterMode : String,       // "fix" / "metered" / "" (no cost)
+        val electricityMode : String,
+        val waterMode : String,
         val paymentMode : String,
         val meterReading : String,
         val waterReading : String,

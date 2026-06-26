@@ -118,7 +118,7 @@ class TenantDetailsActivity : AppCompatActivity() {
                         binding.tvStatus.text = "ACTIVE TENANT"  // ← NO "●" here
                         binding.statusDot.setBackgroundResource(R.drawable.tenant_dot_pulse)  // green animated dot
                         binding.tvStatus.setTextColor(ContextCompat.getColor(this@TenantDetailsActivity, android.R.color.white))
-                    
+
                         binding.tvStatus.parent.let { parent ->
                             if (parent is android.view.ViewGroup) {
                                 parent.setBackgroundResource(R.drawable.tenant_status_badge)

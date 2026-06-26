@@ -26,16 +26,12 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     val propertyCount = MutableStateFlow(0)
+    val tenantCount   = MutableStateFlow(0)
 
-    val tenantCount = MutableStateFlow(0)
-
-    // Total monthly rent of all ACTIVE tenants (rent field)
     val revenueTotal = MutableStateFlow(0.0)
 
-    // Total collected amount from all tenants (amount field = actual payments received)
     val collectedTotal = MutableStateFlow(0.0)
 
-    // Total pending due from all tenants
     val pendingTotal = MutableStateFlow(0.0)
 
     val landlordTier: StateFlow<LandlordTier> =
@@ -47,79 +43,73 @@ class ProfileViewModel @Inject constructor(
             )
 
     fun loadDashboardData() {
-
         viewModelScope.launch {
 
-            // Load property count
-            when (val propertyResponse = repository.getPropertyList()) {
-
+            // ── Properties count ──
+            when (val res = repository.getPropertyList()) {
                 is ResultWrapper.Success -> {
-                    propertyCount.value = propertyResponse.value.data.totalItems
+                    propertyCount.value = res.value.data.totalItems
                 }
-
                 else -> {}
             }
 
-            // Load tenant data and calculate revenue stats
-            when (val tenantResponse = repository.getTenantList()) {
-
+            // ── Tenant data — active count, revenue, collected ──
+            when (val res = repository.getTenantList()) {
                 is ResultWrapper.Success -> {
-
-                    val rows = tenantResponse.value.data.rows
-
-                    // Count only ACTIVE tenants
+                    val rows = res.value.data.rows
                     val activeTenants = rows.filter {
                         it.status?.uppercase() == "ACTIVE"
                     }
 
                     tenantCount.value = activeTenants.size
 
-                    // Monthly rent total = sum of rent of all ACTIVE tenants
+                    // Monthly rent total (what should come in every month)
                     revenueTotal.value = activeTenants.sumOf {
                         it.rent?.toDoubleOrNull() ?: 0.0
                     }
 
-                    // Total collected = sum of amount field (actual payments received)
+                    // Total actually collected
                     collectedTotal.value = rows.sumOf {
                         it.amount?.toDoubleOrNull() ?: 0.0
                     }
+                }
+                else -> {}
+            }
 
-                    // Total pending dues
-                    pendingTotal.value = rows.sumOf {
-                        it.payment_due?.toDoubleOrNull() ?: 0.0
+            // ✅ Pending dues from billing_cycles
+            // SAME API as Due Payments screen
+            // Home page + Profile page + Due screen — all show SAME number
+            when (val res = repository.getTenantDues()) {
+                is ResultWrapper.Success -> {
+                    pendingTotal.value = res.value.data.tenants.sumOf {
+                        it.totalDue ?: 0.0
                     }
                 }
-
                 else -> {}
             }
         }
     }
 
     private fun computeTier(propertyCount: Int): LandlordTier {
-
         return when {
-
             propertyCount <= 0 -> LandlordTier(
                 title = "Starter Landlord",
                 colorHex = "#64748B",
                 progress = 0,
                 hint = "Add your first property to start leveling up"
             )
-
             propertyCount < 3 -> LandlordTier(
                 title = "Growing Landlord",
                 colorHex = "#16A34A",
                 progress = (propertyCount * 100) / 3,
                 hint = "${3 - propertyCount} more to reach Pro Landlord"
             )
-
             propertyCount < 6 -> LandlordTier(
                 title = "Pro Landlord",
                 colorHex = "#F59E0B",
                 progress = (propertyCount * 100) / 6,
                 hint = "${6 - propertyCount} more to reach Elite Landlord"
             )
-
             else -> LandlordTier(
                 title = "Elite Landlord",
                 colorHex = "#7C3AED",

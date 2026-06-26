@@ -153,9 +153,10 @@ Occupied    = ${room.isOccupied}
 
             if (room.isOccupied) {
 
+                // ── Monthly Rent — sirf base rent dikhao (electricity/water alag) ──
                 binding.monthlyRent.text =
                     if (room.monthlyRent > 0)
-                        currencyFormatter.format(room.monthlyRent)
+                        "₹${room.monthlyRent.toLong()}"
                     else
                         "--"
 
@@ -177,8 +178,31 @@ Occupied    = ${room.isOccupied}
                 binding.tvAdvance.text =
                     currencyFormatter.format(room.advance)
 
+                // ── Payment Due from billing_cycles (accurate) ──
                 binding.paymentDue.text =
-                    currencyFormatter.format(room.paymentDue)
+                    if (room.paymentDue > 0)
+                        "₹${room.paymentDue.toLong()}"
+                    else
+                        "₹0"
+
+                // ── Electricity info ──
+                val elecText = when (room.electricityMode.lowercase().trim()) {
+                    "fix", "fixed" -> "Fixed  ₹${room.fixedElectricity.toLong()}"
+                    "meter", "metered" -> "Metered (per use)"
+                    else -> "No Cost"
+                }
+                binding.tvElectricityInfo.text = elecText
+
+                // ── Water info ──
+                val waterText = when (room.waterMode.lowercase().trim()) {
+                    "fix", "fixed" -> "Fixed  ₹${room.fixedWater.toLong()}"
+                    "meter", "metered" -> "Metered (per use)"
+                    else -> "No Cost"
+                }
+                binding.tvWaterInfo.text = waterText
+
+                // ── Total Payable = paymentDue from billing_cycles ──
+                binding.tvTotalPayableCard.text = "₹${room.paymentDue.toLong()}"
             }else {
 
                 binding.monthlyRent.text     = "N/A"
@@ -188,6 +212,9 @@ Occupied    = ${room.isOccupied}
                 binding.nextDueDate.text     = "N/A"
                 binding.tvAdvance.text       = "N/A"
                 binding.paymentDue.text      = "N/A"
+                binding.tvElectricityInfo.text = "N/A"
+                binding.tvWaterInfo.text       = "N/A"
+                binding.tvTotalPayableCard.text = "N/A"
             }
 
             if (room.isOccupied && room.phone.isNotEmpty()) {

@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import com.xvantage.rental.databinding.FragmentTenantsBinding
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.ui.dashboard.TenantListViewModel
 import com.xvantage.rental.ui.dashboard.fragment.adapter.TenantsAdapter
 import kotlinx.coroutines.launch
+import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,8 +67,8 @@ class TenantsFragment : Fragment(){
                 requireContext()
             )
 
-        binding.rvRooms.layoutManager =
-            LinearLayoutManager(requireContext())
+                binding.rvRooms.layoutManager =
+            GridLayoutManager(requireContext(), 2)
 
         binding.rvRooms.adapter =
             tenantsAdapter

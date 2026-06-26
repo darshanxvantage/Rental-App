@@ -12,8 +12,8 @@ import javax.inject.Inject
 data class HomeStats(
     val totalProperties: Int = 0,
     val activeTenants: Int = 0,
-    val totalPayments: Double = 0.0,   // sum of amount (collected)
-    val totalDues: Double = 0.0        // sum of payment_due (pending)
+    val totalPayments: Double = 0.0,  // actual collected (amount field)
+    val totalDues: Double = 0.0       // accurate from billing_cycles
 )
 
 @HiltViewModel
@@ -37,28 +37,32 @@ class HomeViewModel @Inject constructor(
                 else -> {}
             }
 
-            // ── Tenant stats ──
+            // ── Tenant stats from getTenantList (for active count + collected) ──
             var activeTenants = 0
             var totalPayments = 0.0
-            var totalDues     = 0.0
 
             when (val res = repository.getTenantList()) {
                 is ResultWrapper.Success -> {
                     val rows = res.value.data.rows
-
-                    // Active tenants only
                     activeTenants = rows.count {
                         it.status.equals("ACTIVE", ignoreCase = true)
                     }
-
-                    // Total payments = sum of `amount` field (actual collected)
+                    // Total collected = sum of amount field
                     totalPayments = rows.sumOf {
                         it.amount?.toDoubleOrNull() ?: 0.0
                     }
+                }
+                else -> {}
+            }
 
-                    // Total dues = sum of `payment_due` field (pending)
-                    totalDues = rows.sumOf {
-                        it.payment_due?.toDoubleOrNull() ?: 0.0
+            // ── Total dues from getTenantDues (billing_cycles — accurate) ──
+            // This is the SAME source as Due Payments screen
+            // so both screens will always show the same number
+            var totalDues = 0.0
+            when (val res = repository.getTenantDues()) {
+                is ResultWrapper.Success -> {
+                    totalDues = res.value.data.tenants.sumOf {
+                        it.totalDue ?: 0.0
                     }
                 }
                 else -> {}

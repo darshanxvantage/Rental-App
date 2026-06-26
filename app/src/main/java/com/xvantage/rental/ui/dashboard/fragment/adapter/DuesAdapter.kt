@@ -6,18 +6,17 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemDueCardBinding
-import com.xvantage.rental.databinding.ItemDueMonthRowBinding
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.ui.dashboard.fragment.DuesViewModel
 import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
-import android.widget.LinearLayout
-import android.widget.TextView
 
 class DuesAdapter(
     private val context: Context,
@@ -37,10 +36,9 @@ class DuesAdapter(
 
         fun bind(tenant: TenantItem) {
 
-            // ── Tenant basic info ──
+            // ── Basic info ──
             binding.tvTenantName.text = tenant.tenant_name
             binding.tvPhone.text = tenant.phone_number ?: ""
-
             val room = tenant.tenant_details?.room_no ?: "—"
             val property = tenant.tenant_details?.property?.name ?: "—"
             binding.tvRoomProperty.text = "Room $room • $property"
@@ -73,7 +71,7 @@ class DuesAdapter(
             val advance = tenant.advance?.toDoubleOrNull() ?: 0.0
             binding.tvAdvance.text = "₹${advance.toLong()}"
 
-            // ── Due Status (oldest pending month) ──
+            // ── Due Status ──
             val isOverdue = viewModel.isOverdue(tenant)
             binding.tvNextDueDate.text = viewModel.getNextDueLabel(tenant)
             binding.tvNextDueDate.setTextColor(
@@ -81,14 +79,26 @@ class DuesAdapter(
                 else Color.parseColor("#E65100")
             )
 
-            // ── History hint — show only when 2+ months pending ──
+            // ── PRORATED INFO ──
+            // First month me tenant mahine ke beech me aya to
+            // prorated billing dikhao — owner ko pata chale
             val cycles = viewModel.getDueCyclesSorted(tenant)
+            val firstCycle = cycles.firstOrNull()
+
+            if (firstCycle != null && firstCycle.isProrated == true) {
+                binding.llProratedInfo.visibility = View.VISIBLE
+                val days = firstCycle.proratedDays ?: 0
+                binding.tvProratedLabel.text = "First month: $days days billing (prorated)"
+                binding.tvProratedAmount.text = "₹${firstCycle.totalAmount.toLong()}"
+            } else {
+                binding.llProratedInfo.visibility = View.GONE
+            }
+
+            // ── HISTORY HINT (2+ months pending) ──
             if (cycles.size >= 2) {
                 binding.llHistoryHint.visibility = View.VISIBLE
                 binding.tvPendingMonthsCount.text =
-                    "${cycles.size} months pending — tap to view history"
-
-                // Click → open history bottom sheet
+                    "${cycles.size} months pending — tap to view"
                 binding.llHistoryHint.setOnClickListener {
                     showHistoryBottomSheet(tenant)
                 }
@@ -125,7 +135,7 @@ class DuesAdapter(
             // ── Total Payable ──
             binding.tvTotalPayable.text = "₹${due.toLong()}"
 
-            // ── Collect Rent button ──
+            // ── Collect Rent ──
             binding.btnCollect.setOnClickListener {
                 val intent = Intent(context, ReceivePaymentActivity::class.java).apply {
                     putExtra("tenantId", tenant.id)
@@ -147,47 +157,37 @@ class DuesAdapter(
             }
         }
 
-        // ════════════════════════════════════════
-        // HISTORY BOTTOM SHEET
-        // ════════════════════════════════════════
         private fun showHistoryBottomSheet(tenant: TenantItem) {
             val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(context)
                 .inflate(R.layout.bottomsheet_due_history, null)
             dialog.setContentView(view)
 
-            // Header
-            view.findViewById<TextView>(R.id.tvHistoryTenantName)?.text =
-                tenant.tenant_name
+            view.findViewById<TextView>(R.id.tvHistoryTenantName)?.text = tenant.tenant_name
             view.findViewById<TextView>(R.id.tvHistoryRoomProperty)?.text =
                 "Room ${tenant.tenant_details?.room_no ?: "—"} • ${tenant.tenant_details?.property?.name ?: "—"}"
             view.findViewById<TextView>(R.id.tvHistoryTotalDue)?.text =
                 "₹${viewModel.getTotalDue(tenant).toLong()}"
 
-            // Month list
             val llMonthList = view.findViewById<LinearLayout>(R.id.llHistoryMonthList)
             llMonthList?.removeAllViews()
 
             val cycles = viewModel.getDueCyclesSorted(tenant)
-
             cycles.forEach { cycle ->
                 val rowView = LayoutInflater.from(context)
                     .inflate(R.layout.item_due_month_row, llMonthList, false)
 
-                // Month label
-                rowView.findViewById<TextView>(R.id.tvMonthLabel)?.text =
-                    cycle.monthLabel
-
-                // Amount
+                var monthLabel = cycle.monthLabel
+                if (cycle.isProrated == true) {
+                    monthLabel += " (${cycle.proratedDays} days)"
+                }
+                rowView.findViewById<TextView>(R.id.tvMonthLabel)?.text = monthLabel
                 rowView.findViewById<TextView>(R.id.tvMonthAmount)?.text =
                     "₹${cycle.amountDue.toLong()}"
 
-                // Overdue tag
                 val overdueTag = rowView.findViewById<TextView>(R.id.tvMonthOverdueTag)
-                overdueTag?.visibility =
-                    if (cycle.isOverdue) View.VISIBLE else View.GONE
+                overdueTag?.visibility = if (cycle.isOverdue) View.VISIBLE else View.GONE
 
-                // Status badge + dot color
                 val statusBadge = rowView.findViewById<TextView>(R.id.tvMonthStatus)
                 val dot = rowView.findViewById<View>(R.id.viewMonthDot)
 
@@ -219,7 +219,6 @@ class DuesAdapter(
                 llMonthList?.addView(rowView)
             }
 
-            // Close button
             view.findViewById<MaterialButton>(R.id.btnCloseHistory)
                 ?.setOnClickListener { dialog.dismiss() }
 
