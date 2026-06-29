@@ -59,6 +59,12 @@ class ProfileFragment : Fragment() {
         const val IMAGE_PICK_CODE = 1001
     }
 
+    override fun onResume() {
+        super.onResume()
+        profileViewModel.loadDashboardData()
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -66,6 +66,7 @@ data class TenantItem(
     val tenant_details: TenantRoomDetails?,
 
     val dueCycles: List<DueCycle>? = null,
+    val allCycles: List<DueCycle>? = null,
     val totalDue: Double? = null,
     val hasOverdue: Boolean? = null,
     val dueMonthsCount: Int? = null
@@ -76,6 +77,9 @@ data class DueCycle(
     val cycleMonth: String,
     val monthLabel: String,
     val dueDate: String,
+    val rentAmount: Double = 0.0,
+    val electricityAmount: Double = 0.0,
+    val waterAmount: Double = 0.0,
     val totalAmount: Double,
     val amountPaid: Double,
     val amountDue: Double,

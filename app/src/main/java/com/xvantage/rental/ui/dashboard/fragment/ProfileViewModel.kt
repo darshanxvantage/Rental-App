@@ -28,10 +28,13 @@ class ProfileViewModel @Inject constructor(
     val propertyCount = MutableStateFlow(0)
     val tenantCount   = MutableStateFlow(0)
 
+
     val revenueTotal = MutableStateFlow(0.0)
 
+    // Total collected = actual payments received (amount field)
     val collectedTotal = MutableStateFlow(0.0)
 
+    // Total pending = billing_cycles se accurate dues
     val pendingTotal = MutableStateFlow(0.0)
 
     val landlordTier: StateFlow<LandlordTier> =
@@ -45,30 +48,23 @@ class ProfileViewModel @Inject constructor(
     fun loadDashboardData() {
         viewModelScope.launch {
 
-            // ── Properties count ──
+
             when (val res = repository.getPropertyList()) {
-                is ResultWrapper.Success -> {
+                is ResultWrapper.Success ->
                     propertyCount.value = res.value.data.totalItems
-                }
                 else -> {}
             }
 
-            // ── Tenant data — active count, revenue, collected ──
+
             when (val res = repository.getTenantList()) {
                 is ResultWrapper.Success -> {
                     val rows = res.value.data.rows
-                    val activeTenants = rows.filter {
+                    val active = rows.filter {
                         it.status?.uppercase() == "ACTIVE"
                     }
+                    tenantCount.value = active.size
 
-                    tenantCount.value = activeTenants.size
-
-                    // Monthly rent total (what should come in every month)
-                    revenueTotal.value = activeTenants.sumOf {
-                        it.rent?.toDoubleOrNull() ?: 0.0
-                    }
-
-                    // Total actually collected
+                    // Actual collected payments
                     collectedTotal.value = rows.sumOf {
                         it.amount?.toDoubleOrNull() ?: 0.0
                     }
@@ -76,12 +72,16 @@ class ProfileViewModel @Inject constructor(
                 else -> {}
             }
 
-            // ✅ Pending dues from billing_cycles
-            // SAME API as Due Payments screen
-            // Home page + Profile page + Due screen — all show SAME number
             when (val res = repository.getTenantDues()) {
                 is ResultWrapper.Success -> {
-                    pendingTotal.value = res.value.data.tenants.sumOf {
+                    val tenants = res.value.data.tenants
+
+
+                    revenueTotal.value = tenants.sumOf { tenant ->
+                        tenant.rent?.toDoubleOrNull() ?: 0.0
+                    }
+
+                    pendingTotal.value = tenants.sumOf {
                         it.totalDue ?: 0.0
                     }
                 }

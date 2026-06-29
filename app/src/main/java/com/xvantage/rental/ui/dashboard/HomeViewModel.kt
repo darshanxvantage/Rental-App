@@ -12,8 +12,8 @@ import javax.inject.Inject
 data class HomeStats(
     val totalProperties: Int = 0,
     val activeTenants: Int = 0,
-    val totalPayments: Double = 0.0,  // actual collected (amount field)
-    val totalDues: Double = 0.0       // accurate from billing_cycles
+    val totalPayments: Double = 0.0,
+    val totalDues: Double = 0.0
 )
 
 @HiltViewModel
@@ -28,26 +28,23 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading.value = true
 
-            // ── Properties count ──
+            // ── Properties ──
             var propertyCount = 0
             when (val res = repository.getPropertyList()) {
-                is ResultWrapper.Success -> {
+                is ResultWrapper.Success ->
                     propertyCount = res.value.data.rows.size
-                }
                 else -> {}
             }
 
-            // ── Tenant stats from getTenantList (for active count + collected) ──
-            var activeTenants = 0
-            var totalPayments = 0.0
-
+            // ── Active tenants + collected payments ──
+            var activeTenants  = 0
+            var totalPayments  = 0.0
             when (val res = repository.getTenantList()) {
                 is ResultWrapper.Success -> {
                     val rows = res.value.data.rows
                     activeTenants = rows.count {
                         it.status.equals("ACTIVE", ignoreCase = true)
                     }
-                    // Total collected = sum of amount field
                     totalPayments = rows.sumOf {
                         it.amount?.toDoubleOrNull() ?: 0.0
                     }
@@ -55,9 +52,6 @@ class HomeViewModel @Inject constructor(
                 else -> {}
             }
 
-            // ── Total dues from getTenantDues (billing_cycles — accurate) ──
-            // This is the SAME source as Due Payments screen
-            // so both screens will always show the same number
             var totalDues = 0.0
             when (val res = repository.getTenantDues()) {
                 is ResultWrapper.Success -> {

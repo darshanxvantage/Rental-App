@@ -22,67 +22,70 @@ class TakeRentViewModel @Inject constructor(
     val isLoading    = MutableStateFlow(false)
     val errorMsg     = MutableStateFlow<String?>(null)
 
-    // Set whenever a "Generate Invoice" tap successfully produces the
-    // complete tenant statement PDF — the Activity observes this to
-    // open/download the file, then resets it back to null.
-    val statementFilePath = MutableStateFlow<String?>(null)
-    val isGeneratingStatement = MutableStateFlow(false)
+    val statementFilePath      = MutableStateFlow<String?>(null)
+    val isGeneratingStatement  = MutableStateFlow(false)
 
     fun generateCompleteStatement(tenantId: String) {
         viewModelScope.launch {
             isGeneratingStatement.value = true
             when (val result = repository.generateCompleteStatement(tenantId)) {
-                is ResultWrapper.Success -> {
-                    statementFilePath.value = result.value.data.filePath
-                }
-                is ResultWrapper.Error -> {
-                    errorMsg.value = result.message
-                }
+                is ResultWrapper.Success -> statementFilePath.value = result.value.data.filePath
+                is ResultWrapper.Error   -> errorMsg.value = result.message
                 else -> {}
             }
             isGeneratingStatement.value = false
         }
     }
 
-    fun clearStatementFilePath() {
-        statementFilePath.value = null
-    }
+    fun clearStatementFilePath() { statementFilePath.value = null }
 
     fun loadData() {
         viewModelScope.launch {
             isLoading.value = true
 
-
             val propertyDeferred = async { repository.getPropertyList() }
             val tenantDeferred   = async { repository.getTenantList() }
+            val duesDeferred     = async { repository.getTenantDues() }
 
             val propertyResult = propertyDeferred.await()
             val tenantResult   = tenantDeferred.await()
+            val duesResult     = duesDeferred.await()
 
             when (propertyResult) {
-                is ResultWrapper.Success -> {
-                    propertyList.value = propertyResult.value.data.rows
-                    android.util.Log.d("TakeRent", "Properties loaded: ${propertyList.value.size}")
-                }
-                else -> {
-                    errorMsg.value = "Failed to load properties"
-                    android.util.Log.e("TakeRent", "Property load failed: $propertyResult")
-                }
+                is ResultWrapper.Success -> propertyList.value = propertyResult.value.data.rows
+                else -> errorMsg.value = "Failed to load properties"
             }
 
             when (tenantResult) {
                 is ResultWrapper.Success -> {
-                    tenantList.value = tenantResult.value.data.rows
-                    android.util.Log.d("TakeRent", "Tenants loaded: ${tenantList.value.size}")
-                    tenantList.value.forEach { t ->
-                        android.util.Log.d("TakeRent",
-                            "Tenant: ${t.tenant_name} | property_fk: ${t.property_fk} | room: ${t.tenant_details?.room_no} | status: ${t.status}")
+                    val tenants = tenantResult.value.data.rows.toMutableList()
+
+                    if (duesResult is ResultWrapper.Success) {
+                        val duesMap = duesResult.value.data.tenants.associateBy { it.id }
+
+                        val merged = tenants.map { tenant ->
+                            val dueData = duesMap[tenant.id]
+                            if (dueData != null) {
+                                tenant.copy(
+
+                                    payment_due = (dueData.totalDue ?: 0.0).toString(),
+
+
+                                    rent_end_date = dueData.dueCycles
+                                        ?.firstOrNull()
+                                        ?.dueDate
+                                        ?: tenant.rent_end_date
+                                )
+                            } else {
+                                tenant
+                            }
+                        }
+                        tenantList.value = merged
+                    } else {
+                        tenantList.value = tenants
                     }
                 }
-                else -> {
-                    errorMsg.value = "Failed to load tenants"
-                    android.util.Log.e("TakeRent", "Tenant load failed: $tenantResult")
-                }
+                else -> errorMsg.value = "Failed to load tenants"
             }
 
             isLoading.value = false

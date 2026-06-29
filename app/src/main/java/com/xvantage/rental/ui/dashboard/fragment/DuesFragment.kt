@@ -106,7 +106,7 @@ class DuesFragment : Fragment() {
                 val listToShow = when (currentTab) {
                     TAB_OVERDUE -> viewModel.getOverdueTenants()
                     TAB_NO_DUE  -> viewModel.getNoDueTenants()
-                    else        -> tenants
+                    else -> tenants.filter { (it.totalDue ?: 0.0) > 0.0 }
                 }
                 showList(listToShow)
             }

@@ -1,6 +1,6 @@
 package com.xvantage.rental.ui.takeRent.activity
 
-import   android.os.Bundle
+import    android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat

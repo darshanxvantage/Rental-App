@@ -36,10 +36,15 @@ class DuesViewModel @Inject constructor(
     }
 
     fun getElectricityInfo(tenant: TenantItem): Pair<String, String> {
-        return when (tenant.fixed_electricity?.trim()?.lowercase()) {
+        val mode = tenant.fixed_electricity?.trim()?.lowercase()
+        val currentCycle = tenant.dueCycles?.firstOrNull()
+
+        return when (mode) {
             "no cost", "no_cost", "none" -> Pair("No Cost", "₹0")
             "fix", "fixed" -> {
-                val amt = tenant.fixed_electricity_amount?.toDoubleOrNull() ?: 0.0
+                val amt = currentCycle?.electricityAmount
+                    ?: tenant.fixed_electricity_amount?.toDoubleOrNull()
+                    ?: 0.0
                 Pair("Fixed", "₹${amt.toLong()}")
             }
             "meter", "metered" -> Pair("Metered", "Per usage")
@@ -48,10 +53,15 @@ class DuesViewModel @Inject constructor(
     }
 
     fun getWaterInfo(tenant: TenantItem): Pair<String, String> {
-        return when (tenant.fixed_waterbill?.trim()?.lowercase()) {
+        val mode = tenant.fixed_waterbill?.trim()?.lowercase()
+        val currentCycle = tenant.dueCycles?.firstOrNull()
+
+        return when (mode) {
             "no cost", "no_cost", "none" -> Pair("No Cost", "₹0")
             "fix", "fixed" -> {
-                val amt = tenant.fixed_waterbill_amount?.toDoubleOrNull() ?: 0.0
+                val amt = currentCycle?.waterAmount
+                    ?: tenant.fixed_waterbill_amount?.toDoubleOrNull()
+                    ?: 0.0
                 Pair("Fixed", "₹${amt.toLong()}")
             }
             "meter", "metered" -> Pair("Metered", "Per usage")
@@ -74,6 +84,9 @@ class DuesViewModel @Inject constructor(
 
     fun getDueCyclesSorted(tenant: TenantItem) =
         tenant.dueCycles.orEmpty().sortedBy { it.cycleMonth }
+
+    fun getAllCyclesSorted(tenant: TenantItem) =
+        tenant.allCycles.orEmpty().sortedBy { it.cycleMonth }
 
     // ─────────── FILTER HELPERS (tab switching) ───────────
 

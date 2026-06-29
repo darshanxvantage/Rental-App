@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.xvantage.rental.ui.addProperty.activity.AddPropertyActivity
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentHomeBinding
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
@@ -116,7 +117,10 @@ class HomeFragment : Fragment() {
             CommonFunction().navigation(requireContext(), AddTenantActivity::class.java)
         }
         binding.cvQuickAction.cvAddProperty.setOnClickListener {
-            CommonFunction().navigation(requireContext(), ManagePropertyActivity::class.java)
+            CommonFunction().navigation(
+                requireContext(),
+                AddPropertyActivity::class.java
+            )
         }
         binding.tvViewAllTenant.setOnClickListener {
             CommonFunction().navigation(requireContext(), TenantListActivity::class.java)

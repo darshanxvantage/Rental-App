@@ -79,9 +79,6 @@ class DuesAdapter(
                 else Color.parseColor("#E65100")
             )
 
-            // ── PRORATED INFO ──
-            // First month me tenant mahine ke beech me aya to
-            // prorated billing dikhao — owner ko pata chale
             val cycles = viewModel.getDueCyclesSorted(tenant)
             val firstCycle = cycles.firstOrNull()
 
@@ -94,11 +91,15 @@ class DuesAdapter(
                 binding.llProratedInfo.visibility = View.GONE
             }
 
-            // ── HISTORY HINT (2+ months pending) ──
-            if (cycles.size >= 2) {
+
+            val allCycles = viewModel.getAllCyclesSorted(tenant)
+            if (allCycles.isNotEmpty()) {
                 binding.llHistoryHint.visibility = View.VISIBLE
-                binding.tvPendingMonthsCount.text =
-                    "${cycles.size} months pending — tap to view"
+                binding.tvPendingMonthsCount.text = when {
+                    cycles.isEmpty() -> "View payment history"
+                    cycles.size == 1 -> "1 month pending — tap to view history"
+                    else -> "${cycles.size} months pending — tap to view history"
+                }
                 binding.llHistoryHint.setOnClickListener {
                     showHistoryBottomSheet(tenant)
                 }
@@ -172,7 +173,7 @@ class DuesAdapter(
             val llMonthList = view.findViewById<LinearLayout>(R.id.llHistoryMonthList)
             llMonthList?.removeAllViews()
 
-            val cycles = viewModel.getDueCyclesSorted(tenant)
+            val cycles = viewModel.getAllCyclesSorted(tenant)
             cycles.forEach { cycle ->
                 val rowView = LayoutInflater.from(context)
                     .inflate(R.layout.item_due_month_row, llMonthList, false)
