@@ -27,7 +27,7 @@ class ManagePropertyAdapter(
 
     interface OnRoomItemClickListener {
         fun onRoomClick(roomNumber: String, position: Int)
-        fun onAddTenantClick(roomNumber: String, position: Int)
+        fun onAddTenantClick(room: PropertyRoom, position: Int)
     }
 
     inner class ManagePropertyViewHolder(
@@ -83,7 +83,7 @@ class ManagePropertyAdapter(
             itemBinding.btnAddTenant.setOnClickListener {
 
                 listener.onAddTenantClick(
-                    room.room_no,
+                    room,
                     position
                 )
             }

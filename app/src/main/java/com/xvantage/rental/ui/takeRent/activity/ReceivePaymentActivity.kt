@@ -10,6 +10,12 @@ import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityReceivePaymentBinding
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
+import android.app.Dialog
+import android.view.Window
+import android.view.WindowManager
+import android.widget.TextView
+import com.google.android.material.button.MaterialButton
+import com.xvantage.rental.network.response.PaymentSummary
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -340,29 +346,22 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
                     is ResultWrapper.Success -> {
 
+                        Log.d("PAYMENT_POPUP", "SUCCESS")
+
                         layoutBinding.btnRcvPayment.isEnabled = true
                         layoutBinding.toolbar.btnSave.isEnabled = true
 
-                        Toast.makeText(
-                            this@ReceivePaymentActivity,
-                            "Payment received successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val paymentSummary =
+                            result.value.data.paymentSummary
 
-                        RentalNotificationHelper.showPaymentReceived(
-                            context = this@ReceivePaymentActivity,
-                            tenantName = tenantName,
-                            amount = rentAmount
-                        )
+                        showPaymentSuccessDialog(paymentSummary)
 
-                        setResult(RESULT_OK)
-
-                        finish()
                     }
 
                     is ResultWrapper.Error -> {
 
                         layoutBinding.btnRcvPayment.isEnabled = true
+
                         layoutBinding.toolbar.btnSave.isEnabled = true
 
                         Toast.makeText(
@@ -380,6 +379,122 @@ class ReceivePaymentActivity : AppCompatActivity() {
             }
 
         }
+
+    }
+
+    private fun showPaymentSuccessDialog(
+        payment: PaymentSummary
+    ) {
+
+        Log.d("PAYMENT_POPUP", "DIALOG OPEN")
+
+        val dialog = Dialog(this)
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+
+        dialog.setContentView(R.layout.dialog_payment_success)
+
+        dialog.setCancelable(false)
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.window?.setLayout(
+
+            WindowManager.LayoutParams.MATCH_PARENT,
+
+            WindowManager.LayoutParams.WRAP_CONTENT
+
+        )
+
+        val tvAmount =
+            dialog.findViewById<TextView>(R.id.tvAmountReceived)
+
+        val tvPrevious =
+            dialog.findViewById<TextView>(R.id.tvPreviousDue)
+
+        val tvRemaining =
+            dialog.findViewById<TextView>(R.id.tvRemainingDue)
+
+        val tvStatus =
+            dialog.findViewById<TextView>(R.id.tvStatus)
+
+        val btnDone =
+            dialog.findViewById<MaterialButton>(R.id.btnDone)
+
+        tvAmount.text =
+            formatAmount(payment.amountReceived)
+
+        tvPrevious.text =
+            formatAmount(payment.previousDue)
+
+        tvRemaining.text =
+            formatAmount(payment.remainingDue)
+
+        if (payment.isFullyPaid) {
+
+            tvStatus.text =
+                "Tenant dues cleared.\nNo pending amount remaining."
+
+            tvStatus.setTextColor(
+
+                getColor(R.color.green)
+
+            )
+
+        } else {
+
+            tvStatus.text =
+                "${formatAmount(payment.remainingDue)} is still pending.\nPlease collect the remaining amount later."
+
+            tvStatus.setTextColor(
+
+                getColor(R.color.red)
+
+            )
+
+        }
+
+        btnDone.setOnClickListener {
+
+            RentalNotificationHelper.showPaymentReceived(
+
+                context = this,
+
+                tenantName = tenantName,
+
+                amount = rentAmount
+
+            )
+
+            val resultIntent = intent.apply {
+
+                putExtra("payment_updated", true)
+
+            }
+
+            setResult(
+
+                RESULT_OK,
+
+                resultIntent
+
+            )
+
+            dialog.dismiss()
+
+            finish()
+
+        }
+
+        dialog.show()
+
+    }
+
+    private fun formatAmount(
+        amount: Double
+    ): String {
+
+        return "₹%,.0f".format(amount)
 
     }
 

@@ -85,13 +85,18 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.homeStats.collect { stats ->
 
-                // Total Payments → tvPaymentCount in total_payment_card
+                requireView().findViewById<TextView>(R.id.tvPropertyCount)
+                    ?.text = stats.totalProperties.toString()
+
+                requireView().findViewById<TextView>(R.id.tvTenantCount)
+                    ?.text = stats.activeTenants.toString()
+
                 requireView().findViewById<TextView>(R.id.tvPaymentCount)
                     ?.text = formatRupees(stats.totalPayments)
 
-                // Due Payments → tvDueCount in due_payment_card
                 requireView().findViewById<TextView>(R.id.tvDueCount)
                     ?.text = formatRupees(stats.totalDues)
+
             }
         }
     }
@@ -146,8 +151,6 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             propertyViewModel.propertyList.collect {
                 propertiesAdapter.addItems(it)
-                requireView().findViewById<TextView>(R.id.tvPropertyCount)
-                    ?.text = it.size.toString()
             }
         }
     }
@@ -164,11 +167,6 @@ class HomeFragment : Fragment() {
             tenantViewModel.tenantList.collect {
                 tenantsAdapter.addItems(it)
                 // Active tenants only count
-                val activeCount = it.count { t ->
-                    t.status.equals("ACTIVE", ignoreCase = true)
-                }
-                requireView().findViewById<TextView>(R.id.tvTenantCount)
-                    ?.text = activeCount.toString()
             }
         }
     }

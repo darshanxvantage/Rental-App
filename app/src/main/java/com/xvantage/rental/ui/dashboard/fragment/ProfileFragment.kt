@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.widget.TextView
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -197,14 +198,15 @@ class ProfileFragment : Fragment() {
     private fun showRevenueDialog() {
         viewLifecycleOwner.lifecycleScope.launch {
 
-            val monthly   = profileViewModel.revenueTotal.value
+            val monthly = profileViewModel.monthlyRentTotal.value
+
             val collected = profileViewModel.collectedTotal.value
-            val pending   = profileViewModel.pendingTotal.value
 
+            val pending = profileViewModel.pendingTotal.value
 
-            val rate = if (monthly > 0)
-                ((collected / monthly) * 100).toInt().coerceIn(0, 100)
-            else 0
+            val rate = profileViewModel.collectionRate.value
+
+            val lifetime = profileViewModel.lifetimeRevenue.value
 
 
             val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(
@@ -230,6 +232,8 @@ class ProfileFragment : Fragment() {
                 ?.text = formatRupees(pending)
             view.findViewById<android.widget.TextView>(R.id.tvCollectionRate)
                 ?.text = "$rate%"
+            view.findViewById<TextView>(R.id.tvLifetimeRevenue)
+                ?.text = formatRupees(lifetime)
 
 
             val pb = view.findViewById<android.widget.ProgressBar>(R.id.pbCollection)

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.core.view.WindowCompat
+import com.xvantage.rental.network.response.PropertyRoom
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityManagePropertyBinding
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
@@ -12,6 +13,8 @@ import com.xvantage.rental.ui.manageProperty.adapter.ManagePropertyAdapter
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.app.Dialog
+import com.xvantage.rental.databinding.DialogRoomOccupiedBinding
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.xvantage.rental.ui.manageProperty.adapter.PropertyGroupAdapter
@@ -108,8 +111,23 @@ class ManagePropertyActivity :
         CommonFunction().toast(this, "$roomNumber Clicked")
     }
 
-    override fun onAddTenantClick(roomNumber: String, position: Int) {
-        CommonFunction().navigation(this, AddTenantActivity::class.java)
+    override fun onAddTenantClick(
+        room: PropertyRoom,
+        position: Int
+    ) {
+
+        if (room.status.contains("OCCUP", true)) {
+
+            showOccupiedPopup(room)
+
+        } else {
+
+            CommonFunction().navigation(
+                this,
+                AddTenantActivity::class.java
+            )
+
+        }
     }
 
     override fun onEditProperty(property: PropertyItem) {
@@ -183,5 +201,36 @@ class ManagePropertyActivity :
             .setCancelable(true)
 
             .show()
+    }
+    private fun showOccupiedPopup(room: PropertyRoom) {
+
+        val dialog = Dialog(this)
+
+        val binding =
+            DialogRoomOccupiedBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+
+        dialog.setCancelable(true)
+
+        binding.tvRoomNo.text =
+            "Room ${room.room_no}"
+
+        binding.tvMessage.text =
+            "This room is already occupied."
+
+        binding.btnAnotherRoom.setOnClickListener {
+
+            dialog.dismiss()
+
+        }
+
+        binding.btnCancel.setOnClickListener {
+
+            dialog.dismiss()
+
+        }
+
+        dialog.show()
     }
 }

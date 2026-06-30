@@ -37,6 +37,12 @@ class ProfileViewModel @Inject constructor(
     // Total pending = billing_cycles se accurate dues
     val pendingTotal = MutableStateFlow(0.0)
 
+    val monthlyRentTotal = MutableStateFlow(0.0)
+
+    val collectionRate = MutableStateFlow(0)
+
+    val lifetimeRevenue = MutableStateFlow(0.0)
+
     val landlordTier: StateFlow<LandlordTier> =
         propertyCount.map { count -> computeTier(count) }
             .stateIn(
@@ -46,45 +52,32 @@ class ProfileViewModel @Inject constructor(
             )
 
     fun loadDashboardData() {
+
         viewModelScope.launch {
 
+            when (val res = repository.getDashboard()) {
 
-            when (val res = repository.getPropertyList()) {
-                is ResultWrapper.Success ->
-                    propertyCount.value = res.value.data.totalItems
-                else -> {}
-            }
-
-
-            when (val res = repository.getTenantList()) {
                 is ResultWrapper.Success -> {
-                    val rows = res.value.data.rows
-                    val active = rows.filter {
-                        it.status?.uppercase() == "ACTIVE"
-                    }
-                    tenantCount.value = active.size
 
-                    // Actual collected payments
-                    collectedTotal.value = rows.sumOf {
-                        it.amount?.toDoubleOrNull() ?: 0.0
-                    }
+                    val dashboard = res.value.data
+
+                    propertyCount.value = dashboard.totalProperties
+
+                    tenantCount.value = dashboard.totalTenants
+
+                    revenueTotal.value = dashboard.monthlyRentTotal
+
+                    monthlyRentTotal.value = dashboard.monthlyRentTotal
+
+                    collectedTotal.value = dashboard.monthCollected
+
+                    pendingTotal.value = dashboard.monthPending
+
+                    collectionRate.value = dashboard.collectionRatePercent
+
+                    lifetimeRevenue.value = dashboard.lifetimeRevenue
                 }
-                else -> {}
-            }
 
-            when (val res = repository.getTenantDues()) {
-                is ResultWrapper.Success -> {
-                    val tenants = res.value.data.tenants
-
-
-                    revenueTotal.value = tenants.sumOf { tenant ->
-                        tenant.rent?.toDoubleOrNull() ?: 0.0
-                    }
-
-                    pendingTotal.value = tenants.sumOf {
-                        it.totalDue ?: 0.0
-                    }
-                }
                 else -> {}
             }
         }

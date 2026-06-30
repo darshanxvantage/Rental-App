@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentDuesBinding
 import com.xvantage.rental.network.response.TenantItem
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Intent
+import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
 import com.xvantage.rental.ui.dashboard.fragment.adapter.DuesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,11 +31,24 @@ class DuesFragment : Fragment() {
     // Track which tab is active
     private var currentTab = TAB_ALL
 
+    private val paymentLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+
+                viewModel.loadDues()
+
+            }
+
+        }
+
     companion object {
         private const val TAB_ALL     = 0
         private const val TAB_OVERDUE = 1
         private const val TAB_NO_DUE  = 2
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +76,31 @@ class DuesFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = DuesAdapter(requireContext(), viewModel)
+        adapter = DuesAdapter(
+            requireContext(),
+            viewModel
+        ) { tenant ->
+
+            val intent = Intent(
+                requireContext(),
+                ReceivePaymentActivity::class.java
+            )
+
+            intent.putExtra("tenantId", tenant.id)
+            intent.putExtra("tenantName", tenant.tenant_name)
+            intent.putExtra("roomId", tenant.room_fk)
+            intent.putExtra("propertyName", tenant.tenant_details?.property?.name ?: "")
+            intent.putExtra("monthlyRent", tenant.rent?.toDoubleOrNull() ?: 0.0)
+            intent.putExtra("totalPayable", tenant.totalDue ?: 0.0)
+            intent.putExtra("electricityMode", tenant.fixed_electricity ?: "")
+            intent.putExtra("waterMode", tenant.fixed_waterbill ?: "")
+            intent.putExtra("lastMeterReading", tenant.last_meter_reading ?: "")
+            intent.putExtra("lastWaterReading", tenant.last_meter_reading_water ?: "")
+            intent.putExtra("costPerUnit", tenant.cost_per_unit ?: "")
+            intent.putExtra("costUnitWater", tenant.cost_unit_water ?: "")
+
+            paymentLauncher.launch(intent)
+        }
         binding.rvDues.layoutManager = LinearLayoutManager(requireContext())
         binding.rvDues.adapter = adapter
     }

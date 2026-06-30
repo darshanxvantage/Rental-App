@@ -13,6 +13,8 @@ import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
 import com.xvantage.rental.network.response.TenantDuesResponse
 import com.xvantage.rental.network.response.InvoiceHistoryResponse
+import com.xvantage.rental.network.response.PaymentSuccessResponse
+import com.xvantage.rental.network.response.DashboardResponse
 import com.xvantage.rental.network.response.StatementResponse
 import com.xvantage.rental.network.request.tenant.StatusRequest
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
@@ -81,6 +83,11 @@ interface   APIInterface {
 
     @GET("landlord/tenant/dues")
     suspend fun getTenantDues(): Response<TenantDuesResponse>
+
+    @GET("landlord/tenant/dashboard")
+    suspend fun getDashboard(
+        @Query("month") month: String? = null
+    ): Response<DashboardResponse>
 
     @GET("landlord/tenant/invoices")
     suspend fun getInvoiceHistory(
@@ -167,7 +174,7 @@ interface   APIInterface {
         @Body
         request: TenantPaymentRequest
 
-    ): Response<JsonObject>
+    ): Response<PaymentSuccessResponse>
 
 
     @DELETE("landlord/property/{propertyId}")

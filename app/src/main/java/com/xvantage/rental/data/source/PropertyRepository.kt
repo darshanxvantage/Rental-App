@@ -12,9 +12,11 @@ import com.xvantage.rental.network.response.PropertyType
 import com.xvantage.rental.network.utils.ApiLogger
 import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
+import com.xvantage.rental.network.response.DashboardResponse
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
+import com.xvantage.rental.network.response.PaymentSuccessResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType
@@ -367,6 +369,24 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
         }
     }
 
+    suspend fun getDashboard(
+        month: String? = null
+    ): ResultWrapper<DashboardResponse> {
+
+        return try {
+
+            val response = apiInterface.getDashboard(month)
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
+        }
+    }
+
     suspend fun getInvoiceHistory(
         tenantId: String? = null
     ): ResultWrapper<InvoiceHistoryResponse> {
@@ -454,7 +474,7 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
         request: TenantPaymentRequest
 
-    ): ResultWrapper<JsonObject> {
+    ): ResultWrapper<PaymentSuccessResponse> {
 
         return try {
 

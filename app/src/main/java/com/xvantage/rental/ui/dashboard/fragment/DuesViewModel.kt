@@ -24,7 +24,11 @@ class DuesViewModel @Inject constructor(
             isLoading.value = true
             when (val result = repository.getTenantDues()) {
                 is ResultWrapper.Success -> {
-                    allTenants.value = result.value.data.tenants
+                    allTenants.value = result.value.data.tenants.filter {
+
+                        (it.totalDue ?: 0.0) > 0.0
+
+                    }
                 }
                 is ResultWrapper.Error -> {
                     errorMsg.value = result.message
@@ -91,10 +95,17 @@ class DuesViewModel @Inject constructor(
     // ─────────── FILTER HELPERS (tab switching) ───────────
 
     fun getTotalDuesAcrossAllTenants(): Double =
-        allTenants.value.sumOf { it.totalDue ?: 0.0 }
+        allTenants.value
+            .filter { (it.totalDue ?: 0.0) > 0.0 }
+            .sumOf { it.totalDue ?: 0.0 }
 
     fun getOverdueTenants(): List<TenantItem> =
-        allTenants.value.filter { it.hasOverdue == true }
+        allTenants.value.filter {
+
+            it.hasOverdue == true &&
+                    (it.totalDue ?: 0.0) > 0.0
+
+        }
 
     fun getNoDueTenants(): List<TenantItem> =
         allTenants.value.filter { (it.totalDue ?: 0.0) <= 0.0 }

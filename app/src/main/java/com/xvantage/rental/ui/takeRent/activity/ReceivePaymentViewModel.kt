@@ -2,10 +2,10 @@ package com.xvantage.rental.ui.takeRent.activity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.JsonObject
 import com.xvantage.rental.data.source.PropertyRepository
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.utils.ResultWrapper
+import com.xvantage.rental.network.response.PaymentSuccessResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ class ReceivePaymentViewModel @Inject constructor(
     val isLoading = MutableStateFlow(false)
 
     val paymentResult =
-        MutableStateFlow<ResultWrapper<JsonObject>?>(null)
+        MutableStateFlow<ResultWrapper<PaymentSuccessResponse>?>(null)
 
     fun receivePayment(
         request: TenantPaymentRequest
