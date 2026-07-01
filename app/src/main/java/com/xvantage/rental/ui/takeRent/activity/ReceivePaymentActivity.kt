@@ -33,8 +33,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
     private val viewModel: ReceivePaymentViewModel by viewModels()
     private lateinit var rentAmount: String
     private lateinit var rentRcvDate: String
-    private lateinit var fromDate: String
-    private lateinit var toDate: String
     private lateinit var note: String
     private lateinit var paymentMode: String
     private var electricityMeterReading: String? = null
@@ -94,17 +92,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
         ).format(java.util.Date())
 
         layoutBinding.etRentRcvDate.setText(today)
-
-        layoutBinding.etFromDate.setText(today)
-        val calendar = java.util.Calendar.getInstance()
-        calendar.add(java.util.Calendar.MONTH, 1)
-
-        val nextMonth = java.text.SimpleDateFormat(
-            "yyyy-MM-dd",
-            java.util.Locale.getDefault()
-        ).format(calendar.time)
-
-        layoutBinding.etToDate.setText(nextMonth)
 
 
         layoutBinding.rbCash.isChecked = true
@@ -195,10 +182,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
                     rent_receive_date = rentRcvDate,
 
-                    rent_start_date = fromDate,
-
-                    rent_end_date = toDate,
-
                     payment_mode = paymentMode,
 
                     note = note,
@@ -231,31 +214,13 @@ class ReceivePaymentActivity : AppCompatActivity() {
                 }
             )
         }
-        layoutBinding.etFromDate.setOnClickListener {
-            CommonFunction().showDatePickerDialog(
-                context = this,
-                onDateSelected = { selectedDate ->
-                    layoutBinding.etFromDate.setText(selectedDate)
-                }
-            )
-        }
-        layoutBinding.etToDate.setOnClickListener {
-            CommonFunction().showDatePickerDialog(
-                context = this,
-                onDateSelected = { selectedDate ->
-                    layoutBinding.etToDate.setText(selectedDate)
-                }
-            )
-        }
 
     }
 
     private fun validateFields(): Boolean {
         val basicValid =
             validateEditText(layoutBinding.etRentAmount, getString(R.string.rent_amount_required)) &&
-                    validateEditText(layoutBinding.etRentRcvDate, getString(R.string.rent_receive_date_required)) &&
-                    validateEditText(layoutBinding.etFromDate, getString(R.string.from_date_required)) &&
-                    validateEditText(layoutBinding.etToDate, getString(R.string.to_date_required))
+                    validateEditText(layoutBinding.etRentRcvDate, getString(R.string.rent_receive_date_required))
 
         if (!basicValid) return false
 
@@ -309,8 +274,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
     private fun storeValues() {
         rentAmount = layoutBinding.etRentAmount.text.toString().trim()
         rentRcvDate = layoutBinding.etRentRcvDate.text.toString().trim()
-        fromDate = layoutBinding.etFromDate.text.toString().trim()
-        toDate = layoutBinding.etToDate.text.toString().trim()
         paymentMode = getSelectedPaymentMode()
         note = layoutBinding.etNote.text.toString().trim()
 
@@ -323,14 +286,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
             if (waterMode.equals("metered", ignoreCase = true))
                 layoutBinding.etWaterMeterReading.text.toString().trim()
             else null
-
-        Log.d(
-            "ReceivePaymentActivity",
-            "storeValues: $rentAmount, $rentRcvDate, $fromDate, $toDate, $paymentMode, $note"
-        )
-
-
-
 
         Log.d("ReceivePayment", "TenantId : $tenantId")
         Log.d("ReceivePayment", "Property : $propertyName")
@@ -350,12 +305,6 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
                         layoutBinding.btnRcvPayment.isEnabled = true
                         layoutBinding.toolbar.btnSave.isEnabled = true
-
-                        val paymentSummary =
-                            result.value.data.paymentSummary
-
-                        showPaymentSuccessDialog(paymentSummary)
-
                     }
 
                     is ResultWrapper.Error -> {

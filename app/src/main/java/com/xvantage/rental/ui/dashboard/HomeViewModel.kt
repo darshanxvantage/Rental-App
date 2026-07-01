@@ -7,23 +7,15 @@ import com.xvantage.rental.network.utils.ResultWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 data class HomeStats(
-
     val totalProperties: Int = 0,
-
     val activeTenants: Int = 0,
-
     val totalPayments: Double = 0.0,
-
-    val totalDues: Double = 0.0,
-
-    val monthlyRent: Double = 0.0,
-
-    val monthPending: Double = 0.0,
-
-    val lifetimeRevenue: Double = 0.0
+    val totalDues: Double = 0.0
 )
 
 @HiltViewModel
@@ -35,43 +27,24 @@ class HomeViewModel @Inject constructor(
     val isLoading = MutableStateFlow(false)
 
     fun loadHomeStats() {
-
         viewModelScope.launch {
-
             isLoading.value = true
 
-            when (val res = repository.getDashboard()) {
+            val currentMonth = SimpleDateFormat(
+                "yyyy-MM", Locale.getDefault()
+            ).format(Date())
 
+            when (val res = repository.getDashboard(currentMonth)) {
                 is ResultWrapper.Success -> {
-
-                    val dashboard = res.value.data
-
+                    val data = res.value.data
                     homeStats.value = HomeStats(
-
-                        totalProperties = dashboard.totalProperties,
-
-                        activeTenants = dashboard.totalTenants,
-
-                        totalPayments = dashboard.totalRentCollected,
-
-                        totalDues = dashboard.totalRentDue,
-
-                        monthlyRent = dashboard.monthlyRentTotal,
-
-                        monthPending = dashboard.monthPending,
-
-                        lifetimeRevenue = dashboard.lifetimeRevenue
-
+                        totalProperties = data.totalProperties,
+                        activeTenants   = data.totalTenants,
+                        totalPayments   = data.monthCollected,
+                        totalDues       = data.totalRentDue
                     )
                 }
-
-                is ResultWrapper.Error -> {
-
-                    // Optional: log error
-                }
-
                 else -> {}
-
             }
 
             isLoading.value = false
