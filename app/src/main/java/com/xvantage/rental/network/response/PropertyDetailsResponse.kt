@@ -17,6 +17,8 @@ data class PropertyDetailsData(
 
     val propertyType: String,
 
+    val propertyTypeId: String,
+
     val ownerName: String,
 
     val waNumber: String,
@@ -31,14 +33,18 @@ data class PropertyDetailsData(
 
     val vacantRooms: Int,
 
+    val roomTypes: List<RoomTypeItem>,
+
     val rooms: List<PropertyRoomItem>
 )
 
-data class PropertyRoomItem(
-
+data class RoomTypeItem(
     val id: String,
+    val name: String
+)
 
+data class PropertyRoomItem(
+    val id: String,
     val room_no: String,
-
     val status: String
 )

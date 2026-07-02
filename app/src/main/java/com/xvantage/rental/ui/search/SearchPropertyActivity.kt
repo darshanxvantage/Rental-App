@@ -84,33 +84,41 @@ class SearchPropertyActivity : AppCompatActivity() {
 
                 originalList.addAll(it)
 
-                propertiesAdapter.addItems(it)
+                propertiesAdapter.addItems(emptyList())
+
+                binding.rvProperties.visibility = View.GONE
             }
         }
     }
 
-    private fun filterProperties(
-        query: String
-    ) {
+    private fun filterProperties(query: String) {
 
-        val filteredList =
-            originalList.filter {
+        if (query.trim().isEmpty()) {
 
-                it.name.contains(
-                    query,
-                    ignoreCase = true
-                )
+            binding.rvProperties.visibility = View.GONE
 
-                        ||
+            propertiesAdapter.addItems(emptyList())
 
-                        it.address.contains(
-                            query,
-                            ignoreCase = true
-                        )
-            }
+            return
+        }
 
-        propertiesAdapter.addItems(
-            filteredList
-        )
+        val filteredList = originalList.filter {
+
+            it.name.contains(query, true) ||
+
+                    it.address.contains(query, true)
+        }
+
+        if (filteredList.isEmpty()) {
+
+            binding.rvProperties.visibility = View.GONE
+
+        } else {
+
+            binding.rvProperties.visibility = View.VISIBLE
+
+        }
+
+        propertiesAdapter.addItems(filteredList)
     }
 }

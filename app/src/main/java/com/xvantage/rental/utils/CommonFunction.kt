@@ -10,6 +10,7 @@ import android.widget.Toast
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.format.Formatter
+import com.xvantage.rental.utils.ImageCompressor
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -19,10 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-import java.io.FileOutputStream
 import java.util.Locale
 
 class CommonFunction {
@@ -137,20 +135,28 @@ class CommonFunction {
 
         if (uri == null) return null
 
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val file =
+            ImageCompressor.compressImage(
+                context,
+                uri
+            )
 
-        val file = File(
-            context.cacheDir,
-            getFileName(context, uri)
-        )
+        val mimeType = when (file.extension.lowercase()) {
 
-        FileOutputStream(file).use { output ->
-            inputStream.copyTo(output)
+            "jpg", "jpeg" -> "image/jpeg"
+
+            "png" -> "image/png"
+
+            else -> "image/jpeg"
         }
 
         val requestBody = file.asRequestBody(
-            "image/*".toMediaTypeOrNull()
+            mimeType.toMediaTypeOrNull()
         )
+
+        android.util.Log.e("UPLOAD", "File Name = ${file.name}")
+        android.util.Log.e("UPLOAD", "Extension = ${file.extension}")
+        android.util.Log.e("UPLOAD", "Mime = $mimeType")
 
         return MultipartBody.Part.createFormData(
             partName,

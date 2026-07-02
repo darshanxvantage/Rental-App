@@ -33,7 +33,7 @@ import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
 import com.xvantage.rental.ui.manageProperty.ManagePropertyActivity
-import com.xvantage.rental.ui.settings.SettingsActivity
+//import com.xvantage.rental.ui.settings.SettingsActivity
 import com.xvantage.rental.ui.tenant.TenantListActivity
 import com.xvantage.rental.utils.AppPreference
 import dagger.hilt.android.AndroidEntryPoint
@@ -165,14 +165,10 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Edit Profile
-        binding.btnEditProfile.setOnClickListener {
-            showEditProfileBottomSheet()
-        }
-
         // Quick Actions
+        // Settings button is now Edit Profile
         binding.btnQuickSettings.setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+            showEditProfileBottomSheet()
         }
 
         binding.btnQuickSecurity.setOnClickListener {
@@ -185,13 +181,6 @@ class ProfileFragment : Fragment() {
 
         binding.btnQuickShare.setOnClickListener {
             shareApp()
-        }
-
-        // Logout
-        binding.btnLogout.setOnClickListener {
-            appPreference.logoutUser()
-            startActivity(Intent(requireContext(), AuthActivity::class.java))
-            requireActivity().finish()
         }
     }
 

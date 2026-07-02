@@ -166,15 +166,26 @@ class DuesAdapter(
                     .inflate(R.layout.item_due_month_row, llMonthList, false)
 
                 var monthLabel = cycle.monthLabel
-                if (cycle.isProrated == true) {
-                    monthLabel += " (${cycle.proratedDays} days)"
-                }
                 rowView.findViewById<TextView>(R.id.tvMonthLabel)?.text = monthLabel
                 rowView.findViewById<TextView>(R.id.tvMonthAmount)?.text =
                     "₹${cycle.amountDue.toLong()}"
 
                 val overdueTag = rowView.findViewById<TextView>(R.id.tvMonthOverdueTag)
-                overdueTag?.visibility = if (cycle.isOverdue) View.VISIBLE else View.GONE
+
+                when {
+                    cycle.isOverdue -> {
+                        overdueTag?.text = "⚠ Overdue"
+                        overdueTag?.visibility = View.VISIBLE
+                    }
+                    cycle.isDueSoon -> {
+                        overdueTag?.text = "⏰ Due Soon"
+                        overdueTag?.setTextColor(Color.parseColor("#E65100"))
+                        overdueTag?.visibility = View.VISIBLE
+                    }
+                    else -> {
+                        overdueTag?.visibility = View.GONE
+                    }
+                }
 
                 val statusBadge = rowView.findViewById<TextView>(R.id.tvMonthStatus)
                 val dot = rowView.findViewById<View>(R.id.viewMonthDot)

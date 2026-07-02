@@ -54,9 +54,9 @@
         <activity
             android:name=".ui.search.SearchPropertyActivity"
             android:exported="false"/>
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".ui.settings.SettingsActivity"-->
+<!--            android:exported="false" />-->
 
 
 

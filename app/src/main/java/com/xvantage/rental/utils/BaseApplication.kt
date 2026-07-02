@@ -15,11 +15,13 @@ class BaseApplication : Application() {
         instance = this
     }
     companion object {
+
         @SuppressLint("StaticFieldLeak")
-        private lateinit var instance: Context
+        lateinit var instance: Context
 
         fun get(): Context {
             return instance
         }
+
     }
 }

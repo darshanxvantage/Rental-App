@@ -138,23 +138,20 @@ class TakeRentActivity : AppCompatActivity() {
                         "TENANT_IMAGE",
                         "Tenant = ${tenant?.tenant_name}"
                     )
-
-                    android.util.Log.d(
-                        "PROFILE_URL",
-                        "Profile = ${tenant?.profile_pic}"
-                    )
-
                     android.util.Log.e(
-                        "PROFILE_CHECK",
+                        "DUE_CYCLE_DEBUG",
                         """
-Property = ${property.name}
-Room = ${room.room_no}
-
 Tenant = ${tenant?.tenant_name}
-Tenant Room = ${tenant?.tenant_details?.room_no}
-Tenant Property = ${tenant?.property_fk}
 
-Profile = ${tenant?.profile_pic}
+DueCycles = ${tenant?.dueCycles}
+
+First Total = ${tenant?.dueCycles?.firstOrNull()?.totalAmount}
+
+Rent = ${tenant?.rent}
+
+Fixed Electricity = ${tenant?.fixed_electricity_amount}
+
+Fixed Water = ${tenant?.fixed_waterbill_amount}
 """.trimIndent()
                     )
                     RoomItem(
@@ -189,6 +186,10 @@ Profile = ${tenant?.profile_pic}
 
                         paymentDue =
                             tenant?.payment_due?.toDoubleOrNull() ?: 0.0,
+
+                        totalPayableThisCycle =
+                            tenant?.dueCycles?.firstOrNull()?.totalAmount ?:
+                            (tenant?.rent?.toDoubleOrNull() ?: 0.0),
 
                         fixedElectricity =
                             tenant?.fixed_electricity_amount
@@ -253,6 +254,7 @@ Profile = ${tenant?.profile_pic}
         val nextDueDate     : String,
         val advance         : Double,
         val paymentDue      : Double,
+        val totalPayableThisCycle : Double,
         val fixedElectricity : Double,
         val fixedWater : Double,
         val electricityMode : String,

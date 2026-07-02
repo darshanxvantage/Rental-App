@@ -10,6 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,6 +41,31 @@ class TakeRentViewModel @Inject constructor(
 
     fun clearStatementFilePath() { statementFilePath.value = null }
 
+
+    
+
+    private fun getNextDueDateFromCycles(
+        dueCycles: List<com.xvantage.rental.network.response.DueCycle>?
+    ): String? {
+        val firstCycle = dueCycles?.firstOrNull() ?: return null
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val cycleMonthSdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            // cycleMonth is "2026-07-01" format
+            val cycleDate = cycleMonthSdf.parse(firstCycle.cycleMonth) ?: return null
+            val cal = Calendar.getInstance().apply { time = cycleDate }
+
+            // Add 1 month → 1st of next month
+            cal.add(Calendar.MONTH, 1)
+            cal.set(Calendar.DAY_OF_MONTH, 1)
+
+            sdf.format(cal.time)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun loadData() {
         viewModelScope.launch {
             isLoading.value = true
@@ -67,13 +94,10 @@ class TakeRentViewModel @Inject constructor(
                             val dueData = duesMap[tenant.id]
                             if (dueData != null) {
                                 tenant.copy(
-
+                                    // Accurate due from billing_cycles
                                     payment_due = (dueData.totalDue ?: 0.0).toString(),
 
-
-                                    rent_end_date = dueData.dueCycles
-                                        ?.firstOrNull()
-                                        ?.dueDate
+                                    rent_end_date = getNextDueDateFromCycles(dueData.dueCycles)
                                         ?: tenant.rent_end_date
                                 )
                             } else {

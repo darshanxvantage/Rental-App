@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -15,6 +16,7 @@ import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.network.response.PropertyRoom
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.xvantage.rental.utils.ImageCompressor
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -746,6 +748,27 @@ class AddTenantActivity : AppCompatActivity() {
 
     private fun createTenant() {
 
+        Log.e("CREATE_TENANT", "========== CREATE REQUEST ==========")
+
+        Log.e("CREATE_TENANT", "RoomId = ${selectedRoom?.id}")
+        Log.e("CREATE_TENANT", "PropertyId = ${selectedProperty?.id}")
+
+        Log.e("CREATE_TENANT", "TenantName = ${binding.etTenantName.text}")
+        Log.e("CREATE_TENANT", "Phone = ${binding.etPhoneNumber.text}")
+
+        Log.e("CREATE_TENANT", "Rent = ${binding.llRentFinanceDetail.etRentAmount.text}")
+
+        Log.e("CREATE_TENANT", "Deposit = ${binding.llRentFinanceDetail.etDepositAmount.text}")
+
+        Log.e("CREATE_TENANT", "MoveIn = ${binding.llRentFinanceDetail.tvMoveInDate.text}")
+
+        Log.e("CREATE_TENANT", "RentStart = ${binding.llRentFinanceDetail.tvRentStartDate.text}")
+
+        Log.e("CREATE_TENANT", "RentDue = ${binding.llRentFinanceDetail.tvRentDueDate.text}")
+
+
+
+
         viewModel.createTenant(
 
             roomId = selectedRoom?.id ?: "",
@@ -804,13 +827,13 @@ class AddTenantActivity : AppCompatActivity() {
             referenceName =
                 binding.etReferenceName.text.toString().trim(),
 
+
             profilePic =
                 CommonFunction().getMultipartFromUri(
                     this,
                     tenantImageUri,
                     "profilePic"
                 ),
-
             documents =
                 CommonFunction().getMultipartListFromUris(
                     this,

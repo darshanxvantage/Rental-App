@@ -85,6 +85,7 @@ data class DueCycle(
     val amountDue: Double,
     val status: String,
     val isOverdue: Boolean,
+    val isDueSoon: Boolean = false,
     val isProrated: Boolean,
     val proratedDays: Int? = null
 )

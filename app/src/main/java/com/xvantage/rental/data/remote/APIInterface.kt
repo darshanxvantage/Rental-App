@@ -205,6 +205,43 @@ interface   APIInterface {
 
 
     @Multipart
+    @POST("landlord/room/create")
+    suspend fun createRoom(
+
+        @Part("propertyId")
+        propertyId: RequestBody,
+
+        @Part("propertyTypeId")
+        propertyTypeId: RequestBody,
+
+        @Part("roomNo")
+        roomNo: RequestBody,
+
+        @Part("roomTypeId")
+        roomTypeId: RequestBody,
+
+        @Part("roomTypeText")
+        roomTypeText: RequestBody,
+
+        @Part("address")
+        address: RequestBody,
+
+        @Part("rent")
+        rent: RequestBody,
+
+        @Part("meterReading")
+        meterReading: RequestBody,
+
+        @Part("meterReadingLastDate")
+        meterReadingLastDate: RequestBody,
+
+        @Part
+        roomImage: MultipartBody.Part?
+
+    ): Response<JsonObject>
+
+
+    @Multipart
     @POST("landlord/tenant/create")
     suspend fun createTenant(
 

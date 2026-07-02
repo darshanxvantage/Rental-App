@@ -9,16 +9,32 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.xvantage.rental.databinding.FragmentAddRoomBottomSheetBinding
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.xvantage.rental.ui.addProperty.RoomViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
+import com.google.gson.Gson
+import com.xvantage.rental.network.response.PropertyDetailsResponse
+import com.xvantage.rental.network.response.PropertyDetailsData
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
+@AndroidEntryPoint
 class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentAddRoomBottomSheetBinding? = null
     private val binding get() = _binding!!
+    private var propertyId = ""
+
+    private val viewModel: RoomViewModel by viewModels()
+
+    private var propertyData: PropertyDetailsData? = null
 
     private var onRoomAddedListener: ((Room) -> Unit)? = null
     private val calendar = Calendar.getInstance()
@@ -37,12 +53,33 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
+
+        val json =
+            arguments?.getString("property_json")
+
+        if (!json.isNullOrEmpty()) {
+
+            propertyData =
+                Gson().fromJson(
+                    json,
+                    PropertyDetailsData::class.java
+                )
+
+            propertyId =
+                propertyData?.id ?: ""
+        }
 
         setupRoomTypeSpinner()
         setupDatePicker()
         setupActionButtons()
+        observeState()
     }
 
     private fun setupRoomTypeSpinner() {
@@ -87,7 +124,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
-
+        android.util.Log.e("ROOM_DEBUG", "Save button clicked")
         // Save button
         binding.btnSave.setOnClickListener {
             if (validateFields()) {
@@ -120,28 +157,80 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun saveRoom() {
-        val roomNumber = binding.etRoomNumber.text.toString()
-        val roomType = binding.spinnerRoomType.selectedItem.toString()
-        val rentAmount = binding.etRoomRent.text.toString().toDoubleOrNull() ?: 0.0
-        val meterReading = binding.etMeterReading.text.toString().toDoubleOrNull() ?: 0.0
-        val readingDate = calendar.timeInMillis
 
-        val newRoom = Room(
-            id = UUID.randomUUID().toString(),
-            propertyId = "", // This should be set by the parent activity
-            number = roomNumber,
-            type = roomType,
-            rent = rentAmount,
-            meterReading = meterReading,
-            readingDate = readingDate,
-            isOccupied = false
+        viewModel.createRoom(
+
+            propertyId = propertyData?.id ?: "",
+
+            propertyTypeId = propertyData?.propertyTypeId ?: "",
+
+            roomNo = binding.etRoomNumber.text.toString(),
+
+            roomTypeId = propertyData?.roomTypes
+                ?.firstOrNull {
+                    it.name == binding.spinnerRoomType.selectedItem.toString()
+                }?.id ?: "",
+
+            roomTypeText =
+                binding.spinnerRoomType.selectedItem.toString(),
+
+            address =
+                propertyData?.address ?: "",
+
+            rent =
+                binding.etRoomRent.text.toString(),
+
+            meterReading =
+                binding.etMeterReading.text.toString(),
+
+            meterReadingLastDate =
+                binding.etReadingDate.text.toString(),
+
+            roomImage = null
         )
+    }
 
-        // Notify listener about the new room
-        onRoomAddedListener?.invoke(newRoom)
+    private fun observeState() {
 
-        // Close bottom sheet
-        dismiss()
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            viewLifecycleOwner.repeatOnLifecycle(
+                androidx.lifecycle.Lifecycle.State.STARTED
+            ) {
+
+                viewModel.state.collect { state ->
+
+                    when (state) {
+
+                        is RoomViewModel.State.Loading -> {
+                            // Optional: ProgressBar બતાવો
+                        }
+
+                        is RoomViewModel.State.Success -> {
+
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                "Room Created Successfully",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+
+                            dismiss()
+                        }
+
+                        is RoomViewModel.State.Error -> {
+
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                state.message,
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

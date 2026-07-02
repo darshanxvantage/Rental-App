@@ -201,8 +201,29 @@ Occupied    = ${room.isOccupied}
                 }
                 binding.tvWaterInfo.text = waterText
 
-                // ── Total Payable = paymentDue from billing_cycles ──
-                binding.tvTotalPayableCard.text = "₹${room.paymentDue.toLong()}"
+
+
+
+                var total = room.monthlyRent
+
+
+                if (
+                    room.electricityMode.equals("fixed", true) ||
+                    room.electricityMode.equals("fix", true)
+                ) {
+                    total += room.fixedElectricity
+                }
+
+
+                if (
+                    room.waterMode.equals("fixed", true) ||
+                    room.waterMode.equals("fix", true)
+                ) {
+                    total += room.fixedWater
+                }
+
+                binding.tvTotalPayableCard.text =
+                    currencyFormatter.format(total)
             }else {
 
                 binding.monthlyRent.text     = "N/A"

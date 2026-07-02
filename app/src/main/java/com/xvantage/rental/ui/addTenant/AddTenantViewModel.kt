@@ -12,6 +12,7 @@ import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 import com.xvantage.rental.network.response.PropertyItem
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
+import android.util.Log
 import javax.inject.Inject
 
 @HiltViewModel
@@ -159,70 +160,59 @@ class AddTenantViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            when (
+            when (val response = repository.createTenant(
 
-                repository.createTenant(
+                roomId,
+                tenantName,
+                phoneNumber,
+                phoneCode,
+                rent,
+                roomDeposit,
+                checkinDate,
+                rentStartDate,
+                rentSubmissionDate,
+                fixedWaterBill,
+                fixedElectricity,
+                fixedWaterBillAmount,
+                fixedElectricityAmount,
+                costPerUnit,
+                meterReading,
+                meterReadingWater,
+                costUnitWater,
+                referenceName,
+                profilePic,
+                documents
 
-                    roomId,
-
-                    tenantName,
-
-                    phoneNumber,
-
-                    phoneCode,
-
-                    rent,
-
-                    roomDeposit,
-
-                    checkinDate,
-
-                    rentStartDate,
-
-                    rentSubmissionDate,
-
-                    fixedWaterBill,
-
-                    fixedElectricity,
-
-                    fixedWaterBillAmount,
-
-                    fixedElectricityAmount,
-
-                    costPerUnit,
-
-                    meterReading,
-
-                    meterReadingWater,
-
-                    costUnitWater,
-
-                    referenceName,
-
-                    profilePic,
-
-                    documents
-
-                )
-
-            ) {
+            )) {
 
                 is ResultWrapper.Success -> {
 
-                    createTenantState.value = true
+                    Log.e(
+                        "CREATE_TENANT",
+                        "SUCCESS"
+                    )
 
+                    createTenantState.value = true
                 }
 
                 is ResultWrapper.Error -> {
 
-                    createTenantState.value = false
+                    Log.e(
+                        "CREATE_TENANT",
+                        "ERROR = ${response.message}"
+                    )
 
+                    createTenantState.value = false
                 }
 
                 else -> {
 
-                    createTenantState.value = false
+                    Log.e(
+                        "CREATE_TENANT",
+                        "UNKNOWN ERROR"
+                    )
 
+                    createTenantState.value = false
                 }
             }
         }

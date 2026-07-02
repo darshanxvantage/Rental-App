@@ -184,13 +184,27 @@ class PropertyDetailsActivity : AppCompatActivity() {
     }
 
     private fun showAddRoomBottomSheet() {
+
         val bottomSheet = AddRoomBottomSheetFragment()
-        bottomSheet.setOnRoomAddedListener { room ->
-            // Notify rooms fragment about the new room
-//            val roomsFragment = supportFragmentManager.fragments.find { it is RoomsFragment } as? RoomsFragment
-//            roomsFragment?.addRoom(room)
-        }
-        bottomSheet.show(supportFragmentManager, "AddRoomBottomSheet")
+
+        val currentData =
+            (viewModel.state.value as? PropertyDetailsViewModel.State.Success)
+                ?.details
+                ?.data
+
+        val bundle = Bundle()
+
+        bundle.putString(
+            "property_json",
+            Gson().toJson(currentData)
+        )
+
+        bottomSheet.arguments = bundle
+
+        bottomSheet.show(
+            supportFragmentManager,
+            "AddRoomBottomSheet"
+        )
     }
 
     private fun showAddTenantBottomSheet() {

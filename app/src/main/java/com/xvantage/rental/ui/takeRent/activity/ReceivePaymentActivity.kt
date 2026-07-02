@@ -305,6 +305,14 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
                         layoutBinding.btnRcvPayment.isEnabled = true
                         layoutBinding.toolbar.btnSave.isEnabled = true
+
+                        val summary = result.value.data?.paymentSummary
+                        if (summary != null) {
+                            showPaymentSuccessDialog(summary)
+                        } else {
+                            showFallbackSuccessDialog()
+                        }
+
                     }
 
                     is ResultWrapper.Error -> {
@@ -329,6 +337,35 @@ class ReceivePaymentActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    private fun showFallbackSuccessDialog() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Payment Received ✅")
+            .setMessage("Payment has been recorded successfully!")
+            .setCancelable(false)
+            .setPositiveButton("Done") { _, _ ->
+                RentalNotificationHelper.showPaymentReceived(
+                    context = this,
+                    tenantName = tenantName,
+                    amount = rentAmount
+                )
+                navigateToHome()
+            }
+            .show()
+    }
+
+    private fun navigateToHome() {
+        val homeIntent = android.content.Intent(
+            this,
+            com.xvantage.rental.ui.dashboard.DashboardActivity::class.java
+        ).apply {
+            flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("navigate_to_home", true)
+        }
+        startActivity(homeIntent)
+        finish()
     }
 
     private fun showPaymentSuccessDialog(
@@ -406,32 +443,14 @@ class ReceivePaymentActivity : AppCompatActivity() {
         btnDone.setOnClickListener {
 
             RentalNotificationHelper.showPaymentReceived(
-
                 context = this,
-
                 tenantName = tenantName,
-
                 amount = rentAmount
-
-            )
-
-            val resultIntent = intent.apply {
-
-                putExtra("payment_updated", true)
-
-            }
-
-            setResult(
-
-                RESULT_OK,
-
-                resultIntent
-
             )
 
             dialog.dismiss()
 
-            finish()
+            navigateToHome()
 
         }
 

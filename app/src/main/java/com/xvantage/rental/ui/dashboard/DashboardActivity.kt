@@ -29,7 +29,7 @@ import com.xvantage.rental.ui.dashboard.fragment.DuesFragment
 import com.xvantage.rental.ui.dashboard.fragment.HomeFragment
 import com.xvantage.rental.ui.dashboard.fragment.ProfileFragment
 import com.xvantage.rental.ui.search.SearchPropertyActivity
-import com.xvantage.rental.ui.settings.SettingsActivity
+//import com.xvantage.rental.ui.settings.SettingsActivity
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.utils.LocaleHelper
@@ -99,12 +99,12 @@ class DashboardActivity : BaseActivity() {
         with(toolbarBinding) {
             home.visibility    = View.VISIBLE
             search.visibility  = View.VISIBLE
-            setting.visibility = View.VISIBLE
+//            setting.visibility = View.VISIBLE
             btnSave.visibility = View.GONE
             back.visibility    = View.GONE
             home.setOnClickListener   { toggleDrawer() }
             search.setOnClickListener { startActivity(Intent(this@DashboardActivity, SearchPropertyActivity::class.java)) }
-            setting.setOnClickListener { startActivity(Intent(this@DashboardActivity, SettingsActivity::class.java)) }
+//            setting.setOnClickListener { startActivity(Intent(this@DashboardActivity, SettingsActivity::class.java)) }
         }
     }
 

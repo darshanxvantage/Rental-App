@@ -23,6 +23,7 @@
                 android:id="@+id/imgCover"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:contentDescription="@null"
                 android:scaleType="centerCrop"
                 android:src="@drawable/profile_cover" />
 
@@ -623,7 +624,7 @@
                         android:orientation="horizontal"
                         android:weightSum="4">
 
-                        <!-- SETTINGS -->
+                        <!-- EDIT PROFILE (was Settings) -->
                         <LinearLayout
                             android:id="@+id/btnQuickSettings"
                             android:layout_width="0dp"
@@ -648,7 +649,7 @@
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
                                     android:layout_gravity="center"
-                                    android:src="@drawable/setting" />
+                                    android:src="@drawable/ic_edit" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -656,7 +657,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
-                                android:text="Settings"
+                                android:text="Edit"
                                 android:textColor="#444444"
                                 android:textSize="11sp" />
 
@@ -784,36 +785,6 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <!-- EDIT PROFILE BUTTON -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEditProfile"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="20dp"
-                android:text="Edit Profile"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:backgroundTint="#2962FF"
-                app:cornerRadius="16dp" />
-
-            <!-- LOGOUT BUTTON -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogout"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="12dp"
-                android:text="Logout"
-                android:textAllCaps="false"
-                android:textColor="#FF3B30"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:backgroundTint="#FFF1F1"
-                app:cornerRadius="16dp"
-                app:strokeColor="#FF3B30"
-                app:strokeWidth="1dp" />
 
         </LinearLayout>
 

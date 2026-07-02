@@ -13,6 +13,7 @@ import com.xvantage.rental.network.utils.ApiLogger
 import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.network.response.DashboardResponse
+import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
@@ -60,24 +61,12 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.imageUri != null) {
                 // Get content type from Uri
-                val contentType = request.imageUri.lastPathSegment?.let {
-                    when {
-                        it.endsWith(".jpg", true) || it.endsWith(".jpeg", true) -> "image/jpeg"
-                        it.endsWith(".png", true) -> "image/png"
-                        else -> "image/*"
-                    }
-                } ?: "image/*"
-
-                // Create a file from the URI
-                val file = File(request.imageUri.path ?: "")
-                val imageRequestBody = RequestBody.create(contentType.toMediaTypeOrNull(), file)
-
-                // Create the MultipartBody.Part
-                imagePart = MultipartBody.Part.createFormData(
-                    "propertyImage",
-                    file.name,
-                    imageRequestBody
-                )
+                imagePart =
+                    CommonFunction().getMultipartFromUri(
+                        BaseApplication.instance,
+                        request.imageUri,
+                        "propertyImage"
+                    )
             }
 
             // Create a request info map for logging
@@ -161,22 +150,11 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.imageUri != null) {
 
-                val file =
-                    File(
-                        request.imageUri.path ?: ""
-                    )
-
-                val requestFile =
-                    RequestBody.create(
-                        "image/*".toMediaTypeOrNull(),
-                        file
-                    )
-
                 imagePart =
-                    MultipartBody.Part.createFormData(
-                        "propertyImage",
-                        file.name,
-                        requestFile
+                    CommonFunction().getMultipartFromUri(
+                        BaseApplication.instance,
+                        request.imageUri,
+                        "propertyImage"
                     )
             }
 
@@ -540,53 +518,43 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val response = apiInterface.createTenant(
 
                 roomId.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 tenantName.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 phoneCode.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 rent.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 roomDeposit.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 checkinDate.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 rentStartDate.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 rentSubmissionDate.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 fixedWaterBill.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 fixedElectricity.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 fixedWaterBillAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 fixedElectricityAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 costPerUnit.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 meterReading.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 meterReadingWater.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 referenceName.toRequestBody("text/plain".toMediaTypeOrNull()),
-
                 profilePic,
-
                 documents
-
             )
 
-            NetworkHelper.handleApiResponse(response)
+            android.util.Log.e("CREATE_TENANT", "HTTP = ${response.code()}")
+            android.util.Log.e("CREATE_TENANT", "BODY = ${response.body()}")
+            android.util.Log.e("CREATE_TENANT", "ERROR = ${response.errorBody()?.string()}")
+
+            return NetworkHelper.handleApiResponse(response)
 
         } catch (e: Exception) {
 
-            ResultWrapper.Error(e.localizedMessage ?: "Tenant Create Failed")
+            android.util.Log.e(
+                "CREATE_TENANT_EXCEPTION",
+                android.util.Log.getStackTraceString(e)
+            )
 
+            return ResultWrapper.Error(
+                e.localizedMessage ?: "Tenant Create Failed"
+            )
         }
     }
 
@@ -639,18 +607,12 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.profilePic != null) {
 
-                val file = File(request.profilePic.path ?: "")
-
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
-
-                profilePicPart = MultipartBody.Part.createFormData(
-                    "profilePic",
-                    file.name,
-                    requestFile
-                )
+                profilePicPart =
+                    CommonFunction().getMultipartFromUri(
+                        BaseApplication.instance,
+                        request.profilePic,
+                        "profilePic"
+                    )
             }
 
 
@@ -658,22 +620,15 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             request.documents?.forEach { uri ->
 
-                val file = File(uri.path ?: "")
+                CommonFunction().getMultipartFromUri(
+                    BaseApplication.instance,
+                    uri,
+                    "document"
+                )?.let {
 
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
+                    documentParts.add(it)
 
-                documentParts.add(
-
-                    MultipartBody.Part.createFormData(
-                        "document",
-                        file.name,
-                        requestFile
-                    )
-
-                )
+                }
             }
 
 
@@ -723,7 +678,66 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
     }
 
 
+    suspend fun createRoom(
 
+        propertyId: String,
+
+        propertyTypeId: String,
+
+        roomNo: String,
+
+        roomTypeId: String,
+
+        roomTypeText: String,
+
+        address: String,
+
+        rent: String,
+
+        meterReading: String,
+
+        meterReadingLastDate: String,
+
+        roomImage: MultipartBody.Part?
+
+    ): ResultWrapper<JsonObject> {
+
+        return try {
+
+            val response = apiInterface.createRoom(
+
+                propertyId.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                propertyTypeId.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                roomNo.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                roomTypeId.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                roomTypeText.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                address.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                rent.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                meterReading.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                meterReadingLastDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                roomImage
+
+            )
+
+            NetworkHelper.handleApiResponse(response)
+
+        } catch (e: Exception) {
+
+            ResultWrapper.Error(
+                e.localizedMessage ?: "Room Create Failed"
+            )
+
+        }
+    }
 
 
 
