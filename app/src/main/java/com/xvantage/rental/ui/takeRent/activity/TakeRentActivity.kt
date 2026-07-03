@@ -155,16 +155,23 @@ Fixed Water = ${tenant?.fixed_waterbill_amount}
 """.trimIndent()
                     )
                     RoomItem(
-                        roomId          = room.room_no,
-                        propertyName    = property.name,
-                        propertyId      = property.id,
-                        tenantId        = tenant?.id ?: "",
-                        tenantName      = tenant?.tenant_name ?: "Available for Rent",
-                        phone           = tenant?.phone_number ?: "",
-                        profilePic      = tenant?.profile_pic ?: "",
-                        isOccupied      = tenant != null,
-                        roomStatus      = if (tenant != null) "Occupied" else "Vacant",
+                        roomId = room.id,
+                        roomNo = room.room_no,
 
+                        propertyName = property.name,
+                        propertyId = property.id,
+
+                        tenantId = tenant?.id ?: "",
+                        tenantName = tenant?.tenant_name ?: "Available for Rent",
+
+                        phone = tenant?.phone_number ?: "",
+                        profilePic = tenant?.profile_pic ?: "",
+
+                        isOccupied = tenant != null,
+
+                        roomStatus =
+                            if (tenant != null) "Occupied"
+                            else "Vacant",
 
                         monthlyRent =
                             tenant?.rent?.toDoubleOrNull() ?: 0.0,
@@ -179,7 +186,10 @@ Fixed Water = ${tenant?.fixed_waterbill_amount}
                             tenant?.rent_receive_date ?: "",
 
                         nextDueDate =
-                            tenant?.rent_end_date ?: "",
+                            tenant?.nextDueDate
+                                ?.takeIf { it.isNotBlank() }
+                                ?: tenant?.rent_end_date
+                                ?: "",
 
                         advance =
                             tenant?.advance?.toDoubleOrNull() ?: 0.0,
@@ -188,8 +198,10 @@ Fixed Water = ${tenant?.fixed_waterbill_amount}
                             tenant?.payment_due?.toDoubleOrNull() ?: 0.0,
 
                         totalPayableThisCycle =
-                            tenant?.dueCycles?.firstOrNull()?.totalAmount ?:
-                            (tenant?.rent?.toDoubleOrNull() ?: 0.0),
+                            tenant?.dueCycles
+                                ?.firstOrNull()
+                                ?.totalAmount
+                                ?: (tenant?.rent?.toDoubleOrNull() ?: 0.0),
 
                         fixedElectricity =
                             tenant?.fixed_electricity_amount
@@ -239,6 +251,7 @@ Fixed Water = ${tenant?.fixed_waterbill_amount}
 
     data class RoomItem(
         val roomId          : String,
+        val roomNo          : String,
         val propertyName    : String,
         val propertyId      : String,
         val tenantId        : String,

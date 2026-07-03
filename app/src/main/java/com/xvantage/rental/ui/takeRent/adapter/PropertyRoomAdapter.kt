@@ -113,7 +113,7 @@ Occupied    = ${room.isOccupied}
             )
 
 
-            binding.roomId.text = "Room ${room.roomId}"
+            binding.roomId.text = "Room ${room.roomNo}"
             binding.address.text = room.propertyName
 
 

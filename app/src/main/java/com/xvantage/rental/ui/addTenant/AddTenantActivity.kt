@@ -16,7 +16,9 @@ import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.network.response.PropertyRoom
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.xvantage.rental.utils.ImageCompressor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.FileOutputStream
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -88,6 +90,32 @@ class AddTenantActivity : AppCompatActivity() {
 
     // Spinner options for electricity and water charges
     private val spinnerElecAndWaterOptions = arrayOf("No cost", "Fixed", "Metered")
+
+    // "until_leave" or "fixed" — tracks the Lease Type radio selection so it
+    // can actually be sent to the backend (previously captured in the UI
+    // and silently dropped).
+    private var selectedLeaseType = "until_leave"
+
+    private val displayDateFormat =
+        java.text.SimpleDateFormat("dd MMM, yyyy", java.util.Locale.US)
+    private val isoDateFormat =
+        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+
+    /**
+     * Converts a date shown in the UI ("15 Jul, 2026") into the ISO format
+     * ("2026-07-15") the backend expects. Sending ISO avoids ambiguous
+     * date-string parsing on the server (day-first strings aren't reliably
+     * parsed by JS Date()/moment()).
+     */
+    private fun toIsoDateOrEmpty(displayDate: String): String {
+        if (displayDate.isBlank()) return ""
+        return try {
+            val parsed = displayDateFormat.parse(displayDate)
+            if (parsed != null) isoDateFormat.format(parsed) else ""
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -181,6 +209,22 @@ class AddTenantActivity : AppCompatActivity() {
                     binding.llRentFinanceDetail.tvMoveInDate.text =
                         tenant.checkin_date ?: ""
 
+                    binding.llRentFinanceDetail.tvRentDueDate.text =
+                        tenant.rent_submission_date ?: ""
+
+                    selectedLeaseType = tenant.lease_type ?: "until_leave"
+                    if (selectedLeaseType == "fixed") {
+                        binding.llRentFinanceDetail.rgLeaseType.check(R.id.rb_fixed_define)
+                        binding.llRentFinanceDetail.llLeaseDateSelection.visibility = View.VISIBLE
+                        binding.llRentFinanceDetail.tvAggreementStartDate.text =
+                            tenant.rent_start_date ?: ""
+                        binding.llRentFinanceDetail.tvAggreementEndDate.text =
+                            tenant.lease_end_date ?: ""
+                    } else {
+                        binding.llRentFinanceDetail.rgLeaseType.check(R.id.rb_until_leave)
+                        binding.llRentFinanceDetail.llLeaseDateSelection.visibility = View.GONE
+                    }
+
                     binding.llElectricityFinanceDetail.etElectricityDefaultAmount.setText(
                         tenant.fixed_electricity_amount ?: ""
                     )
@@ -269,6 +313,8 @@ class AddTenantActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
+                    scheduleReminderIfPossible()
+
                     setResult(RESULT_OK)
 
                     finish()
@@ -290,11 +336,54 @@ class AddTenantActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
+                    scheduleReminderIfPossible()
+
                     setResult(RESULT_OK)
                     finish()
                 }
             }
         }
+
+        lifecycleScope.launch {
+
+            viewModel.tenantErrorMessage.collect { message ->
+
+                if (!message.isNullOrBlank()) {
+
+                    Toast.makeText(
+                        this@AddTenantActivity,
+                        message,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                }
+
+            }
+
+        }
+    }
+
+    /**
+     * Schedules the local rent reminder against the REAL due date the
+     * backend just calculated for this tenant (instead of never being
+     * called at all, which is what happened before).
+     */
+    private fun scheduleReminderIfPossible() {
+
+        val dueDate = viewModel.createdTenantNextDueDate.value
+
+        if (!dueDate.isNullOrBlank()) {
+
+            val daysUntilDue = calculateDaysUntilDue(dueDate)
+
+            scheduleRentReminder(
+                tenantName = binding.etTenantName.text.toString().trim(),
+                rentAmount = binding.llRentFinanceDetail.etRentAmount.text.toString().trim(),
+                daysUntilDue = daysUntilDue
+            )
+
+        }
+
     }
 
 
@@ -370,10 +459,16 @@ class AddTenantActivity : AppCompatActivity() {
 
 
 
-        // YEH ADD KARO — toolbar save button ke liye
+
         binding.toolbar.btnSave.setOnClickListener {
 
-            if (isEditMode) {
+            val errorMessage = validateTenantForm()
+
+            if (errorMessage != null) {
+
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+
+            } else if (isEditMode) {
 
                 updateTenant()
 
@@ -388,10 +483,12 @@ class AddTenantActivity : AppCompatActivity() {
         binding.llRentFinanceDetail.rgLeaseType.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_until_leave -> {
+                    selectedLeaseType = "until_leave"
                     binding.llRentFinanceDetail.llLeaseDateSelection.visibility = View.GONE
                     Toast.makeText(this, "Until Leave selected", Toast.LENGTH_SHORT).show()
                 }
                 R.id.rb_fixed_define -> {
+                    selectedLeaseType = "fixed"
                     binding.llRentFinanceDetail.llLeaseDateSelection.visibility = View.VISIBLE
                 }
             }
@@ -735,7 +832,7 @@ class AddTenantActivity : AppCompatActivity() {
 
     private fun calculateDaysUntilDue(dueDateStr: String): Long {
         return try {
-            val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
             val dueDate = sdf.parse(dueDateStr) ?: return 1L
             val today = java.util.Date()
             val diff = dueDate.time - today.time
@@ -746,106 +843,308 @@ class AddTenantActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Returns a user-facing error message if the form is missing required
+     * fields, or null if everything looks good. Previously the Save button
+     * called create/update directly with no checks at all.
+     */
+    private fun validateTenantForm(): String? {
+
+        if (selectedProperty == null) {
+            return "Please select a property"
+        }
+
+        if (selectedRoom == null) {
+            return "Please select a room"
+        }
+
+        if (binding.etTenantName.text.toString().trim().isEmpty()) {
+            return "Please enter tenant name"
+        }
+
+        if (binding.etPhoneNumber.text.toString().trim().isEmpty()) {
+            return "Please enter phone number"
+        }
+
+        val rentText = binding.llRentFinanceDetail.etRentAmount.text.toString().trim()
+        if (rentText.isEmpty() || rentText.toDoubleOrNull() == null || rentText.toDouble() <= 0) {
+            return "Please enter a valid rent amount"
+        }
+
+        if (binding.llRentFinanceDetail.etDepositAmount.text.toString().trim().isEmpty()) {
+            return "Please enter deposit amount"
+        }
+
+        if (binding.llRentFinanceDetail.tvMoveInDate.text.toString().trim().isEmpty() ||
+            binding.llRentFinanceDetail.tvMoveInDate.text.toString() == "Select Move-In Date"
+        ) {
+            return "Please select move-in date"
+        }
+
+        if (binding.llRentFinanceDetail.tvRentStartDate.text.toString().trim().isEmpty() ||
+            binding.llRentFinanceDetail.tvRentStartDate.text.toString() == "Select Rent Date"
+        ) {
+            return "Please select rent start date"
+        }
+
+        if (binding.llRentFinanceDetail.tvRentDueDate.text.toString().trim().isEmpty() ||
+            binding.llRentFinanceDetail.tvRentDueDate.text.toString() == "Select Rent Due Date"
+        ) {
+            return "Please select rent due date"
+        }
+
+        if (selectedLeaseType == "fixed") {
+            if (binding.llRentFinanceDetail.tvAggreementStartDate.text.toString().trim().isEmpty()) {
+                return "Please select agreement start date"
+            }
+            if (binding.llRentFinanceDetail.tvAggreementEndDate.text.toString().trim().isEmpty()) {
+                return "Please select agreement end date"
+            }
+        }
+
+        return null
+    }
+
+
+
+    private fun compressImage(uri: Uri?): Uri? {
+
+        if (uri == null) return null
+
+        return try {
+
+            val inputStream = contentResolver.openInputStream(uri)
+
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            inputStream?.close()
+
+            if (bitmap == null) {
+                return uri
+            }
+
+            val maxWidth = 1280
+            val maxHeight = 1280
+
+            val width = bitmap.width
+            val height = bitmap.height
+
+            val scale = minOf(
+                maxWidth.toFloat() / width,
+                maxHeight.toFloat() / height,
+                1f
+            )
+
+            val newWidth = (width * scale).toInt()
+            val newHeight = (height * scale).toInt()
+
+            val resizedBitmap = if (
+                newWidth != width ||
+                newHeight != height
+            ) {
+
+                Bitmap.createScaledBitmap(
+                    bitmap,
+                    newWidth,
+                    newHeight,
+                    true
+                )
+
+            } else {
+
+                bitmap
+            }
+
+            val compressedFile = File(
+                cacheDir,
+                "compressed_${System.currentTimeMillis()}.jpg"
+            )
+
+            val outputStream =
+                FileOutputStream(compressedFile)
+
+            resizedBitmap.compress(
+                Bitmap.CompressFormat.JPEG,
+                70,
+                outputStream
+            )
+
+            outputStream.flush()
+            outputStream.close()
+
+            if (resizedBitmap !== bitmap) {
+                resizedBitmap.recycle()
+            }
+
+            bitmap.recycle()
+
+            Uri.fromFile(compressedFile)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            uri
+        }
+    }
+
     private fun createTenant() {
 
-        Log.e("CREATE_TENANT", "========== CREATE REQUEST ==========")
+        val compressedTenantImage =
+            compressImage(tenantImageUri)
 
-        Log.e("CREATE_TENANT", "RoomId = ${selectedRoom?.id}")
-        Log.e("CREATE_TENANT", "PropertyId = ${selectedProperty?.id}")
+        val compressedFrontAadhar =
+            compressImage(frontAdharImageUri)
 
-        Log.e("CREATE_TENANT", "TenantName = ${binding.etTenantName.text}")
-        Log.e("CREATE_TENANT", "Phone = ${binding.etPhoneNumber.text}")
-
-        Log.e("CREATE_TENANT", "Rent = ${binding.llRentFinanceDetail.etRentAmount.text}")
-
-        Log.e("CREATE_TENANT", "Deposit = ${binding.llRentFinanceDetail.etDepositAmount.text}")
-
-        Log.e("CREATE_TENANT", "MoveIn = ${binding.llRentFinanceDetail.tvMoveInDate.text}")
-
-        Log.e("CREATE_TENANT", "RentStart = ${binding.llRentFinanceDetail.tvRentStartDate.text}")
-
-        Log.e("CREATE_TENANT", "RentDue = ${binding.llRentFinanceDetail.tvRentDueDate.text}")
-
-
+        val compressedBackAadhar =
+            compressImage(backAdharImageUri)
 
 
         viewModel.createTenant(
 
             roomId = selectedRoom?.id ?: "",
 
-            tenantName = binding.etTenantName.text.toString().trim(),
+            tenantName =
+                binding.etTenantName.text
+                    .toString()
+                    .trim(),
 
-            phoneNumber = binding.etPhoneNumber.text.toString().trim(),
+            phoneNumber =
+                binding.etPhoneNumber.text
+                    .toString()
+                    .trim(),
 
             phoneCode = "+91",
 
-            rent = binding.llRentFinanceDetail.etRentAmount.text.toString().trim(),
+            rent =
+                binding.llRentFinanceDetail
+                    .etRentAmount.text
+                    .toString()
+                    .trim(),
 
-            roomDeposit = binding.llRentFinanceDetail.etDepositAmount.text.toString().trim(),
+            roomDeposit =
+                binding.llRentFinanceDetail
+                    .etDepositAmount.text
+                    .toString()
+                    .trim(),
 
             checkinDate =
-                binding.llRentFinanceDetail.tvMoveInDate.text.toString().trim(),
+                toIsoDateOrEmpty(
+                    binding.llRentFinanceDetail
+                        .tvMoveInDate.text
+                        .toString()
+                        .trim()
+                ),
 
             rentStartDate =
-                binding.llRentFinanceDetail.tvRentStartDate.text.toString().trim(),
+                toIsoDateOrEmpty(
+                    binding.llRentFinanceDetail
+                        .tvRentStartDate.text
+                        .toString()
+                        .trim()
+                ),
 
             rentSubmissionDate =
-                binding.llRentFinanceDetail.tvRentDueDate.text.toString().trim(),
+                toIsoDateOrEmpty(
+                    binding.llRentFinanceDetail
+                        .tvRentDueDate.text
+                        .toString()
+                        .trim()
+                ),
 
-            fixedWaterBill = when (
-                binding.llWaterFinanceDetail.spWater.selectedItemPosition
-            ) {
-                1 -> "fix"
-                2 -> "metered"
-                else -> ""
-            },
+            fixedWaterBill =
+                when (
+                    binding.llWaterFinanceDetail
+                        .spWater.selectedItemPosition
+                ) {
 
-            fixedElectricity = when (
-                binding.llElectricityFinanceDetail.spElectricity.selectedItemPosition
-            ) {
-                1 -> "fix"
-                2 -> "metered"
-                else -> ""
-            },
+                    1 -> "fix"
+
+                    2 -> "metered"
+
+                    else -> ""
+                },
+
+            fixedElectricity =
+                when (
+                    binding.llElectricityFinanceDetail
+                        .spElectricity.selectedItemPosition
+                ) {
+
+                    1 -> "fix"
+
+                    2 -> "metered"
+
+                    else -> ""
+                },
 
             fixedWaterBillAmount =
-                binding.llWaterFinanceDetail.etWaterFixedAmount.text.toString().trim(),
+                binding.llWaterFinanceDetail
+                    .etWaterFixedAmount.text
+                    .toString()
+                    .trim(),
 
             fixedElectricityAmount =
-                binding.llElectricityFinanceDetail.etElectricityDefaultAmount.text.toString().trim(),
+                binding.llElectricityFinanceDetail
+                    .etElectricityDefaultAmount.text
+                    .toString()
+                    .trim(),
 
             costPerUnit =
-                binding.llElectricityFinanceDetail.etElectricityCostUnit.text.toString().trim(),
+                binding.llElectricityFinanceDetail
+                    .etElectricityCostUnit.text
+                    .toString()
+                    .trim(),
 
             meterReading = "",
 
             meterReadingWater = "",
 
             costUnitWater =
-                binding.llWaterFinanceDetail.etWaterCostUnit.text.toString().trim(),
+                binding.llWaterFinanceDetail
+                    .etWaterCostUnit.text
+                    .toString()
+                    .trim(),
 
             referenceName =
-                binding.etReferenceName.text.toString().trim(),
+                binding.etReferenceName.text
+                    .toString()
+                    .trim(),
 
+            leaseType = selectedLeaseType,
+
+            leaseEndDate =
+                if (selectedLeaseType == "fixed") {
+
+                    toIsoDateOrEmpty(
+                        binding.llRentFinanceDetail
+                            .tvAggreementEndDate.text
+                            .toString()
+                            .trim()
+                    )
+
+                } else {
+
+                    ""
+                },
 
             profilePic =
                 CommonFunction().getMultipartFromUri(
                     this,
-                    tenantImageUri,
+                    compressedTenantImage,
                     "profilePic"
                 ),
+
             documents =
                 CommonFunction().getMultipartListFromUris(
                     this,
                     listOfNotNull(
-                        frontAdharImageUri,
-                        backAdharImageUri
+                        compressedFrontAadhar,
+                        compressedBackAadhar
                     ),
                     "document"
                 )
-
         )
-
     }
 
     private fun updateTenant() {
@@ -870,23 +1169,56 @@ class AddTenantActivity : AppCompatActivity() {
 
             roomDeposit = binding.llRentFinanceDetail.etDepositAmount.text.toString().trim(),
 
-            rentStartDate = binding.llRentFinanceDetail.tvRentStartDate.text.toString().trim(),
+            rentStartDate =
+                toIsoDateOrEmpty(
+                    binding.llRentFinanceDetail.tvRentStartDate.text
+                        .toString()
+                        .trim()
+                ),
 
             fixedWaterBillAmount =
-                binding.llWaterFinanceDetail.etWaterFixedAmount.text.toString().trim(),
+                binding.llWaterFinanceDetail.etWaterFixedAmount.text
+                    .toString()
+                    .trim(),
 
             fixedElectricityAmount =
-                binding.llElectricityFinanceDetail.etElectricityDefaultAmount.text.toString().trim(),
+                binding.llElectricityFinanceDetail.etElectricityDefaultAmount.text
+                    .toString()
+                    .trim(),
 
             meterReading = "",
 
             waterReading = "",
 
             costPerUnit =
-                binding.llElectricityFinanceDetail.etElectricityCostUnit.text.toString().trim(),
+                binding.llElectricityFinanceDetail.etElectricityCostUnit.text
+                    .toString()
+                    .trim(),
 
             costUnitWater =
-                binding.llWaterFinanceDetail.etWaterCostUnit.text.toString().trim(),
+                binding.llWaterFinanceDetail.etWaterCostUnit.text
+                    .toString()
+                    .trim(),
+
+            rentSubmissionDate =
+                toIsoDateOrEmpty(
+                    binding.llRentFinanceDetail.tvRentDueDate.text
+                        .toString()
+                        .trim()
+                ),
+
+            leaseType = selectedLeaseType,
+
+            leaseEndDate =
+                if (selectedLeaseType == "fixed") {
+                    toIsoDateOrEmpty(
+                        binding.llRentFinanceDetail.tvAggreementEndDate.text
+                            .toString()
+                            .trim()
+                    )
+                } else {
+                    ""
+                },
 
             profilePic = tenantImageUri,
 

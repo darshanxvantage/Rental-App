@@ -18,6 +18,11 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.FileOutputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -256,59 +261,224 @@ class AddPropertyActivity : AppCompatActivity() {
         return true
     }
 
+
+    private suspend fun compressPropertyImage(uri: Uri?): Uri? =
+        withContext(Dispatchers.IO) {
+
+            if (uri == null) {
+                return@withContext null
+            }
+
+            try {
+
+                val inputStream =
+                    contentResolver.openInputStream(uri)
+
+                val bitmap =
+                    BitmapFactory.decodeStream(inputStream)
+
+                inputStream?.close()
+
+                if (bitmap == null) {
+                    return@withContext uri
+                }
+
+                val maxWidth = 1280
+                val maxHeight = 1280
+
+                val width = bitmap.width
+                val height = bitmap.height
+
+                val scale = minOf(
+                    maxWidth.toFloat() / width,
+                    maxHeight.toFloat() / height,
+                    1f
+                )
+
+                val newWidth = (width * scale).toInt()
+                val newHeight = (height * scale).toInt()
+
+                val resizedBitmap =
+                    if (newWidth != width || newHeight != height) {
+
+                        Bitmap.createScaledBitmap(
+                            bitmap,
+                            newWidth,
+                            newHeight,
+                            true
+                        )
+
+                    } else {
+                        bitmap
+                    }
+
+                val compressedFile = File(
+                    cacheDir,
+                    "property_compressed_${System.currentTimeMillis()}.jpg"
+                )
+
+                FileOutputStream(compressedFile).use { outputStream ->
+
+                    resizedBitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        70,
+                        outputStream
+                    )
+                }
+
+                if (resizedBitmap !== bitmap) {
+                    resizedBitmap.recycle()
+                }
+
+                bitmap.recycle()
+
+                Uri.fromFile(compressedFile)
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "AddProperty",
+                    "Image compression failed",
+                    e
+                )
+
+                uri
+            }
+        }
+
     /**
      * Create and submit property data
      */
     private fun submitProperty() {
-        val request = CreatePropertyRequest(
-            address = binding.etAddress.text.toString().trim(),
-            noOfRoom = binding.etHomeNumber.text.toString().toIntOrNull() ?: 0,
-            propertyTypeId = selectedPropertyTypeId,  // This should now be properly set
-            wa_number = binding.etWhatsappNumber.text.toString().trim(),
-            name = binding.etSignUpEmail.text.toString().trim(),
-            imageUri = propertyImage
-        )
 
-        Log.d("AddProperty", "Submitting with typeId: $selectedPropertyTypeId")
-        viewModel.createProperty(request)
+        lifecycleScope.launch {
+
+            binding.toolbar.btnSave.isEnabled = false
+
+            try {
+
+
+                val compressedImage =
+                    compressPropertyImage(propertyImage)
+
+                val request = CreatePropertyRequest(
+
+                    address =
+                        binding.etAddress.text
+                            .toString()
+                            .trim(),
+
+                    noOfRoom =
+                        binding.etHomeNumber.text
+                            .toString()
+                            .toIntOrNull() ?: 0,
+
+                    propertyTypeId =
+                        selectedPropertyTypeId,
+
+                    wa_number =
+                        binding.etWhatsappNumber.text
+                            .toString()
+                            .trim(),
+
+                    name =
+                        binding.etSignUpEmail.text
+                            .toString()
+                            .trim(),
+
+                    imageUri = compressedImage
+                )
+
+                Log.d(
+                    "AddProperty",
+                    "Submitting with typeId: $selectedPropertyTypeId"
+                )
+
+                // 3. Send request
+                viewModel.createProperty(request)
+
+            } catch (e: Exception) {
+
+                binding.toolbar.btnSave.isEnabled = true
+
+                Log.e(
+                    "AddProperty",
+                    "Image compression failed",
+                    e
+                )
+
+                Toast.makeText(
+                    this@AddPropertyActivity,
+                    "Failed to process property image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
     private fun updateProperty() {
 
-        val request =
-            UpdatePropertyRequest(
+        lifecycleScope.launch {
 
-                propertyId = propertyId,
+            binding.toolbar.btnSave.isEnabled = false
 
-                address =
-                    binding.etAddress.text
-                        .toString()
-                        .trim(),
+            try {
 
-                noOfRoom =
-                    binding.etHomeNumber.text
-                        .toString()
-                        .toIntOrNull() ?: 0,
+                val compressedImage =
+                    compressPropertyImage(propertyImage)
 
-                propertyTypeId =
-                    selectedPropertyTypeId,
+                val request =
+                    UpdatePropertyRequest(
 
-                wa_number =
-                    binding.etWhatsappNumber.text
-                        .toString()
-                        .trim(),
+                        propertyId = propertyId,
 
-                name =
-                    binding.etSignUpEmail.text
-                        .toString()
-                        .trim(),
+                        address =
+                            binding.etAddress.text
+                                .toString()
+                                .trim(),
 
-                imageUri =
-                    propertyImage
-            )
+                        noOfRoom =
+                            binding.etHomeNumber.text
+                                .toString()
+                                .toIntOrNull() ?: 0,
 
-        viewModel.updateProperty(
-            request
-        )
+                        propertyTypeId =
+                            selectedPropertyTypeId,
+
+                        wa_number =
+                            binding.etWhatsappNumber.text
+                                .toString()
+                                .trim(),
+
+                        name =
+                            binding.etSignUpEmail.text
+                                .toString()
+                                .trim(),
+
+                        imageUri =
+                            compressedImage
+                    )
+
+                viewModel.updateProperty(
+                    request
+                )
+
+            } catch (e: Exception) {
+
+                binding.toolbar.btnSave.isEnabled = true
+
+                Log.e(
+                    "AddProperty",
+                    "Update property image processing failed",
+                    e
+                )
+
+                Toast.makeText(
+                    this@AddPropertyActivity,
+                    "Failed to process property image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
 
@@ -316,35 +486,115 @@ class AddPropertyActivity : AppCompatActivity() {
      * Initialize all views and drop-down menus.
      */
     private fun initViews() {
-        viewModel.loadPropertyTypes()
 
-        // Set up property type spinner with listener
-        lifecycleScope.launch {
-            viewModel.propertyTypes.collect { list ->
-                if (list.isNotEmpty()) {
-                    val names = list.map { it.name }
-                    propertyTypeIds = list.map { it.id }
-                    setupSpinner(binding.spinnerPropertyType, listOf("Select Property Type") + names)
+        // First show loading text instead of blank spinner
+        setupSpinner(
+            binding.spinnerPropertyType,
+            listOf("Loading property types...")
+        )
+
+
+        // Property Type selection listener
+        binding.spinnerPropertyType.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+
+                    if (
+                        pos > 0 &&
+                        pos - 1 < propertyTypeIds.size
+                    ) {
+
+                        selectedPropertyTypeId =
+                            propertyTypeIds[pos - 1]
+
+                        Log.d(
+                            "AddProperty",
+                            "Selected typeId=$selectedPropertyTypeId"
+                        )
+
+                    } else {
+
+                        selectedPropertyTypeId = ""
+                    }
+
+                    updatePropertySection(pos)
                 }
-            }
-        }
 
-        // Add item selection listener after spinner is populated
-        binding.spinnerPropertyType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                if (pos > 0 && propertyTypeIds.isNotEmpty()) {
-                    selectedPropertyTypeId = propertyTypeIds[pos - 1]
-                    Log.d("AddProperty", "Selected typeId=$selectedPropertyTypeId at position $pos")
-                } else {
+
+                override fun onNothingSelected(
+                    parent: AdapterView<*>
+                ) {
+
                     selectedPropertyTypeId = ""
                 }
-                updatePropertySection(pos)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                selectedPropertyTypeId = ""
+
+        // Observe Property Type API data
+        lifecycleScope.launch {
+
+            viewModel.propertyTypes.collect { list ->
+
+                Log.d(
+                    "PROPERTY_TYPE_UI",
+                    "Received list size=${list.size}, data=$list"
+                )
+
+                if (list.isNotEmpty()) {
+
+                    propertyTypeIds =
+                        list.map { it.id }
+
+                    val names =
+                        list.map { it.name }
+
+                    val spinnerItems =
+                        listOf("Select Property Type") + names
+
+                    setupSpinner(
+                        binding.spinnerPropertyType,
+                        spinnerItems
+                    )
+                }
             }
         }
+
+
+        // Observe Property Type API errors
+        lifecycleScope.launch {
+
+            viewModel.propertyTypeError.collect { error ->
+
+                if (!error.isNullOrBlank()) {
+
+                    Log.e(
+                        "PROPERTY_TYPE_UI",
+                        error
+                    )
+
+                    setupSpinner(
+                        binding.spinnerPropertyType,
+                        listOf("Unable to load property types")
+                    )
+
+                    Toast.makeText(
+                        this@AddPropertyActivity,
+                        error,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+
+
+        // API call AFTER observers are attached
+        viewModel.loadPropertyTypes()
     }
 
     /**
@@ -356,14 +606,91 @@ class AddPropertyActivity : AppCompatActivity() {
         defaultTextColor: Int = Color.GRAY,
         selectedTextColor: Int = Color.BLACK
     ) {
-        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items) {
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getDropDownView(position, convertView, parent) as TextView
-                view.setTextColor(if (position == 0) defaultTextColor else selectedTextColor)
-                return view
+
+        val adapter =
+            object : ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                items
+            ) {
+
+                override fun getView(
+                    position: Int,
+                    convertView: View?,
+                    parent: ViewGroup
+                ): View {
+
+                    val view =
+                        super.getView(
+                            position,
+                            convertView,
+                            parent
+                        ) as TextView
+
+                    view.text = items[position]
+
+                    view.setTextColor(
+                        if (position == 0)
+                            defaultTextColor
+                        else
+                            selectedTextColor
+                    )
+
+                    view.textSize = 16f
+
+                    view.setPadding(
+                        12,
+                        0,
+                        12,
+                        0
+                    )
+
+                    return view
+                }
+
+
+                override fun getDropDownView(
+                    position: Int,
+                    convertView: View?,
+                    parent: ViewGroup
+                ): View {
+
+                    val view =
+                        super.getDropDownView(
+                            position,
+                            convertView,
+                            parent
+                        ) as TextView
+
+                    view.text = items[position]
+
+                    view.setTextColor(
+                        if (position == 0)
+                            defaultTextColor
+                        else
+                            selectedTextColor
+                    )
+
+                    view.setBackgroundColor(Color.WHITE)
+
+                    view.textSize = 16f
+
+                    view.setPadding(
+                        32,
+                        28,
+                        32,
+                        28
+                    )
+
+                    return view
+                }
             }
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
         spinner.adapter = adapter
     }
 

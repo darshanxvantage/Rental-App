@@ -1,7 +1,13 @@
-<resources >
-    <!-- Base application theme. -->
-    <style name="Base.Theme.RentalApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<resources>
+
+    <!-- Dark application theme -->
+    <style
+        name="Base.Theme.RentalApp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- DatePicker / Dialog action button color -->
+        <item name="colorAccent">#B8AFC7</item>
+
     </style>
+
 </resources>

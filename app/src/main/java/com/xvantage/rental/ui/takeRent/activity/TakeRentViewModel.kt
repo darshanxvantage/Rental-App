@@ -41,29 +41,10 @@ class TakeRentViewModel @Inject constructor(
 
     fun clearStatementFilePath() { statementFilePath.value = null }
 
-
-    
-
     private fun getNextDueDateFromCycles(
         dueCycles: List<com.xvantage.rental.network.response.DueCycle>?
     ): String? {
-        val firstCycle = dueCycles?.firstOrNull() ?: return null
-        return try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val cycleMonthSdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-            // cycleMonth is "2026-07-01" format
-            val cycleDate = cycleMonthSdf.parse(firstCycle.cycleMonth) ?: return null
-            val cal = Calendar.getInstance().apply { time = cycleDate }
-
-            // Add 1 month → 1st of next month
-            cal.add(Calendar.MONTH, 1)
-            cal.set(Calendar.DAY_OF_MONTH, 1)
-
-            sdf.format(cal.time)
-        } catch (e: Exception) {
-            null
-        }
+        return dueCycles?.firstOrNull()?.dueDate
     }
 
     fun loadData() {

@@ -82,8 +82,8 @@ class RoomsFragment : Fragment() {
                     Room(
                         id = it.id,
                         number = it.room_no,
-                        type = property.propertyType,
-                        rent = 0.0,
+                        type = property.propertyType ?: "",
+                        rent = it.rent,
                         isOccupied =
                             it.status.equals(
                                 "OCCUPED",

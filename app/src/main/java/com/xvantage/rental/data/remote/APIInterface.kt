@@ -299,6 +299,12 @@ interface   APIInterface {
         @Part("refrence_name")
         referenceName: RequestBody,
 
+        @Part("lease_type")
+        leaseType: RequestBody,
+
+        @Part("lease_end_date")
+        leaseEndDate: RequestBody,
+
         @Part
         profilePic: MultipartBody.Part?,
 
@@ -334,6 +340,9 @@ interface   APIInterface {
         @Part("rent_start_date")
         rentStartDate: RequestBody,
 
+        @Part("rent_submission_date")
+        rentSubmissionDate: RequestBody,
+
         @Part("fixed_waterbill_amount")
         fixedWaterBill: RequestBody,
 
@@ -351,6 +360,12 @@ interface   APIInterface {
 
         @Part("cost_unit_water")
         costUnitWater: RequestBody,
+
+        @Part("lease_type")
+        leaseType: RequestBody,
+
+        @Part("lease_end_date")
+        leaseEndDate: RequestBody,
 
         @Part
         profilePic: MultipartBody.Part?,

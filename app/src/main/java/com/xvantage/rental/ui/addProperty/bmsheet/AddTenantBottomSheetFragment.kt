@@ -10,6 +10,9 @@ import com.xvantage.rental.databinding.FragmentAddTenantBottomSheetBinding
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import android.net.Uri
+import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
 import java.util.UUID
 import com.xvantage.rental.adapter.RoomSpinnerAdapter
@@ -40,6 +43,9 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
     private var propertyDetails: PropertyDetailsData? = null
     private var selectedRoomIndex = -1
 
+    private var aadhaarPhotoUri: Uri? = null
+    private var tenantPhotoUri: Uri? = null
+
     private var onTenantAddedListener: ((Tenant) -> Unit)? = null
     private val calendar = Calendar.getInstance()
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -51,6 +57,39 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
     fun setOnTenantAddedListener(listener: (Tenant) -> Unit) {
         onTenantAddedListener = listener
     }
+
+    private val aadhaarPhotoPicker =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            uri?.let {
+
+                aadhaarPhotoUri = it
+
+                showSelectedImage(
+                    binding.ivAadharUpload,
+                    it
+                )
+            }
+        }
+
+
+    private val tenantPhotoPicker =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            uri?.let {
+
+                tenantPhotoUri = it
+
+                showSelectedImage(
+                    binding.ivTenantPhotoUpload,
+                    it
+                )
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,30 +109,133 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupDatePickers()
+        setupPhotoPickers()
         setupActionButtons()
 
         loadRoomsFromArguments()
         observeCreateTenant()
     }
 
+    private fun setupPhotoPickers() {
+
+        binding.ivAadharUpload.setOnClickListener {
+            aadhaarPhotoPicker.launch("image/*")
+        }
+
+        binding.ivTenantPhotoUpload.setOnClickListener {
+            tenantPhotoPicker.launch("image/*")
+        }
+    }
+
+    private fun showSelectedImage(
+        container: ViewGroup,
+        uri: Uri
+    ) {
+
+        container.removeAllViews()
+
+        val heightInPx =
+            (120 * resources.displayMetrics.density).toInt()
+
+        val imageView = ImageView(requireContext()).apply {
+
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                heightInPx
+            )
+
+            scaleType = ImageView.ScaleType.CENTER_CROP
+
+            setImageURI(uri)
+        }
+
+        container.addView(imageView)
+    }
+
+
+
+
 
 
     private fun setupDatePickers() {
-        binding.etRentStartDate.setOnClickListener { showDatePicker { date -> binding.etRentStartDate.setText(date) } }
-        binding.etRentSubmissionDate.setOnClickListener { showDatePicker { date -> binding.etRentSubmissionDate.setText(date) } }
+
+        // CHECK-IN DATE
+        binding.etCheckinDate.setOnClickListener {
+            showDatePicker { date ->
+                binding.etCheckinDate.setText(date)
+            }
+        }
+
+        // RENT START DATE
+        binding.etRentStartDate.setOnClickListener {
+            showDatePicker { date ->
+                binding.etRentStartDate.setText(date)
+            }
+        }
+
+        // RENT SUBMISSION DATE
+        binding.etRentSubmissionDate.setOnClickListener {
+            showDatePicker { date ->
+                binding.etRentSubmissionDate.setText(date)
+            }
+        }
     }
 
-    private fun showDatePicker(onDateSet: (String) -> Unit) {
-        val listener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            calendar.set(year, month, day)
-            onDateSet(dateFormatter.format(calendar.time))
-        }
-        DatePickerDialog(
-            requireContext(), listener,
+    private fun showDatePicker(
+        onDateSet: (String) -> Unit
+    ) {
+
+        val listener =
+            DatePickerDialog.OnDateSetListener { _, year, month, day ->
+
+                calendar.set(
+                    Calendar.YEAR,
+                    year
+                )
+
+                calendar.set(
+                    Calendar.MONTH,
+                    month
+                )
+
+                calendar.set(
+                    Calendar.DAY_OF_MONTH,
+                    day
+                )
+
+                onDateSet(
+                    dateFormatter.format(calendar.time)
+                )
+            }
+
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            listener,
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+
+
+        datePickerDialog.setOnShowListener {
+
+            val buttonColor =
+                Color.parseColor("#1565C0")
+
+
+            datePickerDialog
+                .getButton(DatePickerDialog.BUTTON_POSITIVE)
+                .setTextColor(buttonColor)
+
+
+            datePickerDialog
+                .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                .setTextColor(buttonColor)
+        }
+
+
+        datePickerDialog.show()
     }
 
     private fun setupActionButtons() {
@@ -268,23 +410,52 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun saveTenant() {
+
         val tenant = Tenant(
+
             id = UUID.randomUUID().toString(),
+
             roomId = roomId,
+
             propertyId = propertyId,
+
             roomName =
                 binding.spinnerRoomName
                     .selectedItem
                     ?.toString()
                     ?: "",
-            tenantName = binding.etTenantName.text.toString(),
-            aadhaarPhotoUri = "binding.ivAadharUpload.drawable?.toString()",
-            tenantPhotoUri = "binding.ivTenantPhotoUpload.drawable?.toUri().toString()",
-            rentStartDate = binding.etRentStartDate.text.toString(),
-            roomDeposit = binding.etRoomDeposit.text.toString().toDoubleOrNull() ?: 0.0,
-            rentSubmissionDate = binding.etRentSubmissionDate.text.toString()
+
+            tenantName =
+                binding.etTenantName.text
+                    ?.toString()
+                    ?.trim()
+                    ?: "",
+
+            aadhaarPhotoUri =
+                aadhaarPhotoUri?.toString() ?: "",
+
+            tenantPhotoUri =
+                tenantPhotoUri?.toString() ?: "",
+
+            rentStartDate =
+                binding.etRentStartDate.text
+                    ?.toString()
+                    ?: "",
+
+            roomDeposit =
+                binding.etRoomDeposit.text
+                    ?.toString()
+                    ?.toDoubleOrNull()
+                    ?: 0.0,
+
+            rentSubmissionDate =
+                binding.etRentSubmissionDate.text
+                    ?.toString()
+                    ?: ""
         )
+
         onTenantAddedListener?.invoke(tenant)
+
         dismiss()
     }
 

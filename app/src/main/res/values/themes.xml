@@ -1,22 +1,44 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.RentalApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/white</item>
+
+    <!-- Base application theme -->
+    <style
+        name="Base.Theme.RentalApp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/white</item>
+
+        <!-- DatePicker / Dialog action button color -->
+        <item name="colorAccent">#6C6479</item>
+
         <item name="materialAlertDialogTheme">@style/MyDialogTheme</item>
 
     </style>
 
-    <style name="Theme.RentalApp" parent="Base.Theme.RentalApp" />
 
-    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+    <style
+        name="Theme.RentalApp"
+        parent="Base.Theme.RentalApp" />
+
+
+    <style
+        name="BottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+
         <item name="bottomSheetStyle">@style/AppBottomSheetStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
     </style>
 
-    <style name="AppBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bg_bottom_sheet_rounded</item>
+
+    <style
+        name="AppBottomSheetStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+
+        <item name="android:background">
+            @drawable/bg_bottom_sheet_rounded
+        </item>
+
     </style>
 
 </resources>

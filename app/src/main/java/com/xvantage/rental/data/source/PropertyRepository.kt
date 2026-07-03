@@ -13,7 +13,6 @@ import com.xvantage.rental.network.utils.ApiLogger
 import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.network.response.DashboardResponse
-import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.utils.BaseApplication
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
@@ -61,12 +60,24 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.imageUri != null) {
                 // Get content type from Uri
-                imagePart =
-                    CommonFunction().getMultipartFromUri(
-                        BaseApplication.instance,
-                        request.imageUri,
-                        "propertyImage"
-                    )
+                val contentType = request.imageUri.lastPathSegment?.let {
+                    when {
+                        it.endsWith(".jpg", true) || it.endsWith(".jpeg", true) -> "image/jpeg"
+                        it.endsWith(".png", true) -> "image/png"
+                        else -> "image/*"
+                    }
+                } ?: "image/*"
+
+                // Create a file from the URI
+                val file = File(request.imageUri.path ?: "")
+                val imageRequestBody = RequestBody.create(contentType.toMediaTypeOrNull(), file)
+
+                // Create the MultipartBody.Part
+                imagePart = MultipartBody.Part.createFormData(
+                    "propertyImage",
+                    file.name,
+                    imageRequestBody
+                )
             }
 
             // Create a request info map for logging
@@ -150,11 +161,22 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.imageUri != null) {
 
+                val file =
+                    File(
+                        request.imageUri.path ?: ""
+                    )
+
+                val requestFile =
+                    RequestBody.create(
+                        "image/*".toMediaTypeOrNull(),
+                        file
+                    )
+
                 imagePart =
-                    CommonFunction().getMultipartFromUri(
-                        BaseApplication.instance,
-                        request.imageUri,
-                        "propertyImage"
+                    MultipartBody.Part.createFormData(
+                        "propertyImage",
+                        file.name,
+                        requestFile
                     )
             }
 
@@ -214,23 +236,106 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
     }
 
     suspend fun getPropertyTypes(): ResultWrapper<List<PropertyType>> {
+
         return try {
-            val response = apiInterface.get("room-type/property-type")
-            val wrapper = NetworkHelper.handleApiResponse(response)
+
+            val response =
+                apiInterface.get(
+                    "room-type/property-type"
+                )
+
+
+            android.util.Log.d(
+                "PROPERTY_TYPE_API",
+                "Request URL = ${response.raw().request.url}"
+            )
+
+            android.util.Log.d(
+                "PROPERTY_TYPE_API",
+                "HTTP Code = ${response.code()}"
+            )
+
+            android.util.Log.d(
+                "PROPERTY_TYPE_API",
+                "Response Body = ${response.body()}"
+            )
+
+
+            val wrapper =
+                NetworkHelper.handleApiResponse(response)
+
+
             when (wrapper) {
+
                 is ResultWrapper.Success -> {
+
                     val jsonObject = wrapper.value
-                    val dataArray = jsonObject.getAsJsonArray("data")
-                    val listType = object : TypeToken<List<PropertyType>>() {}.type
-                    val list: List<PropertyType> = Gson().fromJson(dataArray, listType)
+
+                    if (!jsonObject.has("data")) {
+
+                        return ResultWrapper.Error(
+                            "Response does not contain data field"
+                        )
+                    }
+
+
+                    val dataArray =
+                        jsonObject.getAsJsonArray("data")
+
+
+                    val listType =
+                        object :
+                            TypeToken<List<PropertyType>>() {}.type
+
+
+                    val list: List<PropertyType> =
+                        Gson().fromJson(
+                            dataArray,
+                            listType
+                        )
+
+
+                    android.util.Log.d(
+                        "PROPERTY_TYPE_API",
+                        "Parsed Property Types = $list"
+                    )
+
+
                     ResultWrapper.Success(list)
                 }
 
-                is ResultWrapper.Error -> wrapper
-                else -> ResultWrapper.Error("Unexpected response type")
+
+                is ResultWrapper.Error -> {
+
+                    android.util.Log.e(
+                        "PROPERTY_TYPE_API",
+                        "API Error = ${wrapper.message}"
+                    )
+
+                    wrapper
+                }
+
+
+                else -> {
+
+                    ResultWrapper.Error(
+                        "Unexpected response type"
+                    )
+                }
             }
+
+
         } catch (e: Exception) {
-            ResultWrapper.Error("Network error: ${e.localizedMessage}")
+
+            android.util.Log.e(
+                "PROPERTY_TYPE_API",
+                "Exception",
+                e
+            )
+
+            ResultWrapper.Error(
+                "Network error: ${e.localizedMessage}"
+            )
         }
     }
     suspend fun getPropertyDetails(id: String): ResultWrapper<PropertyDetailsResponse> {
@@ -507,6 +612,10 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
         referenceName: String,
 
+        leaseType: String,
+
+        leaseEndDate: String,
+
         profilePic: MultipartBody.Part?,
 
         documents: List<MultipartBody.Part>?
@@ -518,43 +627,57 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val response = apiInterface.createTenant(
 
                 roomId.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 tenantName.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 phoneCode.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 rent.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 roomDeposit.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 checkinDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 rentStartDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 rentSubmissionDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 fixedWaterBill.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 fixedElectricity.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 fixedWaterBillAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 fixedElectricityAmount.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 costPerUnit.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 meterReading.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 meterReadingWater.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 referenceName.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                leaseType.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                leaseEndDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+
                 profilePic,
+
                 documents
+
             )
 
-            android.util.Log.e("CREATE_TENANT", "HTTP = ${response.code()}")
-            android.util.Log.e("CREATE_TENANT", "BODY = ${response.body()}")
-            android.util.Log.e("CREATE_TENANT", "ERROR = ${response.errorBody()?.string()}")
-
-            return NetworkHelper.handleApiResponse(response)
+            NetworkHelper.handleApiResponse(response)
 
         } catch (e: Exception) {
 
-            android.util.Log.e(
-                "CREATE_TENANT_EXCEPTION",
-                android.util.Log.getStackTraceString(e)
-            )
+            ResultWrapper.Error(e.localizedMessage ?: "Tenant Create Failed")
 
-            return ResultWrapper.Error(
-                e.localizedMessage ?: "Tenant Create Failed"
-            )
         }
     }
 
@@ -585,6 +708,15 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val rentStartDatePart =
                 request.rentStartDate.toRequestBody("text/plain".toMediaTypeOrNull())
 
+            val rentSubmissionDatePart =
+                request.rentSubmissionDate.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val leaseTypePart =
+                request.leaseType.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val leaseEndDatePart =
+                request.leaseEndDate.toRequestBody("text/plain".toMediaTypeOrNull())
+
             val fixedWaterBillAmountPart =
                 request.fixedWaterBillAmount.toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -607,12 +739,18 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             if (request.profilePic != null) {
 
-                profilePicPart =
-                    CommonFunction().getMultipartFromUri(
-                        BaseApplication.instance,
-                        request.profilePic,
-                        "profilePic"
-                    )
+                val file = File(request.profilePic.path ?: "")
+
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
+
+                profilePicPart = MultipartBody.Part.createFormData(
+                    "profilePic",
+                    file.name,
+                    requestFile
+                )
             }
 
 
@@ -620,15 +758,22 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
             request.documents?.forEach { uri ->
 
-                CommonFunction().getMultipartFromUri(
-                    BaseApplication.instance,
-                    uri,
-                    "document"
-                )?.let {
+                val file = File(uri.path ?: "")
 
-                    documentParts.add(it)
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
 
-                }
+                documentParts.add(
+
+                    MultipartBody.Part.createFormData(
+                        "document",
+                        file.name,
+                        requestFile
+                    )
+
+                )
             }
 
 
@@ -648,6 +793,8 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                 rentStartDatePart,
 
+                rentSubmissionDatePart,
+
                 fixedWaterBillAmountPart,
 
                 fixedElectricityAmountPart,
@@ -659,6 +806,10 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 costPerUnitPart,
 
                 costUnitWaterPart,
+
+                leaseTypePart,
+
+                leaseEndDatePart,
 
                 profilePicPart,
 
@@ -676,7 +827,6 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
         }
     }
-
 
     suspend fun createRoom(
 
@@ -742,6 +892,8 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
 
 
+
+
     suspend fun deleteTenant(
         tenantId: String
     ): ResultWrapper<Boolean> {
@@ -773,6 +925,7 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             )
         }
     }
+
 
     suspend fun deleteTenantPermanent(
         tenantId: String

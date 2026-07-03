@@ -2,6 +2,7 @@ package com.xvantage.rental.ui.addProperty.bmsheet
 
 import android.R
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.xvantage.rental.databinding.FragmentAddRoomBottomSheetBinding
-import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,13 +17,9 @@ import com.xvantage.rental.ui.addProperty.RoomViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
-import com.google.gson.Gson
-import com.xvantage.rental.network.response.PropertyDetailsResponse
-import com.xvantage.rental.network.response.PropertyDetailsData
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.UUID
 
 @AndroidEntryPoint
 class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
@@ -31,10 +27,9 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentAddRoomBottomSheetBinding? = null
     private val binding get() = _binding!!
     private var propertyId = ""
+    private var propertyTypeId = ""
 
     private val viewModel: RoomViewModel by viewModels()
-
-    private var propertyData: PropertyDetailsData? = null
 
     private var onRoomAddedListener: ((Room) -> Unit)? = null
     private val calendar = Calendar.getInstance()
@@ -55,26 +50,14 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
 
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val json =
-            arguments?.getString("property_json")
+        propertyId = arguments?.getString("propertyId") ?: ""
+        propertyTypeId = arguments?.getString("propertyTypeId") ?: ""  // ✅ get UUID
 
-        if (!json.isNullOrEmpty()) {
-
-            propertyData =
-                Gson().fromJson(
-                    json,
-                    PropertyDetailsData::class.java
-                )
-
-            propertyId =
-                propertyData?.id ?: ""
-        }
+        android.util.Log.e("ROOM_PROPERTY_ID", propertyId)
+        android.util.Log.e("ROOM_PROPERTY_TYPE_ID", propertyTypeId)
 
         setupRoomTypeSpinner()
         setupDatePicker()
@@ -99,20 +82,38 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun showDatePicker() {
-        val dateListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, month)
-            calendar.set(Calendar.DAY_OF_MONTH, day)
-            updateDateField()
-        }
 
-        DatePickerDialog(
+        val dateListener =
+            DatePickerDialog.OnDateSetListener { _, year, month, day ->
+
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, day)
+
+                updateDateField()
+            }
+
+
+        val datePickerDialog = DatePickerDialog(
             requireContext(),
             dateListener,
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+
+
+        datePickerDialog.setOnShowListener {
+
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)
+                .setTextColor(Color.parseColor("#1565C0"))
+
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                .setTextColor(Color.parseColor("#1565C0"))
+        }
+
+
+        datePickerDialog.show()
     }
 
     private fun updateDateField() {
@@ -160,31 +161,24 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
         viewModel.createRoom(
 
-            propertyId = propertyData?.id ?: "",
+            propertyId = propertyId,
 
-            propertyTypeId = propertyData?.propertyTypeId ?: "",
+            // ✅ FIX: actual UUID instead of hardcoded "1"
+            propertyTypeId = propertyTypeId,
 
             roomNo = binding.etRoomNumber.text.toString(),
 
-            roomTypeId = propertyData?.roomTypes
-                ?.firstOrNull {
-                    it.name == binding.spinnerRoomType.selectedItem.toString()
-                }?.id ?: "",
+            roomTypeId = "",
 
-            roomTypeText =
-                binding.spinnerRoomType.selectedItem.toString(),
+            roomTypeText = binding.spinnerRoomType.selectedItem.toString(),
 
-            address =
-                propertyData?.address ?: "",
+            address = "",
 
-            rent =
-                binding.etRoomRent.text.toString(),
+            rent = binding.etRoomRent.text.toString(),
 
-            meterReading =
-                binding.etMeterReading.text.toString(),
+            meterReading = binding.etMeterReading.text.toString(),
 
-            meterReadingLastDate =
-                binding.etReadingDate.text.toString(),
+            meterReadingLastDate = binding.etReadingDate.text.toString(),
 
             roomImage = null
         )
@@ -213,6 +207,12 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
                                 "Room Created Successfully",
                                 android.widget.Toast.LENGTH_SHORT
                             ).show()
+
+                            // Notify parent activity to reload property details
+                            parentFragmentManager.setFragmentResult(
+                                "room_added",
+                                Bundle()
+                            )
 
                             dismiss()
                         }

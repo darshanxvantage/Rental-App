@@ -69,6 +69,9 @@ data class TenantItem(
     val allCycles: List<DueCycle>? = null,
     val totalDue: Double? = null,
     val hasOverdue: Boolean? = null,
+    val hasDueSoon: Boolean? = null,
+
+    val nextDueDate: String? = null,
     val dueMonthsCount: Int? = null
 )
 

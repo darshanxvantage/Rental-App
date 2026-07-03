@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.util.Log
 import javax.inject.Inject
 
 /**
@@ -43,11 +44,41 @@ class AddPropertyViewModel @Inject constructor(
     private val _propertyTypes = MutableStateFlow<List<PropertyType>>(emptyList())
     val propertyTypes: StateFlow<List<PropertyType>> = _propertyTypes.asStateFlow()
 
+    private val _propertyTypeError = MutableStateFlow<String?>(null)
+    val propertyTypeError: StateFlow<String?> = _propertyTypeError.asStateFlow()
+
     fun loadPropertyTypes() = viewModelScope.launch {
-        when(val res = repository.getPropertyTypes()) {
-            is ResultWrapper.Success -> _propertyTypes.value = res.value
-            is ResultWrapper.Error   -> _createPropertyState.value = CreatePropertyState.Error(res.message)
-            else -> Unit
+
+        _propertyTypeError.value = null
+
+        when (val res = repository.getPropertyTypes()) {
+
+            is ResultWrapper.Success -> {
+
+                _propertyTypes.value = res.value
+
+                Log.d(
+                    "PROPERTY_TYPE_API",
+                    "Property types loaded: ${res.value}"
+                )
+            }
+
+            is ResultWrapper.Error -> {
+
+                _propertyTypes.value = emptyList()
+
+                _propertyTypeError.value =
+                    res.message.ifBlank {
+                        "Unable to load property types"
+                    }
+
+                Log.e(
+                    "PROPERTY_TYPE_API",
+                    "Property type API failed: ${res.message}"
+                )
+            }
+
+            ResultWrapper.Loading -> Unit
         }
     }
 

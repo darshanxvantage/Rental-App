@@ -12,7 +12,6 @@ import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 import com.xvantage.rental.network.response.PropertyItem
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
-import android.util.Log
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +27,17 @@ class AddTenantViewModel @Inject constructor(
 
     val createTenantState =
         MutableStateFlow(false)
+
+    // Populated from the API response after a successful create/update, so
+    // the Activity can schedule a rent reminder against the REAL due date
+    // (instead of guessing one on-device).
+    val createdTenantNextDueDate =
+        MutableStateFlow<String?>(null)
+
+    // Real backend error message (validation failures etc.) so the user sees
+    // *why* saving failed, instead of nothing happening.
+    val tenantErrorMessage =
+        MutableStateFlow<String?>(null)
 
     val propertyListState =
         MutableStateFlow<List<PropertyItem>>(emptyList())
@@ -90,18 +100,29 @@ class AddTenantViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            when (
+            val result = repository.updateTenant(request)
 
-                repository.updateTenant(
-                    request
-                )
-
-            ) {
+            when (result) {
 
                 is ResultWrapper.Success -> {
 
+                    createdTenantNextDueDate.value =
+                        result.value.get("data")
+                            ?.asJsonObject
+                            ?.get("rent_end_date")
+                            ?.asString
+
                     updateTenantState.value =
                         true
+                }
+
+                is ResultWrapper.Error -> {
+
+                    tenantErrorMessage.value =
+                        result.message
+
+                    updateTenantState.value =
+                        false
                 }
 
                 else -> {
@@ -152,6 +173,10 @@ class AddTenantViewModel @Inject constructor(
 
         referenceName: String,
 
+        leaseType: String,
+
+        leaseEndDate: String,
+
         profilePic: MultipartBody.Part?,
 
         documents: List<MultipartBody.Part>?
@@ -160,59 +185,84 @@ class AddTenantViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            when (val response = repository.createTenant(
+            val result = repository.createTenant(
 
                 roomId,
+
                 tenantName,
+
                 phoneNumber,
+
                 phoneCode,
+
                 rent,
+
                 roomDeposit,
+
                 checkinDate,
+
                 rentStartDate,
+
                 rentSubmissionDate,
+
                 fixedWaterBill,
+
                 fixedElectricity,
+
                 fixedWaterBillAmount,
+
                 fixedElectricityAmount,
+
                 costPerUnit,
+
                 meterReading,
+
                 meterReadingWater,
+
                 costUnitWater,
+
                 referenceName,
+
+                leaseType,
+
+                leaseEndDate,
+
                 profilePic,
+
                 documents
 
-            )) {
+            )
+
+            when (result) {
 
                 is ResultWrapper.Success -> {
 
-                    Log.e(
-                        "CREATE_TENANT",
-                        "SUCCESS"
-                    )
+                    // Backend now returns the freshly-created first billing
+                    // cycle's due date as the tenant's rent_end_date — use it
+                    // to schedule the rent reminder.
+                    createdTenantNextDueDate.value =
+                        result.value.get("data")
+                            ?.asJsonObject
+                            ?.get("rent_end_date")
+                            ?.asString
 
                     createTenantState.value = true
+
                 }
 
                 is ResultWrapper.Error -> {
 
-                    Log.e(
-                        "CREATE_TENANT",
-                        "ERROR = ${response.message}"
-                    )
+                    tenantErrorMessage.value =
+                        result.message
 
                     createTenantState.value = false
+
                 }
 
                 else -> {
 
-                    Log.e(
-                        "CREATE_TENANT",
-                        "UNKNOWN ERROR"
-                    )
-
                     createTenantState.value = false
+
                 }
             }
         }

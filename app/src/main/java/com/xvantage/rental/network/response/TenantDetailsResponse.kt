@@ -47,6 +47,11 @@ data class TenantDetailsData(
     val rent_start_date: String?,
     val rent_receive_date: String?,
     val rent_end_date: String?,
+    val rent_submission_date: String?,
+
+    // Lease
+    val lease_type: String?,
+    val lease_end_date: String?,
 
     // Payment
     val payment_mode: String?,

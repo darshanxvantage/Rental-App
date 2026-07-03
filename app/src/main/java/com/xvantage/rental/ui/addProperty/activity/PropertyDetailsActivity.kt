@@ -32,6 +32,7 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPropertyDetailsBinding
     private var propertyId: String = ""
+    private var propertyTypeId: String = ""
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private val viewModel by viewModels<PropertyDetailsViewModel>()
 
@@ -54,6 +55,14 @@ class PropertyDetailsActivity : AppCompatActivity() {
         setupPropertyDetails()
         setupViewPager()
         setupFab()
+
+        // Reload property details when a room is added from bottom sheet
+        supportFragmentManager.setFragmentResultListener(
+            "room_added",
+            this
+        ) { _, _ ->
+            viewModel.loadPropertyDetails(propertyId)
+        }
     }
 
     private fun setupToolbar() {
@@ -76,6 +85,9 @@ class PropertyDetailsActivity : AppCompatActivity() {
 //                            binding.progressBar.visibility = View.VISIBLE
                         }
                         is PropertyDetailsViewModel.State.Success -> {
+
+                            // ✅ Store propertyTypeId for room creation
+                            propertyTypeId = state.details.data?.propertyTypeId ?: ""
 
                             android.util.Log.e(
                                 "PROPERTY_DETAILS",
@@ -187,16 +199,17 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
         val bottomSheet = AddRoomBottomSheetFragment()
 
-        val currentData =
-            (viewModel.state.value as? PropertyDetailsViewModel.State.Success)
-                ?.details
-                ?.data
-
         val bundle = Bundle()
 
         bundle.putString(
-            "property_json",
-            Gson().toJson(currentData)
+            "propertyId",
+            propertyId
+        )
+
+        // ✅ FIX: propertyTypeId bhi pass karo — room create ke liye UUID chahiye
+        bundle.putString(
+            "propertyTypeId",
+            propertyTypeId
         )
 
         bottomSheet.arguments = bundle

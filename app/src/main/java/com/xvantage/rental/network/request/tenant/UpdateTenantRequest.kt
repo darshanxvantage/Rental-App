@@ -24,6 +24,8 @@ data class UpdateTenantRequest(
 
     val rentStartDate: String,
 
+    val rentSubmissionDate: String,
+
     val fixedWaterBillAmount: String,
 
     val fixedElectricityAmount: String,
@@ -35,6 +37,10 @@ data class UpdateTenantRequest(
     val costPerUnit: String,
 
     val costUnitWater: String,
+
+    val leaseType: String,
+
+    val leaseEndDate: String,
 
     val profilePic: Uri?,
 
