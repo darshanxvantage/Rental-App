@@ -51,10 +51,14 @@ class TakeRentActivity : AppCompatActivity() {
                 layoutBinding.rvPropertyList.adapter =
                     PropertyRoomAdapter(
                         propertyData,
-                        this@TakeRentActivity
-                    ) { tenantId ->
-                        viewModel.generateCompleteStatement(tenantId)
-                    }
+                        this@TakeRentActivity,
+                        onGenerateStatement = { tenantId ->
+                            viewModel.generateCompleteStatement(tenantId)
+                        },
+                        onPaymentReceived = {
+                            viewModel.loadData()
+                        }
+                    )
 
             }
 

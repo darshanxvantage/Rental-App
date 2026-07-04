@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentDuesBinding
 import com.xvantage.rental.network.response.TenantItem
-import androidx.activity.result.contract.ActivityResultContracts
-import android.content.Intent
-import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
+import com.xvantage.rental.ui.takeRent.bmsheet.ReceivePaymentBottomSheetFragment
 import com.xvantage.rental.ui.dashboard.fragment.adapter.DuesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,17 +28,6 @@ class DuesFragment : Fragment() {
 
     // Track which tab is active
     private var currentTab = TAB_ALL
-
-    private val paymentLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
-            if (result.resultCode == android.app.Activity.RESULT_OK) {
-
-                viewModel.loadDues()
-
-            }
-
-        }
 
     companion object {
         private const val TAB_ALL     = 0
@@ -81,25 +68,28 @@ class DuesFragment : Fragment() {
             viewModel
         ) { tenant ->
 
-            val intent = Intent(
-                requireContext(),
-                ReceivePaymentActivity::class.java
+            // Opens as a bottom sheet now instead of pushing a whole new
+            // screen — "Collect Rent" no longer navigates the owner away
+            // from the Due Payments list they were looking at.
+            val sheet = ReceivePaymentBottomSheetFragment.newInstance(
+                tenantId = tenant.id,
+                tenantName = tenant.tenant_name ?: "",
+                roomId = tenant.room_fk ?: "",
+                propertyName = tenant.tenant_details?.property?.name ?: "",
+                totalPayable = tenant.totalDue ?: 0.0,
+                electricityMode = tenant.fixed_electricity ?: "",
+                waterMode = tenant.fixed_waterbill ?: "",
+                lastMeterReading = tenant.last_meter_reading ?: "",
+                lastWaterReading = tenant.last_meter_reading_water ?: "",
+                costPerUnit = tenant.cost_per_unit ?: "",
+                costUnitWater = tenant.cost_unit_water ?: ""
             )
 
-            intent.putExtra("tenantId", tenant.id)
-            intent.putExtra("tenantName", tenant.tenant_name)
-            intent.putExtra("roomId", tenant.room_fk)
-            intent.putExtra("propertyName", tenant.tenant_details?.property?.name ?: "")
-            intent.putExtra("monthlyRent", tenant.rent?.toDoubleOrNull() ?: 0.0)
-            intent.putExtra("totalPayable", tenant.totalDue ?: 0.0)
-            intent.putExtra("electricityMode", tenant.fixed_electricity ?: "")
-            intent.putExtra("waterMode", tenant.fixed_waterbill ?: "")
-            intent.putExtra("lastMeterReading", tenant.last_meter_reading ?: "")
-            intent.putExtra("lastWaterReading", tenant.last_meter_reading_water ?: "")
-            intent.putExtra("costPerUnit", tenant.cost_per_unit ?: "")
-            intent.putExtra("costUnitWater", tenant.cost_unit_water ?: "")
+            sheet.setOnPaymentReceivedListener {
+                viewModel.loadDues()
+            }
 
-            paymentLauncher.launch(intent)
+            sheet.show(childFragmentManager, "ReceivePayment")
         }
         binding.rvDues.layoutManager = LinearLayoutManager(requireContext())
         binding.rvDues.adapter = adapter

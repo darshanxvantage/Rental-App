@@ -894,6 +894,34 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
 
 
+    suspend fun deleteRoom(roomId: String): ResultWrapper<Boolean> {
+        return try {
+            val response = apiInterface.deleteRoom(roomId)
+            if (response.isSuccessful) ResultWrapper.Success(true)
+            else ResultWrapper.Error("Delete room failed")
+        } catch (e: Exception) {
+            ResultWrapper.Error(e.localizedMessage ?: "Delete room failed")
+        }
+    }
+
+    suspend fun editRoom(
+        roomId: String,
+        roomNo: String,
+        rent: String
+    ): ResultWrapper<Boolean> {
+        return try {
+            val response = apiInterface.editRoom(
+                roomId.toRequestBody("text/plain".toMediaTypeOrNull()),
+                roomNo.toRequestBody("text/plain".toMediaTypeOrNull()),
+                rent.toRequestBody("text/plain".toMediaTypeOrNull())
+            )
+            if (response.isSuccessful) ResultWrapper.Success(true)
+            else ResultWrapper.Error("Edit room failed")
+        } catch (e: Exception) {
+            ResultWrapper.Error(e.localizedMessage ?: "Edit room failed")
+        }
+    }
+
     suspend fun deleteTenant(
         tenantId: String
     ): ResultWrapper<Boolean> {

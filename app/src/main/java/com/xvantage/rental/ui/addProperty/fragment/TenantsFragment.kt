@@ -64,7 +64,8 @@ class TenantsFragment : Fragment(){
 
         tenantsAdapter =
             TenantsAdapter(
-                requireContext()
+                requireContext(),
+                isGridMode = true
             )
 
                 binding.rvRooms.layoutManager =

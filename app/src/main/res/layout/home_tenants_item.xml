@@ -1,155 +1,150 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-    </data>
+    <data></data>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/_12sdp"
-        app:cardElevation="@dimen/_3sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:backgroundTint="@color/whisper_gray"
-        >
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="@color/whisper_gray">
 
-    <RelativeLayout
-        android:layout_width="150dp"
-        android:layout_height="wrap_content">
-
-        <!-- Image with Overlaid Title, Subtitle, and Status -->
-        <RelativeLayout
-            android:id="@+id/rl_image"
-            android:layout_width="150dp"
-            android:layout_height="100dp">
-
-            <ImageView
-                android:id="@+id/item_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/boarding_1" />
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="8dp"
-                android:background="@drawable/status_background"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="🟢 Active"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="10sp"/>
-
-            <TextView
-                android:id="@+id/tvTenantName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_alignParentBottom="true"
-                android:text="Tenant name"
-                android:textColor="@color/white"
-                android:fontFamily="@font/splinesans_bold"
-                android:textStyle="bold"
-                android:textSize="16sp" />
-        </RelativeLayout>
-
-        <!-- Rooms and Current Tenants -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/_5sdp"
-            android:orientation="vertical"
-            android:id="@+id/rl_data"
-            android:layout_below="@id/rl_image">
+            android:orientation="vertical">
+
+            <!-- Image Section -->
+            <RelativeLayout
+                android:id="@+id/rl_image"
+                android:layout_width="match_parent"
+                android:layout_height="110dp">
+
+                <ImageView
+                    android:id="@+id/item_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/boarding_1" />
+
+                <!-- Status Badge -->
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/status_background"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:text="Active"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="10sp" />
+
+                <!-- Tenant Name Overlay -->
+                <TextView
+                    android:id="@+id/tvTenantName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="Tenant name"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/splinesans_bold"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <!-- Info Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/ll_rooms"
-                android:layout_below="@id/rl_image">
-                <!-- Rooms Section -->
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <!-- Property Row -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:id="@+id/ll_rooms"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
 
                     <ImageView
                         android:id="@+id/rooms_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_rooms" />
 
                     <TextView
                         android:id="@+id/tv_location"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:maxLines="2"
-                        android:text="Rooms:"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="--"
                         android:textColor="@color/black"
-                        android:textSize="12sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
 
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/ll_tenant"
-                android:layout_below="@id/rl_image">
-                <!-- Rooms Section -->
+                <!-- Phone Row -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:id="@+id/ll_tenant"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
 
                     <ImageView
                         android:id="@+id/tenants_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_tenants" />
 
                     <TextView
                         android:id="@+id/tv_number"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Rooms:"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="--"
                         android:textColor="@color/black"
-                        android:textSize="12sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
+
+                <!-- View Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/moreButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/black_cole"
+                    app:icon="@drawable/ic_click_circle"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    android:text="View" />
 
             </LinearLayout>
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/more_button"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                app:backgroundTint="@color/black_cole"
-                app:icon="@drawable/ic_click_circle"
-                app:iconGravity="textStart"
-                android:layout_below="@id/ll_tenant"
-                app:iconPadding="10dp"
-                android:text="View"
-                />
         </LinearLayout>
-
-
-    </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 </layout>

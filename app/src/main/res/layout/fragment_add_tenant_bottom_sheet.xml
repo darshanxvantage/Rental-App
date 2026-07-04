@@ -171,13 +171,16 @@
                 android:id="@+id/iv_aadhar_upload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/border_box">
+                android:background="@drawable/border_box"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:id="@+id/uploadContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -187,10 +190,34 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_cloud_upload" />
 
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Drag your file(s) or "
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_browse_aadhar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="browse"
+                            android:textColor="#3B82F6"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/maxSizeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="Max 10 MB files are allowed"
                         android:textColor="#777777"
                         android:textSize="12sp" />
@@ -199,11 +226,17 @@
                         android:id="@+id/supportedFormats"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Only support .jpg, .png files"
+                        android:layout_marginTop="4dp"
+                        android:text="Only support .jpg, .png and .svg and zip files"
                         android:textColor="@color/dark_grey_hint"
                         android:textSize="12sp" />
                 </LinearLayout>
             </RelativeLayout>
+
+            <include
+                android:id="@+id/ll_selected_aadhar_photo"
+                layout="@layout/selected_image_layout"
+                android:visibility="gone" />
 
             <!-- Tenant Photo Upload -->
 
@@ -218,12 +251,15 @@
                 android:id="@+id/iv_tenant_photo_upload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/border_box">
+                android:background="@drawable/border_box"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -232,9 +268,33 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_cloud_upload" />
 
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Drag your file(s) or "
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_browse_tenant"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="browse"
+                            android:textColor="#3B82F6"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="Max 10 MB files are allowed"
                         android:textColor="#777777"
                         android:textSize="12sp" />
@@ -242,11 +302,17 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Only support .jpg, .png files"
+                        android:layout_marginTop="4dp"
+                        android:text="Only support .jpg, .png and .svg and zip files"
                         android:textColor="@color/dark_grey_hint"
                         android:textSize="12sp" />
                 </LinearLayout>
             </RelativeLayout>
+
+            <include
+                android:id="@+id/ll_selected_tenant_photo"
+                layout="@layout/selected_image_layout"
+                android:visibility="gone" />
             <!-- Action Buttons -->
             <!-- Buttons -->
             <LinearLayout

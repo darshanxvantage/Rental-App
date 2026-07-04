@@ -28,12 +28,24 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
     private var propertyId = ""
     private var propertyTypeId = ""
+    private var existingRoomNumbers: List<String> = emptyList()
 
     private val viewModel: RoomViewModel by viewModels()
 
     private var onRoomAddedListener: ((Room) -> Unit)? = null
     private val calendar = Calendar.getInstance()
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private val isoDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    private fun toIsoDateOrEmpty(displayDate: String): String {
+        if (displayDate.isBlank()) return ""
+        return try {
+            val parsed = dateFormatter.parse(displayDate)
+            if (parsed != null) isoDateFormatter.format(parsed) else ""
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     fun setOnRoomAddedListener(listener: (Room) -> Unit) {
         onRoomAddedListener = listener
@@ -55,6 +67,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
         propertyId = arguments?.getString("propertyId") ?: ""
         propertyTypeId = arguments?.getString("propertyTypeId") ?: ""  // ✅ get UUID
+        existingRoomNumbers = arguments?.getStringArrayList("existingRoomNumbers") ?: emptyList()
 
         android.util.Log.e("ROOM_PROPERTY_ID", propertyId)
         android.util.Log.e("ROOM_PROPERTY_TYPE_ID", propertyTypeId)
@@ -142,9 +155,15 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     private fun validateFields(): Boolean {
         var isValid = true
 
-        // Validate room number/name
-        if (binding.etRoomNumber.text.isNullOrBlank()) {
+        val enteredRoomNumber = binding.etRoomNumber.text?.toString()?.trim() ?: ""
+
+
+        if (enteredRoomNumber.isBlank()) {
             binding.etRoomNumber.error = "Room number is required"
+            isValid = false
+        } else if (existingRoomNumbers.any { it.trim().equals(enteredRoomNumber, ignoreCase = true) }) {
+
+            binding.etRoomNumber.error = "Room \"$enteredRoomNumber\" already exists in this property"
             isValid = false
         }
 
@@ -163,7 +182,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
             propertyId = propertyId,
 
-            // ✅ FIX: actual UUID instead of hardcoded "1"
+
             propertyTypeId = propertyTypeId,
 
             roomNo = binding.etRoomNumber.text.toString(),
@@ -178,7 +197,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
             meterReading = binding.etMeterReading.text.toString(),
 
-            meterReadingLastDate = binding.etReadingDate.text.toString(),
+            meterReadingLastDate = toIsoDateOrEmpty(binding.etReadingDate.text.toString()),
 
             roomImage = null
         )

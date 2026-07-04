@@ -64,7 +64,7 @@ class PropertiesAdapter(
             }
 
             itemBinding.roomsValue.text =
-                data.no_of_room
+                data.property_room_no.size.toString()
 
             itemBinding.tenantsValue.text =
                 data.total_tenants.toString()

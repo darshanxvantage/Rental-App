@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.view.View
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityTenantDetailsBinding
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
@@ -145,8 +146,58 @@ class TenantDetailsActivity : AppCompatActivity() {
                     binding.tvDeposit.text    = "₹${data.room_deposit ?: "0"}"
                     binding.tvCheckInDate.text   = data.checkin_date ?: "N/A"
                     binding.tvRentStartDate.text = data.rent_start_date ?: "N/A"
-                    binding.tvElectricity.text   = "₹${data.fixed_electricity_amount ?: "0"}"
-                    binding.tvWater.text         = "₹${data.fixed_waterbill_amount ?: "0"}"
+
+
+                    when ((data.fixed_electricity ?: "").lowercase().trim()) {
+                        "fix", "fixed" -> {
+                            binding.tvElectricityPlanBadge.text = "FIXED"
+                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#1565C0"))
+                            binding.tvElectricity.text = "₹${data.fixed_electricity_amount ?: "0"} / month"
+                        }
+                        "metered" -> {
+                            binding.tvElectricityPlanBadge.text = "METERED"
+                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#E65100"))
+                            binding.tvElectricity.text =
+                                "Current reading: ${data.meter_reading ?: "0"} units"
+                        }
+                        else -> {
+                            binding.tvElectricityPlanBadge.text = "NO COST"
+                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#9E9E9E"))
+                            binding.tvElectricity.text = "Owner pays"
+                        }
+                    }
+
+                    // Water - same fix.
+                    when ((data.fixed_waterbill ?: "").lowercase().trim()) {
+                        "fix", "fixed" -> {
+                            binding.tvWaterPlanBadge.text = "FIXED"
+                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#1565C0"))
+                            binding.tvWater.text = "₹${data.fixed_waterbill_amount ?: "0"} / month"
+                        }
+                        "metered" -> {
+                            binding.tvWaterPlanBadge.text = "METERED"
+                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#E65100"))
+                            binding.tvWater.text =
+                                "Current reading: ${data.meter_reading_water ?: "0"} units"
+                        }
+                        else -> {
+                            binding.tvWaterPlanBadge.text = "NO COST"
+                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#9E9E9E"))
+                            binding.tvWater.text = "Owner pays"
+                        }
+                    }
+
+
+                    val elecIsMetered = (data.fixed_electricity ?: "").lowercase().trim() == "metered"
+                    val waterIsMetered = (data.fixed_waterbill ?: "").lowercase().trim() == "metered"
+
+                    binding.llElecUnitCost.visibility =
+                        if (elecIsMetered) View.VISIBLE else View.GONE
+                    binding.llWaterUnitCost.visibility =
+                        if (waterIsMetered) View.VISIBLE else View.GONE
+                    binding.llUnitCosts.visibility =
+                        if (elecIsMetered || waterIsMetered) View.VISIBLE else View.GONE
+
                     binding.tvCostPerUnit.text   = "₹${data.cost_per_unit ?: "0"}"
                     binding.tvWaterUnit.text     = "₹${data.cost_unit_water ?: "0"}"
 

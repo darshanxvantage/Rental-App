@@ -1,5 +1,6 @@
 package com.xvantage.rental.ui.addProperty.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -82,7 +83,7 @@ class PropertyDetailsActivity : AppCompatActivity() {
                 viewModel.state.collect { state ->
                     when (state) {
                         is PropertyDetailsViewModel.State.Loading -> {
-//                            binding.progressBar.visibility = View.VISIBLE
+
                         }
                         is PropertyDetailsViewModel.State.Success -> {
 
@@ -206,10 +207,23 @@ class PropertyDetailsActivity : AppCompatActivity() {
             propertyId
         )
 
-        // ✅ FIX: propertyTypeId bhi pass karo — room create ke liye UUID chahiye
+
         bundle.putString(
             "propertyTypeId",
             propertyTypeId
+        )
+
+
+        val existingRoomNumbers =
+            (viewModel.state.value as? PropertyDetailsViewModel.State.Success)
+                ?.details
+                ?.data
+                ?.rooms
+                ?.map { it.room_no }
+
+        bundle.putStringArrayList(
+            "existingRoomNumbers",
+            ArrayList(existingRoomNumbers ?: emptyList())
         )
 
         bottomSheet.arguments = bundle
@@ -222,30 +236,12 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
     private fun showAddTenantBottomSheet() {
 
-        val bottomSheet =
-            AddTenantBottomSheetFragment()
-
-        val currentData =
-
-            (viewModel.state.value
-                    as? PropertyDetailsViewModel.State.Success)
-                ?.details
-                ?.data
-
-        val bundle = Bundle()
-
-        bundle.putString(
-            "property_json",
-            Gson().toJson(currentData)
+        val intent = Intent(
+            this,
+            com.xvantage.rental.ui.addTenant.AddTenantActivity::class.java
         )
 
-        bottomSheet.arguments =
-            bundle
-
-        bottomSheet.show(
-            supportFragmentManager,
-            "AddTenantBottomSheet"
-        )
+        startActivity(intent)
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -1,7 +1,6 @@
 package com.xvantage.rental.ui.dashboard.fragment.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,6 @@ import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemDueCardBinding
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.ui.dashboard.fragment.DuesViewModel
-import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
 
 class DuesAdapter(
     private val context: Context,
@@ -79,6 +77,17 @@ class DuesAdapter(
                 if (isOverdue) Color.parseColor("#C62828")
                 else Color.parseColor("#E65100")
             )
+
+            // ── Due Soon alert banner ──
+            val cyclesForAlert = viewModel.getDueCyclesSorted(tenant)
+            val soonCycle = cyclesForAlert.firstOrNull { it.isDueSoon && !it.isOverdue }
+            if (!isOverdue && viewModel.shouldAlertDueSoon(tenant) && soonCycle != null) {
+                binding.llDueSoonAlert.visibility = View.VISIBLE
+                binding.tvDueSoonMessage.text =
+                    "Rent due ${viewModel.getNextDueLabel(tenant).lowercase()} — collect before due date"
+            } else {
+                binding.llDueSoonAlert.visibility = View.GONE
+            }
 
             val cycles = viewModel.getDueCyclesSorted(tenant)
             val firstCycle = cycles.firstOrNull()

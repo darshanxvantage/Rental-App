@@ -163,7 +163,7 @@ class AddPropertyActivity : AppCompatActivity() {
                             )
                         }
 
-                        val property =
+                        val propertyId =
                             state.data.data.id
 
                         val intent =
@@ -173,8 +173,8 @@ class AddPropertyActivity : AppCompatActivity() {
                             ).apply {
 
                                 putExtra(
-                                    "property",
-                                    property
+                                    "propertyId",
+                                    propertyId
                                 )
                             }
 

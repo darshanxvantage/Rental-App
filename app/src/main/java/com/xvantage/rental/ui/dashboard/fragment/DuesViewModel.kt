@@ -24,11 +24,7 @@ class DuesViewModel @Inject constructor(
             isLoading.value = true
             when (val result = repository.getTenantDues()) {
                 is ResultWrapper.Success -> {
-                    allTenants.value = result.value.data.tenants.filter {
-
-                        (it.totalDue ?: 0.0) > 0.0
-
-                    }
+                    allTenants.value = result.value.data.tenants
                 }
                 is ResultWrapper.Error -> {
                     errorMsg.value = result.message
@@ -77,8 +73,42 @@ class DuesViewModel @Inject constructor(
     fun getTotalDue(tenant: TenantItem): Double =
         tenant.totalDue ?: 0.0
 
-    fun getNextDueLabel(tenant: TenantItem): String =
-        tenant.dueCycles?.firstOrNull()?.monthLabel ?: "—"
+    fun getNextDueLabel(tenant: TenantItem): String {
+        val cycle = tenant.dueCycles?.firstOrNull() ?: return "—"
+
+        return when {
+            cycle.isOverdue -> "Overdue"
+            cycle.isDueSoon -> "${daysUntil(cycle.dueDate)}d left"
+            else -> "Due ${formatShortDate(cycle.dueDate)}"
+        }
+    }
+
+    fun shouldAlertDueSoon(tenant: TenantItem): Boolean =
+        tenant.hasDueSoon ?: (tenant.dueCycles?.firstOrNull()?.isDueSoon ?: false)
+
+    private fun daysUntil(dueDateStr: String): Long {
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val due = sdf.parse(dueDateStr) ?: return 0
+            val today = java.util.Date()
+            val diff = due.time - today.time
+            val days = diff / (1000 * 60 * 60 * 24)
+            if (days > 0) days else 0
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    private fun formatShortDate(dateStr: String): String {
+        return try {
+            val input = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val output = java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault())
+            val date = input.parse(dateStr)
+            if (date != null) output.format(date) else dateStr
+        } catch (e: Exception) {
+            dateStr
+        }
+    }
 
     fun isOverdue(tenant: TenantItem): Boolean =
         tenant.hasOverdue ?: false

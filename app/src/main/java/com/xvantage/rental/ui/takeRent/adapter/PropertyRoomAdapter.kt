@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemPropertyCardBinding
 import com.xvantage.rental.databinding.ItemPropertyHeaderBinding
-import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentActivity
+import com.xvantage.rental.ui.takeRent.bmsheet.ReceivePaymentBottomSheetFragment
 import com.xvantage.rental.ui.takeRent.activity.TakeRentActivity
 import java.text.NumberFormat
 import java.util.Locale
@@ -20,7 +20,9 @@ import java.util.Locale
 class PropertyRoomAdapter(
     private val propertyList: List<TakeRentActivity.PropertyItem>,
     private val context: Context,
-    private val onGenerateStatement: (tenantId: String) -> Unit = {}
+    private val onGenerateStatement: (tenantId: String) -> Unit = {},
+
+    private val onPaymentReceived: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -98,6 +100,9 @@ class PropertyRoomAdapter(
         private val binding: ItemPropertyCardBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
+
+
+        private var totalPayableForRoom: Double = 0.0
 
         fun bind(room: TakeRentActivity.RoomItem) {
 
@@ -224,6 +229,9 @@ Occupied    = ${room.isOccupied}
 
                 binding.tvTotalPayableCard.text =
                     currencyFormatter.format(total)
+
+
+                totalPayableForRoom = total
             }else {
 
                 binding.monthlyRent.text     = "N/A"
@@ -264,22 +272,28 @@ Occupied    = ${room.isOccupied}
                 binding.btnGenerateInvoice.alpha     = 1f
 
                 binding.btnRcvPayment.setOnClickListener {
-                    val intent = Intent(context, ReceivePaymentActivity::class.java).apply {
-                        putExtra("tenantId",     room.tenantId)
-                        putExtra("tenantName",   room.tenantName)
-                        putExtra("roomId",       room.roomId)
-                        putExtra("propertyName", room.propertyName)
-                        putExtra("monthlyRent",  room.monthlyRent)
-                        putExtra("fixedElectricity", room.fixedElectricity)
-                        putExtra("fixedWater", room.fixedWater)
-                        putExtra("electricityMode", room.electricityMode)
-                        putExtra("waterMode", room.waterMode)
-                        putExtra("lastMeterReading", room.lastMeterReading)
-                        putExtra("lastWaterReading", room.lastWaterReading)
-                        putExtra("costPerUnit", room.costPerUnit)
-                        putExtra("costUnitWater", room.costUnitWater)
+
+                    val sheet = ReceivePaymentBottomSheetFragment.newInstance(
+                        tenantId = room.tenantId,
+                        tenantName = room.tenantName,
+                        roomId = room.roomId,
+                        propertyName = room.propertyName,
+                        totalPayable = totalPayableForRoom,
+                        electricityMode = room.electricityMode,
+                        waterMode = room.waterMode,
+                        lastMeterReading = room.lastMeterReading,
+                        lastWaterReading = room.lastWaterReading,
+                        costPerUnit = room.costPerUnit,
+                        costUnitWater = room.costUnitWater
+                    )
+
+                    sheet.setOnPaymentReceivedListener {
+                        onPaymentReceived()
                     }
-                    context.startActivity(intent)
+
+                    (context as? androidx.fragment.app.FragmentActivity)
+                        ?.supportFragmentManager
+                        ?.let { fm -> sheet.show(fm, "ReceivePayment") }
                 }
 
                 binding.btnGenerateInvoice.setOnClickListener {

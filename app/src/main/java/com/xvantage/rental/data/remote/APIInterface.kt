@@ -241,6 +241,28 @@ interface   APIInterface {
     ): Response<JsonObject>
 
 
+    @DELETE("landlord/room/{roomId}")
+    suspend fun deleteRoom(
+        @Path("roomId") roomId: String
+    ): Response<JsonObject>
+
+
+    @Multipart
+    @PUT("landlord/room/edit")
+    suspend fun editRoom(
+
+        @Part("roomId")
+        roomId: RequestBody,
+
+        @Part("roomNo")
+        roomNo: RequestBody,
+
+        @Part("rent")
+        rent: RequestBody
+
+    ): Response<JsonObject>
+
+
     @Multipart
     @POST("landlord/tenant/create")
     suspend fun createTenant(

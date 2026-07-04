@@ -40,7 +40,7 @@ class TenantListActivity : AppCompatActivity() {
 
 
         tenantsAdapter =
-            TenantsAdapter(this)
+            TenantsAdapter(this, isGridMode = true)
 
 
 

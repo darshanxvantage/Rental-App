@@ -5,10 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.HomeTenantsItemBinding
 import com.xvantage.rental.network.response.TenantItem
@@ -17,6 +16,7 @@ import com.xvantage.rental.utils.AppPreference
 
 class TenantsAdapter(
     private val context: Context,
+    private val isGridMode: Boolean = false,
 ) : RecyclerView.Adapter<TenantsAdapter.TenantDetailsViewHolder>() {
 
     private lateinit var appPreference: AppPreference
@@ -29,24 +29,59 @@ class TenantsAdapter(
         notifyDataSetChanged()
     }
 
+
     inner class TenantDetailsViewHolder(
         private val itemBinding: HomeTenantsItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
+
         fun setData(data: TenantItem) {
 
-            itemBinding.tvTenantName.text = data.tenant_name
-            itemBinding.tvLocation.text  = data.tenant_details?.property?.name ?: "N/A"
-            itemBinding.tvNumber.text    = data.phone_number ?: "N/A"
+            // Grid mode → full width
+            // Horizontal mode → fixed 160dp
+            val cardParams = itemBinding.root.layoutParams
 
-            // Profile Image
+            if (isGridMode) {
+
+                cardParams.width =
+                    ViewGroup.LayoutParams.MATCH_PARENT
+
+            } else {
+
+                cardParams.width =
+                    (160 * context.resources.displayMetrics.density)
+                        .toInt()
+            }
+
+            itemBinding.root.layoutParams = cardParams
+
+
+            // Tenant Data
+            itemBinding.tvTenantName.text =
+                data.tenant_name
+
+            itemBinding.tvLocation.text =
+                data.tenant_details?.property?.name ?: "N/A"
+
+            itemBinding.tvNumber.text =
+                data.phone_number ?: "N/A"
+
+
+            // Tenant Profile Image
             Glide.with(context)
-                .load(data.profile_pic + "?t=" + System.currentTimeMillis())
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .load(
+                    data.profile_pic +
+                            "?t=" +
+                            System.currentTimeMillis()
+                )
+                .diskCacheStrategy(
+                    DiskCacheStrategy.NONE
+                )
                 .skipMemoryCache(true)
                 .placeholder(R.drawable.image)
                 .error(R.drawable.image)
                 .into(itemBinding.itemImage)
+
 
             android.util.Log.e(
                 "TENANT_STATUS",
@@ -54,39 +89,93 @@ class TenantsAdapter(
             )
 
 
-            val isActive = data.status.equals("ACTIVE", ignoreCase = true)
+            // Tenant Status
+            val isActive =
+                data.status.equals(
+                    "ACTIVE",
+                    ignoreCase = true
+                )
+
 
             if (isActive) {
 
-                itemBinding.tvStatus.text = "Active"
-                itemBinding.tvStatus.setBackgroundResource(R.drawable.status_background)
+                itemBinding.tvStatus.text =
+                    "Active"
+
+                itemBinding.tvStatus
+                    .setBackgroundResource(
+                        R.drawable.status_background
+                    )
 
             } else {
 
-                itemBinding.tvStatus.text = "Inactive"
-                itemBinding.tvStatus.setBackgroundResource(R.drawable.red_status_bg)
-            }
+                itemBinding.tvStatus.text =
+                    "Inactive"
 
+                itemBinding.tvStatus
+                    .setBackgroundResource(
+                        R.drawable.red_status_bg
+                    )
+            }
 
             itemBinding.moreButton.setOnClickListener {
-                val intent = Intent(context, TenantDetailsActivity::class.java)
-                intent.putExtra("tenantId", data.id)
-                context.startActivity(intent)
+
+                openTenantDetails(data)
             }
+            itemBinding.root.setOnClickListener {
+
+                openTenantDetails(data)
+            }
+        }
+        private fun openTenantDetails(
+            data: TenantItem
+        ) {
+
+            val intent = Intent(
+                context,
+                TenantDetailsActivity::class.java
+            )
+
+            intent.putExtra(
+                "tenantId",
+                data.id
+            )
+
+            context.startActivity(intent)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TenantDetailsViewHolder {
-        val binding = HomeTenantsItemBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): TenantDetailsViewHolder {
+
+        val binding =
+            HomeTenantsItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+
         return TenantDetailsViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TenantDetailsViewHolder, position: Int) {
-        appPreference = AppPreference(context)
-        holder.setData(tenantList[position])
+
+    override fun onBindViewHolder(
+        holder: TenantDetailsViewHolder,
+        position: Int
+    ) {
+
+        appPreference =
+            AppPreference(context)
+
+        holder.setData(
+            tenantList[position]
+        )
     }
 
-    override fun getItemCount(): Int = tenantList.size
+
+    override fun getItemCount(): Int =
+        tenantList.size
 }

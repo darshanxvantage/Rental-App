@@ -41,6 +41,7 @@ import android.widget.TextView
 import java.io.File
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
 import dagger.hilt.android.AndroidEntryPoint
 /**
  * Activity to add a tenant.
@@ -58,6 +59,9 @@ class AddTenantActivity : AppCompatActivity() {
 
     private var tenantId = ""
 
+
+    private var hasPrefilledPropertyRoom = false
+
     private var isEditMode = false
 
     private var propertyList = ArrayList<PropertyItem>()
@@ -67,8 +71,7 @@ class AddTenantActivity : AppCompatActivity() {
     private var selectedRoom: PropertyRoom? = null
 
 
-    // Future integration: Use TenantViewModel to manage tenant data dynamically
-//    private val tenantViewModel: TenantViewModel by viewModels()
+
 
     // Image URIs for various photos
     private var tenantImageUri: Uri? = null
@@ -91,9 +94,7 @@ class AddTenantActivity : AppCompatActivity() {
     // Spinner options for electricity and water charges
     private val spinnerElecAndWaterOptions = arrayOf("No cost", "Fixed", "Metered")
 
-    // "until_leave" or "fixed" — tracks the Lease Type radio selection so it
-    // can actually be sent to the backend (previously captured in the UI
-    // and silently dropped).
+
     private var selectedLeaseType = "until_leave"
 
     private val displayDateFormat =
@@ -101,12 +102,7 @@ class AddTenantActivity : AppCompatActivity() {
     private val isoDateFormat =
         java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
 
-    /**
-     * Converts a date shown in the UI ("15 Jul, 2026") into the ISO format
-     * ("2026-07-15") the backend expects. Sending ISO avoids ambiguous
-     * date-string parsing on the server (day-first strings aren't reliably
-     * parsed by JS Date()/moment()).
-     */
+
     private fun toIsoDateOrEmpty(displayDate: String): String {
         if (displayDate.isBlank()) return ""
         return try {
@@ -270,33 +266,36 @@ class AddTenantActivity : AppCompatActivity() {
 
                 binding.actProperty.setAdapter(adapter)
 
-                if (isEditMode) {
+            }
+        }
 
-                    val tenant = viewModel.tenantDetails.value?.data
+        lifecycleScope.launch {
 
-                    tenant?.let {
+            combine(
+                viewModel.tenantDetails,
+                viewModel.propertyListState
+            ) { tenantResponse, properties ->
+                tenantResponse to properties
+            }.collect { (tenantResponse, properties) ->
 
-                        val property = propertyList.firstOrNull { p ->
-                            p.id == it.property_fk
-                        }
+                if (!isEditMode || hasPrefilledPropertyRoom) return@collect
 
-                        property?.let { selected ->
+                val tenant = tenantResponse?.data ?: return@collect
+                if (properties.isEmpty()) return@collect
 
-                            selectedProperty = selected
+                val property = properties.firstOrNull { p -> p.id == tenant.property_fk }
+                    ?: return@collect
 
-                            binding.actProperty.setText(
-                                selected.name,
-                                false
-                            )
+                selectedProperty = property
 
-                            loadRooms()
+                binding.actProperty.setText(
+                    property.name,
+                    false
+                )
 
-                        }
+                loadRooms(prefillFromTenant = true)
 
-                    }
-
-                }
-
+                hasPrefilledPropertyRoom = true
             }
 
         }
@@ -516,7 +515,7 @@ class AddTenantActivity : AppCompatActivity() {
         }
 
     }
-    private fun loadRooms() {
+    private fun loadRooms(prefillFromTenant: Boolean = false) {
 
         val rooms = selectedProperty?.property_room_no ?: return
 
@@ -560,7 +559,7 @@ class AddTenantActivity : AppCompatActivity() {
 
         binding.actRoom.setAdapter(adapter)
 
-        if (isEditMode) {
+        if (isEditMode && prefillFromTenant) {
 
             val tenant = viewModel.tenantDetails.value?.data
 
@@ -843,11 +842,6 @@ class AddTenantActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Returns a user-facing error message if the form is missing required
-     * fields, or null if everything looks good. Previously the Save button
-     * called create/update directly with no checks at all.
-     */
     private fun validateTenantForm(): String? {
 
         if (selectedProperty == null) {

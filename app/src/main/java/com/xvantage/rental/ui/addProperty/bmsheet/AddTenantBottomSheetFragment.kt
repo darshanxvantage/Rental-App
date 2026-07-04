@@ -67,9 +67,10 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 
                 aadhaarPhotoUri = it
 
-                showSelectedImage(
-                    binding.ivAadharUpload,
-                    it
+                showSelectedFile(
+                    uploadBox = binding.ivAadharUpload,
+                    previewLayout = binding.llSelectedAadharPhoto.root,
+                    uri = it
                 )
             }
         }
@@ -84,9 +85,10 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 
                 tenantPhotoUri = it
 
-                showSelectedImage(
-                    binding.ivTenantPhotoUpload,
-                    it
+                showSelectedFile(
+                    uploadBox = binding.ivTenantPhotoUpload,
+                    previewLayout = binding.llSelectedTenantPhoto.root,
+                    uri = it
                 )
             }
         }
@@ -118,6 +120,7 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun setupPhotoPickers() {
 
+
         binding.ivAadharUpload.setOnClickListener {
             aadhaarPhotoPicker.launch("image/*")
         }
@@ -125,31 +128,67 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         binding.ivTenantPhotoUpload.setOnClickListener {
             tenantPhotoPicker.launch("image/*")
         }
-    }
 
-    private fun showSelectedImage(
-        container: ViewGroup,
-        uri: Uri
-    ) {
 
-        container.removeAllViews()
-
-        val heightInPx =
-            (120 * resources.displayMetrics.density).toInt()
-
-        val imageView = ImageView(requireContext()).apply {
-
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                heightInPx
-            )
-
-            scaleType = ImageView.ScaleType.CENTER_CROP
-
-            setImageURI(uri)
+        binding.llSelectedAadharPhoto.btnClose.setOnClickListener {
+            aadhaarPhotoUri = null
+            binding.llSelectedAadharPhoto.root.visibility = View.GONE
+            binding.ivAadharUpload.visibility = View.VISIBLE
         }
 
-        container.addView(imageView)
+
+        binding.llSelectedTenantPhoto.btnClose.setOnClickListener {
+            tenantPhotoUri = null
+            binding.llSelectedTenantPhoto.root.visibility = View.GONE
+            binding.ivTenantPhotoUpload.visibility = View.VISIBLE
+        }
+    }
+
+
+    private fun showSelectedFile(
+        uploadBox: View,
+        previewLayout: View,
+        uri: Uri
+    ) {
+        val thumbnail = previewLayout.findViewById<ImageView>(com.xvantage.rental.R.id.iv_thumbnail)
+        val fileNameView = previewLayout.findViewById<TextView>(com.xvantage.rental.R.id.tv_file_name)
+        val fileSizeView = previewLayout.findViewById<TextView>(com.xvantage.rental.R.id.tv_file_size)
+
+        thumbnail.setImageURI(uri)
+
+        var fileName = "Selected file"
+        var fileSize = ""
+
+        requireContext().contentResolver.query(
+            uri, null, null, null, null
+        )?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+
+            if (cursor.moveToFirst()) {
+                if (nameIndex != -1) fileName = cursor.getString(nameIndex) ?: fileName
+                if (sizeIndex != -1) {
+                    val bytes = cursor.getLong(sizeIndex)
+                    fileSize = formatFileSize(bytes)
+                }
+            }
+        }
+
+        fileNameView.text = fileName
+        fileSizeView.text = fileSize
+
+        uploadBox.visibility = View.GONE
+        previewLayout.visibility = View.VISIBLE
+    }
+
+    private fun formatFileSize(bytes: Long): String {
+        if (bytes <= 0) return ""
+        val kb = bytes / 1024.0
+        return if (kb < 1024) {
+            "%.0f KB".format(kb)
+        } else {
+            "%.1f MB".format(kb / 1024.0)
+        }
     }
 
 
