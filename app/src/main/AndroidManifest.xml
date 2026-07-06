@@ -47,17 +47,14 @@
             android:name=".ui.invoiceHistory.InvoiceHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.takeRent.activity.ReceivePaymentActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.takeRent.activity.TakeRentActivity"
             android:exported="false" />
         <activity
             android:name=".ui.search.SearchPropertyActivity"
             android:exported="false"/>
-<!--        <activity-->
-<!--            android:name=".ui.settings.SettingsActivity"-->
-<!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ui.settings.SettingsActivity"-->
+        <!--            android:exported="false" />-->
 
 
 

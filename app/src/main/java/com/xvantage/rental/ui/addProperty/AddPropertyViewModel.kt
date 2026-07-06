@@ -6,6 +6,7 @@ import com.xvantage.rental.data.source.PropertyRepository
 import com.xvantage.rental.network.request.property.CreatePropertyRequest
 import com.xvantage.rental.network.request.property.UpdatePropertyRequest
 import com.xvantage.rental.network.response.CreatePropertyResponse
+import com.xvantage.rental.network.response.PropertyDetailsData
 import com.xvantage.rental.network.response.PropertyType
 import com.xvantage.rental.network.utils.ResultWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +47,38 @@ class AddPropertyViewModel @Inject constructor(
 
     private val _propertyTypeError = MutableStateFlow<String?>(null)
     val propertyTypeError: StateFlow<String?> = _propertyTypeError.asStateFlow()
+
+    // Full property details fetched when opening Edit Property, so that
+    // fields missing from the Manage Property list (property type, photo)
+    // can be pre-filled too.
+    private val _editPropertyDetails = MutableStateFlow<PropertyDetailsData?>(null)
+    val editPropertyDetails: StateFlow<PropertyDetailsData?> = _editPropertyDetails.asStateFlow()
+
+    fun loadPropertyForEdit(propertyId: String) = viewModelScope.launch {
+
+        when (val res = repository.getPropertyDetails(propertyId)) {
+
+            is ResultWrapper.Success -> {
+
+                _editPropertyDetails.value = res.value.data
+
+                Log.d(
+                    "EDIT_PROPERTY",
+                    "Loaded property details for edit: ${res.value.data}"
+                )
+            }
+
+            is ResultWrapper.Error -> {
+
+                Log.e(
+                    "EDIT_PROPERTY",
+                    "Failed to load property details: ${res.message}"
+                )
+            }
+
+            ResultWrapper.Loading -> Unit
+        }
+    }
 
     fun loadPropertyTypes() = viewModelScope.launch {
 

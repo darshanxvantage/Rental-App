@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.addProperty.activity
 
 import android.Manifest
+import com.bumptech.glide.Glide
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -65,6 +66,11 @@ class AddPropertyActivity : AppCompatActivity() {
 
     private var propertyId = ""
 
+    // Property type id + image URL fetched from the details API for edit
+    // mode. propertyTypeIds isn't populated yet when this arrives (it loads
+    // async), so we stash it here and apply it once the spinner is ready.
+    private var pendingEditPropertyTypeId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_property)
@@ -127,6 +133,81 @@ class AddPropertyActivity : AppCompatActivity() {
         initViews()
         initClickEvents()
         observeViewModelStates()
+
+        if (isEditMode) {
+            observeEditPropertyDetails()
+            viewModel.loadPropertyForEdit(propertyId)
+        }
+    }
+
+    /**
+     * Fetch the full property details (name, address, rooms, owner,
+     * WhatsApp number, property TYPE and PHOTO) and pre-fill every field.
+     * The Intent extras from Manage Property only cover a subset of these,
+     * which is why Property Type and Photo used to show up empty.
+     */
+    private fun observeEditPropertyDetails() {
+
+        lifecycleScope.launch {
+
+            viewModel.editPropertyDetails.collect { details ->
+
+                if (details == null) return@collect
+
+                binding.etSignUpEmail.setText(details.name)
+
+                binding.etAddress.setText(details.address)
+
+                binding.etHomeNumber.setText(
+                    details.totalRooms.toString()
+                )
+
+                binding.etOwnerName.setText(details.ownerName)
+
+                binding.etWhatsappNumber.setText(details.waNumber)
+
+                pendingEditPropertyTypeId = details.propertyTypeId
+
+                trySelectPendingPropertyType()
+
+                if (details.propertyImage.isNotBlank()) {
+
+                    Glide.with(this@AddPropertyActivity)
+                        .load(details.propertyImage)
+                        .placeholder(R.drawable.image)
+                        .error(R.drawable.image)
+                        .into(binding.llPropertyPhoto.ivThumbnail)
+
+                    binding.llPropertyPhoto.tvFileName.text =
+                        "Current property photo"
+
+                    binding.llPropertyPhoto.tvFileSize.text = ""
+
+                    llPropertyImage.visibility = View.VISIBLE
+                    binding.llAddPhoto.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    /**
+     * Selects the correct item in the Property Type spinner once both the
+     * property type list (loaded async from the API) and the property's
+     * own propertyTypeId (loaded async from the edit details API) are
+     * available. Safe to call multiple times / in either order.
+     */
+    private fun trySelectPendingPropertyType() {
+
+        val typeId = pendingEditPropertyTypeId ?: return
+
+        val index = propertyTypeIds.indexOf(typeId)
+
+        if (index >= 0) {
+
+            selectedPropertyTypeId = typeId
+
+            binding.spinnerPropertyType.setSelection(index + 1)
+        }
     }
 
     /**
@@ -561,6 +642,10 @@ class AddPropertyActivity : AppCompatActivity() {
                         binding.spinnerPropertyType,
                         spinnerItems
                     )
+
+                    // In case the edit-details API already returned before
+                    // this list finished loading.
+                    trySelectPendingPropertyType()
                 }
             }
         }

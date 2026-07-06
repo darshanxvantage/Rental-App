@@ -16,6 +16,10 @@ class PropertyGroupAdapter(
 
     private var propertyList: List<PropertyItem> = emptyList()
 
+    // Tracks which property positions are currently expanded (rooms visible).
+    // Empty by default so all properties start collapsed.
+    private val expandedPositions = mutableSetOf<Int>()
+
     interface PropertyActionListener {
 
         fun onEditProperty(
@@ -74,6 +78,33 @@ class PropertyGroupAdapter(
 
             binding.rvRooms.adapter =
                 roomAdapter
+
+            // Restore correct expand/collapse state for this position
+            // (RecyclerView recycles views, so this must be set on every bind).
+            val isExpanded = expandedPositions.contains(adapterPosition)
+
+            binding.detailsGroup.visibility =
+                if (isExpanded) android.view.View.VISIBLE else android.view.View.GONE
+
+            binding.ivExpandArrow.setImageResource(
+                if (isExpanded) com.xvantage.rental.R.drawable.ic_up_arrow
+                else com.xvantage.rental.R.drawable.ic_drop_down_arrow
+            )
+
+            val toggleExpand = {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    if (expandedPositions.contains(position)) {
+                        expandedPositions.remove(position)
+                    } else {
+                        expandedPositions.add(position)
+                    }
+                    notifyItemChanged(position)
+                }
+            }
+
+            binding.headerRow.setOnClickListener { toggleExpand() }
+            binding.ivExpandArrow.setOnClickListener { toggleExpand() }
 
             binding.ivEdit.setOnClickListener {
 

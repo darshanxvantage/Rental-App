@@ -251,13 +251,60 @@ class DashboardActivity : BaseActivity() {
     }
 
     private fun handleBottomNavigationItemSelected(itemId: Int): Boolean {
-        updateBottomNavigationIcons(itemId)
-        return when (itemId) {
-            R.id.home     -> { loadFragment(HomeFragment()); true }
-            R.id.property -> { CommonFunction().navigation(this, AddPropertyActivity::class.java); true }
-            R.id.settings -> { loadFragment(DuesFragment()); true }
-            R.id.profile  -> { loadFragment(ProfileFragment()); true }
-            else -> false
+
+        val currentFragment =
+            supportFragmentManager.findFragmentById(R.id.content_frame)
+
+        when (itemId) {
+
+            R.id.home -> {
+
+                updateBottomNavigationIcons(R.id.home)
+
+                if (currentFragment !is HomeFragment) {
+                    loadFragment(HomeFragment())
+                }
+
+                return true
+            }
+
+
+            R.id.property -> {
+
+                CommonFunction().navigation(
+                    this,
+                    AddPropertyActivity::class.java
+                )
+
+                return true
+            }
+
+
+            R.id.settings -> {
+
+                updateBottomNavigationIcons(R.id.settings)
+
+                if (currentFragment !is DuesFragment) {
+                    loadFragment(DuesFragment())
+                }
+
+                return true
+            }
+
+
+            R.id.profile -> {
+
+                updateBottomNavigationIcons(R.id.profile)
+
+                if (currentFragment !is ProfileFragment) {
+                    loadFragment(ProfileFragment())
+                }
+
+                return true
+            }
+
+
+            else -> return false
         }
     }
 

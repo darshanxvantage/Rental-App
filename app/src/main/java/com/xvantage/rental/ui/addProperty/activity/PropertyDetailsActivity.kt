@@ -130,17 +130,22 @@ class PropertyDetailsActivity : AppCompatActivity() {
     }
     private fun bindHeader(details: PropertyDetailsResponse) {
 
-        binding.tvPropertyName.text =
+        // NOTE: binding.tvPropertyName / tvPropertyAddress point to a hidden
+        // TextView inside the (visibility="gone") property_summary_card in
+        // activity_property_details.xml, NOT the visible banner. The visible
+        // banner's views live inside the included property_header_toolbar,
+        // so they must be updated via binding.toolbar.* instead.
+        binding.toolbar.tvPropertyName.text =
             details.data?.name ?: ""
 
-        binding.tvPropertyAddress.text =
+        binding.toolbar.tvPropertyAddress.text =
             details.data?.address ?: ""
 
         Glide.with(this)
             .load(details.data?.propertyImage)
             .placeholder(R.drawable.image)
             .error(R.drawable.image)
-            .into(binding.ivPropertyImage)
+            .into(binding.toolbar.ivPropertyImage)
     }
 
     private fun setupViewPager() {

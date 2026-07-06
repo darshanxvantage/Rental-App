@@ -1,8 +1,6 @@
 package com.xvantage.rental.ui.addProperty.bmsheet
 
 import android.R
-import android.app.DatePickerDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,9 +15,6 @@ import com.xvantage.rental.ui.addProperty.RoomViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @AndroidEntryPoint
 class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
@@ -33,19 +28,6 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     private val viewModel: RoomViewModel by viewModels()
 
     private var onRoomAddedListener: ((Room) -> Unit)? = null
-    private val calendar = Calendar.getInstance()
-    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    private val isoDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-    private fun toIsoDateOrEmpty(displayDate: String): String {
-        if (displayDate.isBlank()) return ""
-        return try {
-            val parsed = dateFormatter.parse(displayDate)
-            if (parsed != null) isoDateFormatter.format(parsed) else ""
-        } catch (e: Exception) {
-            ""
-        }
-    }
 
     fun setOnRoomAddedListener(listener: (Room) -> Unit) {
         onRoomAddedListener = listener
@@ -73,7 +55,6 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
         android.util.Log.e("ROOM_PROPERTY_TYPE_ID", propertyTypeId)
 
         setupRoomTypeSpinner()
-        setupDatePicker()
         setupActionButtons()
         observeState()
     }
@@ -86,51 +67,6 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
             roomTypes
         )
         binding.spinnerRoomType.adapter = adapter
-    }
-
-    private fun setupDatePicker() {
-        binding.etReadingDate.setOnClickListener {
-            showDatePicker()
-        }
-    }
-
-    private fun showDatePicker() {
-
-        val dateListener =
-            DatePickerDialog.OnDateSetListener { _, year, month, day ->
-
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, day)
-
-                updateDateField()
-            }
-
-
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            dateListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-
-        datePickerDialog.setOnShowListener {
-
-            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)
-                .setTextColor(Color.parseColor("#1565C0"))
-
-            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)
-                .setTextColor(Color.parseColor("#1565C0"))
-        }
-
-
-        datePickerDialog.show()
-    }
-
-    private fun updateDateField() {
-        binding.etReadingDate.setText(dateFormatter.format(calendar.time))
     }
 
     private fun setupActionButtons() {
@@ -195,9 +131,9 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
             rent = binding.etRoomRent.text.toString(),
 
-            meterReading = binding.etMeterReading.text.toString(),
+            meterReading = "",
 
-            meterReadingLastDate = toIsoDateOrEmpty(binding.etReadingDate.text.toString()),
+            meterReadingLastDate = "",
 
             roomImage = null
         )

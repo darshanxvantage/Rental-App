@@ -6,8 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -132,7 +130,6 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
                 val behavior = BottomSheetBehavior.from(it)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
-                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             }
         }
         return dialog
@@ -234,8 +231,7 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupListeners() {
-        // No separate screen to navigate back from anymore — the back
-        // arrow (and swipe-down) just dismiss the sheet.
+
         binding.toolbar.back.setOnClickListener {
             dismiss()
         }
@@ -394,76 +390,73 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun showFallbackSuccessDialog() {
-        android.app.AlertDialog.Builder(requireContext())
-            .setTitle("Payment Received ✅")
-            .setMessage("Payment has been recorded successfully!")
-            .setCancelable(false)
-            .setPositiveButton("Done") { _, _ ->
-                RentalNotificationHelper.showPaymentReceived(
-                    context = requireContext(),
-                    tenantName = tenantName,
-                    amount = rentAmount
-                )
-                finishWithSuccess()
-            }
-            .show()
-    }
 
-    private fun finishWithSuccess() {
-        onPaymentReceivedListener?.invoke()
-        dismiss()
+        showPaymentSuccessBottomSheet(
+            amountReceived = rentAmount.toDoubleOrNull() ?: 0.0,
+            previousDue = 0.0,
+            remainingDue = 0.0,
+            isFullyPaid = true
+        )
     }
 
     private fun showPaymentSuccessDialog(payment: PaymentSummary) {
-
-        val dialog = Dialog(requireContext())
-
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_payment_success)
-        dialog.setCancelable(false)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
+        showPaymentSuccessBottomSheet(
+            amountReceived = payment.amountReceived,
+            previousDue = payment.previousDue,
+            remainingDue = payment.remainingDue,
+            isFullyPaid = payment.isFullyPaid
         )
+    }
 
-        val tvAmount = dialog.findViewById<TextView>(R.id.tvAmountReceived)
-        val tvPrevious = dialog.findViewById<TextView>(R.id.tvPreviousDue)
-        val tvRemaining = dialog.findViewById<TextView>(R.id.tvRemainingDue)
-        val tvStatus = dialog.findViewById<TextView>(R.id.tvStatus)
-        val btnDone = dialog.findViewById<MaterialButton>(R.id.btnDone)
 
-        tvAmount.text = formatAmount(payment.amountReceived)
-        tvPrevious.text = formatAmount(payment.previousDue)
-        tvRemaining.text = formatAmount(payment.remainingDue)
+    private fun showPaymentSuccessBottomSheet(
+        amountReceived: Double,
+        previousDue: Double,
+        remainingDue: Double,
+        isFullyPaid: Boolean
+    ) {
+        val dialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_payment_success, null)
+        dialog.setContentView(view)
+        dialog.setCancelable(false)
 
-        if (payment.isFullyPaid) {
+        val tvAmount = view.findViewById<TextView>(R.id.tvAmountReceived)
+        val tvPrevious = view.findViewById<TextView>(R.id.tvPreviousDue)
+        val tvRemaining = view.findViewById<TextView>(R.id.tvRemainingDue)
+        val tvStatus = view.findViewById<TextView>(R.id.tvStatus)
+        val btnDone = view.findViewById<MaterialButton>(R.id.btnDone)
 
+        tvAmount.text = formatAmount(amountReceived)
+        tvPrevious.text = formatAmount(previousDue)
+        tvRemaining.text = formatAmount(remainingDue)
+
+        if (isFullyPaid) {
             tvStatus.text = "Tenant dues cleared.\nNo pending amount remaining."
             tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
-
         } else {
-
             tvStatus.text =
-                "${formatAmount(payment.remainingDue)} is still pending.\nPlease collect the remaining amount later."
+                "${formatAmount(remainingDue)} is still pending.\nPlease collect the remaining amount later."
             tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
         }
 
         btnDone.setOnClickListener {
-
             RentalNotificationHelper.showPaymentReceived(
                 context = requireContext(),
                 tenantName = tenantName,
                 amount = rentAmount
             )
-
             dialog.dismiss()
-
-            finishWithSuccess()
+            onPaymentReceivedListener?.invoke()
+            dismiss()
         }
 
         dialog.show()
+
+        // Expand fully on show — same behavior as the form sheet, just a
+        // shorter card so it naturally sits lower on screen.
+        dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
+            BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 
     private fun formatAmount(amount: Double): String {

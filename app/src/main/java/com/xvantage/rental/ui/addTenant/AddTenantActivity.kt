@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.addTenant
 
 import android.Manifest
+import com.bumptech.glide.Glide
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -235,6 +236,83 @@ class AddTenantActivity : AppCompatActivity() {
                     binding.llElectricityFinanceDetail.etElectricityCostUnit.setText(
                         tenant.cost_per_unit ?: ""
                     )
+
+                    // Electricity Plan spinner: "No cost" was showing for
+                    // every tenant because only the amount fields were being
+                    // filled — the spinner selection itself (which controls
+                    // which of those fields is even visible) was never set.
+                    binding.llElectricityFinanceDetail.spElectricity.setSelection(
+                        when (tenant.fixed_electricity) {
+                            "fix" -> 1
+                            "metered" -> 2
+                            else -> 0
+                        }
+                    )
+
+                    binding.llWaterFinanceDetail.spWater.setSelection(
+                        when (tenant.fixed_waterbill) {
+                            "fix" -> 1
+                            "metered" -> 2
+                            else -> 0
+                        }
+                    )
+
+                    // Tenant photo preview
+                    if (!tenant.profile_pic.isNullOrBlank()) {
+
+                        Glide.with(this@AddTenantActivity)
+                            .load(tenant.profile_pic)
+                            .placeholder(R.drawable.ic_cloud_upload)
+                            .error(R.drawable.ic_cloud_upload)
+                            .into(binding.llSelectedTenantPhoto.ivThumbnail)
+
+                        binding.llSelectedTenantPhoto.tvFileName.text =
+                            "Current tenant photo"
+
+                        binding.llSelectedTenantPhoto.tvFileSize.text = ""
+
+                        llTenantPhoto.visibility = View.VISIBLE
+                        binding.llAddTenantPhoto.visibility = View.GONE
+                    }
+
+                    // Aadhar document previews (front = index 0, back = index 1,
+                    // matching the same order they're uploaded in).
+                    val frontDoc = tenant.documents.getOrNull(0)
+                    val backDoc = tenant.documents.getOrNull(1)
+
+                    if (!frontDoc?.image.isNullOrBlank()) {
+
+                        Glide.with(this@AddTenantActivity)
+                            .load(frontDoc?.image)
+                            .placeholder(R.drawable.ic_cloud_upload)
+                            .error(R.drawable.ic_cloud_upload)
+                            .into(binding.llSelectedFrontAdharPhoto.ivThumbnail)
+
+                        binding.llSelectedFrontAdharPhoto.tvFileName.text =
+                            "Front Aadhar photo"
+
+                        binding.llSelectedFrontAdharPhoto.tvFileSize.text = ""
+
+                        llFrontAdharPhoto.visibility = View.VISIBLE
+                        binding.llAddFrontAdhar.visibility = View.GONE
+                    }
+
+                    if (!backDoc?.image.isNullOrBlank()) {
+
+                        Glide.with(this@AddTenantActivity)
+                            .load(backDoc?.image)
+                            .placeholder(R.drawable.ic_cloud_upload)
+                            .error(R.drawable.ic_cloud_upload)
+                            .into(binding.llSelectedBackAdharPhoto.ivThumbnail)
+
+                        binding.llSelectedBackAdharPhoto.tvFileName.text =
+                            "Back Aadhar photo"
+
+                        binding.llSelectedBackAdharPhoto.tvFileSize.text = ""
+
+                        llBackAdharPhoto.visibility = View.VISIBLE
+                        binding.llAddBackAdhar.visibility = View.GONE
+                    }
                 }
             }
         }

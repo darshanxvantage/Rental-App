@@ -84,7 +84,7 @@
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:text="Shanti Residency" />
+                    tools:text="Shanti Residency" />
 
                 <TextView
                     android:id="@+id/tv_property_address"
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="#E0E0E0"
                     android:textSize="14sp"
-                    android:text="Sector 21, Andheri West, Mumbai" />
+                    tools:text="Sector 21, Andheri West, Mumbai" />
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>

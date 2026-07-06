@@ -139,62 +139,6 @@
                 android:padding="12dp"
                 android:textColorHint="@color/grey_hint" />
 
-            <!-- Meter Reading with icon -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Last Meter Reading"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_meter_reading"
-                style="@style/EditText"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/grey_border_background"
-                android:hint="Enter last meter reading"
-                android:inputType="numberDecimal"
-                android:padding="12dp"
-                android:textColorHint="@color/grey_hint" />
-
-            <!-- Meter Reading Date with icon -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Reading Date"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_reading_date"
-                style="@style/EditText"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/grey_border_background"
-                android:clickable="true"
-                android:focusable="false"
-                android:hint="Select date"
-                android:padding="12dp"
-                android:textColorHint="@color/grey_hint" />
-
             <!-- Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
