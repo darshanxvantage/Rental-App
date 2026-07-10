@@ -361,7 +361,7 @@ interface   APIInterface {
 
 
     @Multipart
-    @PUT("landlord/tenant/edit")
+    @PUT("landlord/tenant/update")
     suspend fun updateTenant(
 
         @Part("tenantId")

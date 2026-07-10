@@ -237,22 +237,39 @@ Fixed Water = ${tenant?.fixed_waterbill_amount}
                             tenant?.payment_mode ?: "",
 
                         meterReading =
-                            tenant?.meter_reading ?: "",
+                            tenant?.meter_reading
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "0",
 
                         waterReading =
-                            tenant?.meter_reading_water ?: "",
+                            tenant?.meter_reading_water
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "0",
+
 
                         lastMeterReading =
-                            tenant?.last_meter_reading ?: "",
+                            tenant?.last_meter_reading
+                                ?.takeIf { it.isNotBlank() }
+                                ?: tenant?.meter_reading
+                                    ?.takeIf { it.isNotBlank() }
+                                ?: "0",
 
                         lastWaterReading =
-                            tenant?.last_meter_reading_water ?: "",
+                            tenant?.last_meter_reading_water
+                                ?.takeIf { it.isNotBlank() }
+                                ?: tenant?.meter_reading_water
+                                    ?.takeIf { it.isNotBlank() }
+                                ?: "0",
 
                         costPerUnit =
-                            tenant?.cost_per_unit ?: "",
+                            tenant?.cost_per_unit
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "0",
 
                         costUnitWater =
-                            tenant?.cost_unit_water ?: ""
+                            tenant?.cost_unit_water
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "0"
                     )
                 }
             )
