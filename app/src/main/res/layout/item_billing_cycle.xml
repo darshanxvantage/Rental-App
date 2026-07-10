@@ -37,6 +37,17 @@
             android:textSize="12sp"
             tools:text="Due: 2026-05-31" />
 
+        <!-- NEW: makes the tap action explicit in words, not just an icon -->
+        <TextView
+            android:id="@+id/tvTapHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Tap to generate invoice"
+            android:textColor="#0B2140"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -70,5 +81,13 @@
             tools:background="#1E8E5A" />
 
     </LinearLayout>
+
+    <!-- NEW: chevron — universal "this row is tappable" signal -->
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:contentDescription="Tap to generate"
+        android:src="@drawable/ic_chevron_right" />
 
 </LinearLayout>

@@ -2,6 +2,7 @@ package com.xvantage.rental.ui.dashboard
 
 import android.content.Intent
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import android.content.res.ColorStateList
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -212,6 +214,24 @@ class DashboardActivity : BaseActivity() {
         dialog.setContentView(sheetBinding.root)
 
         feedbackViewModel.resetState()
+
+        val chipBg = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(Color.parseColor("#0B2140"), Color.parseColor("#F0F1F4"))
+        )
+        val chipText = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(Color.WHITE, Color.parseColor("#0F1B3D"))
+        )
+        listOf(
+            sheetBinding.chipSuggestion,
+            sheetBinding.chipBug,
+            sheetBinding.chipComplaint,
+            sheetBinding.chipCompliment
+        ).forEach { chip ->
+            chip.chipBackgroundColor = chipBg
+            chip.setTextColor(chipText)
+        }
 
         sheetBinding.btnSubmitFeedback.setOnClickListener {
             val message = sheetBinding.etFeedbackMessage.text.toString().trim()

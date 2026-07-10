@@ -120,31 +120,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="💡 Suggestion" />
+                android:text="💡 Suggestion"
+                app:checkedIconVisible="false"
+                app:chipStrokeWidth="0dp" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipBug"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🐞 Bug Report" />
+                android:text="🐞 Bug Report"
+                app:checkedIconVisible="false"
+                app:chipStrokeWidth="0dp" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipComplaint"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚠️ Complaint" />
+                android:text="⚠️ Complaint"
+                app:checkedIconVisible="false"
+                app:chipStrokeWidth="0dp" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipCompliment"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="❤️ Compliment" />
+                android:text="❤️ Compliment"
+                app:checkedIconVisible="false"
+                app:chipStrokeWidth="0dp" />
         </com.google.android.material.chip.ChipGroup>
 
-        <!-- Message box -->
         <!-- Message box -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilFeedbackMessage"
@@ -152,21 +159,19 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="18dp"
-
+            android:hint="Tell us more..."
             app:counterEnabled="true"
             app:counterMaxLength="500"
-
-            app:boxBackgroundMode="outline"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:hintEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFeedbackMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tell us more..."
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
                 android:maxLength="500"
