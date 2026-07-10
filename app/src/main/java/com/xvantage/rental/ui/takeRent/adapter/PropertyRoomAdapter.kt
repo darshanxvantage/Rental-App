@@ -20,8 +20,7 @@ import java.util.Locale
 class PropertyRoomAdapter(
     private val propertyList: List<TakeRentActivity.PropertyItem>,
     private val context: Context,
-    private val onGenerateStatement: (tenantId: String) -> Unit = {},
-
+    private val onGenerateInvoice: (tenantId: String) -> Unit = {},
     private val onPaymentReceived: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -297,7 +296,9 @@ Occupied    = ${room.isOccupied}
                 }
 
                 binding.btnGenerateInvoice.setOnClickListener {
-                    onGenerateStatement(room.tenantId)
+                    if (room.tenantId.isNotBlank()) {
+                        onGenerateInvoice(room.tenantId)
+                    }
                 }
             } else {
                 // Vacant room — disable buttons

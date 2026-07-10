@@ -32,9 +32,6 @@ class InvoiceHistoryActivity : AppCompatActivity() {
 
         binding.rvInvoiceList.layoutManager = LinearLayoutManager(this)
 
-        // If opened from a specific tenant's room card, this is set
-        // and the list shows only that tenant's invoices. Otherwise
-        // it's null and every invoice across all properties shows.
         val tenantId = intent.getStringExtra("tenantId")
 
         observeInvoices()

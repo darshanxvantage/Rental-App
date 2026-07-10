@@ -19,6 +19,10 @@ data class VerifyOTPResponse(
 
         val email: String?,
 
+        val state: String?,
+
+        val city: String?,
+
         val login_type: String?,
 
         val is_profile_complete: Boolean,

@@ -1,4 +1,3 @@
-
 package com.xvantage.rental.utils
 
 import android.content.Context
@@ -55,6 +54,12 @@ class AppPreference @Inject constructor(
         private const val KEY_PROFILE_IMAGE =
             "profile_image"
 
+        private const val KEY_PROFILE_IMAGE_OWNER =
+            "profile_image_owner_phone"
+
+        private const val KEY_REMOTE_PROFILE_IMAGE_URL =
+            "remote_profile_image_url"
+
         private const val KEY_THEME =
             "theme"
 
@@ -69,6 +74,28 @@ class AppPreference @Inject constructor(
         private const val KEY_BIOMETRIC        = "biometric_enabled"
         private const val KEY_TWO_STEP         = "two_step_enabled"
         private const val KEY_CLOUD_BACKUP     = "cloud_backup"
+
+        private const val KEY_IS_PROFILE_COMPLETE = "is_profile_complete"
+    }
+
+
+
+    fun setIsProfileComplete(value: Boolean) {
+
+        editor.putBoolean(
+            KEY_IS_PROFILE_COMPLETE,
+            value
+        )
+
+        editor.commit()
+    }
+
+    fun isProfileComplete(): Boolean {
+
+        return appSharedPrefs.getBoolean(
+            KEY_IS_PROFILE_COMPLETE,
+            false
+        )
     }
 
     fun setFcmToken(token: String) {
@@ -386,6 +413,15 @@ class AppPreference @Inject constructor(
 
     // PROFILE IMAGE
 
+    fun setRemoteProfileImageUrl(url: String) {
+        editor.putString(KEY_REMOTE_PROFILE_IMAGE_URL, url)
+        editor.apply()
+    }
+
+    fun getRemoteProfileImageUrl(): String? {
+        return appSharedPrefs.getString(KEY_REMOTE_PROFILE_IMAGE_URL, null)
+    }
+
     fun setProfileImage(path: String) {
 
         editor.putString(
@@ -393,10 +429,37 @@ class AppPreference @Inject constructor(
             path
         )
 
+        editor.putString(
+            KEY_PROFILE_IMAGE_OWNER,
+            getPhone()
+        )
+
         editor.apply()
     }
 
     fun getProfileImage(): String? {
+
+        val owner = appSharedPrefs.getString(KEY_PROFILE_IMAGE_OWNER, null)
+        val currentPhone = getPhone()
+
+        if (owner.isNullOrEmpty() || owner != currentPhone) {
+
+            try {
+                val stalePath = appSharedPrefs.getString(KEY_PROFILE_IMAGE, null)
+                if (!stalePath.isNullOrEmpty()) {
+                    val staleFile = java.io.File(stalePath)
+                    if (staleFile.exists()) staleFile.delete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            editor.remove(KEY_PROFILE_IMAGE)
+            editor.remove(KEY_PROFILE_IMAGE_OWNER)
+            editor.apply()
+
+            return null
+        }
 
         return appSharedPrefs.getString(
             KEY_PROFILE_IMAGE,
@@ -531,14 +594,34 @@ class AppPreference @Inject constructor(
 
     fun logoutUser() {
 
+        try {
+            val imagePath = getProfileImage()
+            if (!imagePath.isNullOrEmpty()) {
+                val file = java.io.File(imagePath)
+                if (file.exists()) file.delete()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         editor.remove(KEY_JWT_TOKEN)
-
-
         editor.remove("UId")
+        editor.remove(KEY_USER_NAME)
+        editor.remove(KEY_PHONE)
+        editor.remove(KEY_EMAIL)
+        editor.remove(KEY_CITY)
+        editor.remove(KEY_STATE)
+        editor.remove(KEY_AGE)
+        editor.remove("gender")
+        editor.remove(KEY_PROFILE_IMAGE)
+        editor.remove(KEY_PROFILE_IMAGE_OWNER)
+        editor.remove(KEY_REMOTE_PROFILE_IMAGE_URL)
+        editor.remove(KEY_LISTED_COUNT)
+        editor.remove(KEY_RENTED_COUNT)
+        editor.remove(KEY_RATING)
+        editor.remove(KEY_IS_PROFILE_COMPLETE)
 
         editor.apply()
     }
 
 }
-

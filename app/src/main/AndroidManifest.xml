@@ -95,6 +95,9 @@
             android:name=".ui.dashboard.DashboardActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.dashboard.PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.onboarding.BoardingPermissionActivity"
             android:exported="false" />
         <activity

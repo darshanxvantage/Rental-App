@@ -28,6 +28,11 @@ class AuthActivity : BaseActivity() {
     private lateinit var binding: ActivityAuthBinding
     private val viewModel: AuthViewModel by viewModels()
 
+    companion object {
+
+        const val EXTRA_RESUME_PROFILE = "resume_profile"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -37,6 +42,10 @@ class AuthActivity : BaseActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.auth_fragments_container) as NavHostFragment
         navController = navHostFragment.navController
+
+        if (intent.getBooleanExtra(EXTRA_RESUME_PROFILE, false)) {
+            viewModel.setCurrentScreen(AuthScreen.CreateProfile)
+        }
 
         observeAuthState()
         observeCurrentScreen()

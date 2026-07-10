@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class InvoiceHistoryViewModel @Inject constructor(
+class  InvoiceHistoryViewModel @Inject constructor(
     private val repository: PropertyRepository
 ) : ViewModel() {
 

@@ -7,6 +7,7 @@ import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.xvantage.rental.ui.invoice.GenerateInvoiceBottomSheetFragment
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ActivityTakeRentBinding
 import com.xvantage.rental.ui.takeRent.adapter.PropertyRoomAdapter
@@ -50,11 +51,22 @@ class TakeRentActivity : AppCompatActivity() {
 
                 layoutBinding.rvPropertyList.adapter =
                     PropertyRoomAdapter(
-                        propertyData,
-                        this@TakeRentActivity,
-                        onGenerateStatement = { tenantId ->
-                            viewModel.generateCompleteStatement(tenantId)
+                        propertyList = propertyData,
+                        context = this@TakeRentActivity,
+
+                        onGenerateInvoice = { tenantId ->
+
+                            val bottomSheet =
+                                GenerateInvoiceBottomSheetFragment.newInstance(
+                                    tenantId = tenantId
+                                )
+
+                            bottomSheet.show(
+                                supportFragmentManager,
+                                "GenerateInvoiceBottomSheet"
+                            )
                         },
+
                         onPaymentReceived = {
                             viewModel.loadData()
                         }

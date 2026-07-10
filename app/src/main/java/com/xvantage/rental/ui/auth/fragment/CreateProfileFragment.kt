@@ -1,7 +1,9 @@
 package com.xvantage.rental.ui.auth.fragment
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -12,11 +14,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.xvantage.rental.databinding.FragmentCreateProfileBinding
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
@@ -33,6 +42,29 @@ class CreateProfileFragment : Fragment() {
     private lateinit var binding: FragmentCreateProfileBinding
     private lateinit var appPreference: AppPreference
     private val viewModel: AuthViewModel by activityViewModels()
+
+    // ── Location resolution popup (system "Turn on Location" dialog) launcher ──
+    private val locationSettingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // User ne GPS ON kari didhu → have location fetch kar
+            requestFreshLocation()
+        } else {
+            Toast.makeText(requireContext(), "Please turn on location to auto-fill address", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // ── Runtime permission launcher (Fine Location) ──
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            checkLocationSettingsAndFetch()
+        } else {
+            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +98,6 @@ class CreateProfileFragment : Fragment() {
             val state = binding.etState.text.toString().trim()
             val city = binding.etCity.text.toString().trim()
 
-            // Clear previous errors
             binding.etFirstName.error = null
             binding.etLastName.error = null
             binding.etEmail.error = null
@@ -77,36 +108,28 @@ class CreateProfileFragment : Fragment() {
                     binding.etFirstName.error = "⚠ First name is required"
                     binding.etFirstName.requestFocus()
                 }
-
                 lastName.isEmpty() -> {
                     binding.etLastName.error = "⚠ Last name is required"
                     binding.etLastName.requestFocus()
                 }
-
                 email.isEmpty() -> {
                     binding.etEmail.error = "⚠ Email is required"
                     binding.etEmail.requestFocus()
                 }
-
                 !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                     binding.etEmail.error = "⚠ Enter a valid email"
                     binding.etEmail.requestFocus()
                 }
-
                 gender.isEmpty() -> {
-                    Toast.makeText(context, "⚠ Please select your gender", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "⚠ Please select your gender", Toast.LENGTH_SHORT).show()
                 }
-
                 state.isEmpty() -> {
                     Toast.makeText(context, "⚠ Please select your state", Toast.LENGTH_SHORT).show()
                 }
-
                 city.isEmpty() -> {
                     binding.etCity.error = "⚠ City is required"
                     binding.etCity.requestFocus()
                 }
-
                 else -> {
                     viewModel.createProfile(firstName, lastName, email, state, city, gender)
                 }
@@ -115,7 +138,6 @@ class CreateProfileFragment : Fragment() {
 
         observeState()
     }
-
 
     private fun setupStateDropdown() {
         val stateList = StateProvider.getStates(requireContext())
@@ -141,7 +163,6 @@ class CreateProfileFragment : Fragment() {
         }
     }
 
-
     private fun setupGenderDropdown() {
         val genders = listOf("Male", "Female", "Other")
         val adapter = ArrayAdapter(
@@ -157,19 +178,58 @@ class CreateProfileFragment : Fragment() {
 
 
     private fun fetchCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            return
+        }
+        checkLocationSettingsAndFetch()
+    }
+
+    private fun checkLocationSettingsAndFetch() {
+        val locationRequest = com.google.android.gms.location.LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, 10000
+        ).build()
+
+        val settingsRequest = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+            .setAlwaysShow(true)
+            .build()
+
+        val settingsClient = LocationServices.getSettingsClient(requireActivity())
+
+        settingsClient.checkLocationSettings(settingsRequest)
+            .addOnSuccessListener {
+                // GPS already ON → fetch location
+                requestFreshLocation()
+            }
+            .addOnFailureListener { exception ->
+                if (exception is ResolvableApiException) {
+                    // GPS OFF → show system "Allow" popup to turn it on
+                    try {
+                        val intentSenderRequest =
+                            IntentSenderRequest.Builder(exception.resolution).build()
+                        locationSettingsLauncher.launch(intentSenderRequest)
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        Toast.makeText(requireContext(), "Unable to open location settings", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Location services unavailable on this device", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun requestFreshLocation() {
         val fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1001
-            )
-            return
-        }
+        ) return
 
         Toast.makeText(requireContext(), "Fetching location...", Toast.LENGTH_SHORT).show()
 
@@ -177,11 +237,45 @@ class CreateProfileFragment : Fragment() {
             if (location != null) {
                 getAddressFromLocation(location.latitude, location.longitude)
             } else {
-                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
+                // lastLocation cache empty (fresh device/emulator) → actively request one
+                fetchCurrentLocationActively(fusedClient)
             }
+        }.addOnFailureListener {
+            fetchCurrentLocationActively(fusedClient)
         }
     }
 
+    private fun fetchCurrentLocationActively(
+        fusedClient: com.google.android.gms.location.FusedLocationProviderClient
+    ) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) return
+
+        val cancellationTokenSource = CancellationTokenSource()
+        val currentLocationRequest = CurrentLocationRequest.Builder()
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .setMaxUpdateAgeMillis(0)
+            .build()
+
+        fusedClient.getCurrentLocation(currentLocationRequest, cancellationTokenSource.token)
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    getAddressFromLocation(location.latitude, location.longitude)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Location not found. Please move to an open area and try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
+            }
+    }
 
     private fun getAddressFromLocation(lat: Double, lng: Double) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -192,8 +286,10 @@ class CreateProfileFragment : Fragment() {
                     if (addresses.isNotEmpty()) {
                         val address = addresses[0]
                         binding.etState.setText(address.adminArea ?: "")
-                        binding.etCity.setText(address.locality ?: "")
+                        binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
                         Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -203,29 +299,13 @@ class CreateProfileFragment : Fragment() {
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
                 binding.etState.setText(address.adminArea ?: "")
-                binding.etCity.setText(address.locality ?: "")
+                binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
                 Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1001 &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            fetchCurrentLocation()
-        } else {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
 
     private fun observeState() {
         lifecycleScope.launch {

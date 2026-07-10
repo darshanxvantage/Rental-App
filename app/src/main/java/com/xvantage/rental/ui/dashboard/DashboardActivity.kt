@@ -7,6 +7,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.chip.Chip
+import com.xvantage.rental.databinding.BottomsheetFeedbackBinding
+import kotlinx.coroutines.launch
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -42,6 +47,7 @@ class DashboardActivity : BaseActivity() {
     private lateinit var toolbarBinding: ToolbarLayoutBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appPreference: AppPreference
+    private val feedbackViewModel: FeedbackViewModel by viewModels()
 
     private val PKG_BOOKMYFARM = "com.app.bookmyfarm"
     private val PKG_SPYGAME    = "com.xv.spygame"
@@ -136,6 +142,17 @@ class DashboardActivity : BaseActivity() {
                 CommonFunction().showRatingDialog(this@DashboardActivity)
                 closeDrawer()
             }
+            findViewById<View>(R.id.policy_tv)?.setOnClickListener {
+                startActivity(Intent(this@DashboardActivity, PrivacyPolicyActivity::class.java))
+                closeDrawer()
+            }
+
+// ── Feedback ──
+            findViewById<View>(R.id.feedback_tv)?.setOnClickListener {
+                closeDrawer()
+                showFeedbackBottomSheet()
+            }
+
             // ── Logout ──
             findViewById<View>(R.id.logout_tv)?.setOnClickListener {
                 appPreference.logoutUser()
@@ -184,6 +201,65 @@ class DashboardActivity : BaseActivity() {
         // ── View All ──
         view.findViewById<LinearLayout>(R.id.tvViewAllApps)?.setOnClickListener {
             openUrl(DEVELOPER_URL); dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showFeedbackBottomSheet() {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val sheetBinding = BottomsheetFeedbackBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
+
+        feedbackViewModel.resetState()
+
+        sheetBinding.btnSubmitFeedback.setOnClickListener {
+            val message = sheetBinding.etFeedbackMessage.text.toString().trim()
+            val rating = sheetBinding.ratingBarFeedback.rating.toInt()
+
+            val selectedChipId = sheetBinding.chipGroupCategory.checkedChipId
+            val category = when (selectedChipId) {
+                sheetBinding.chipBug.id        -> "BUG"
+                sheetBinding.chipComplaint.id  -> "COMPLAINT"
+                sheetBinding.chipCompliment.id -> "COMPLIMENT"
+                else                            -> "SUGGESTION"
+            }
+
+            if (message.isEmpty()) {
+                sheetBinding.tilFeedbackMessage.error = "Please tell us what's on your mind"
+                return@setOnClickListener
+            }
+            sheetBinding.tilFeedbackMessage.error = null
+
+            val appVersion = try {
+                packageManager.getPackageInfo(packageName, 0).versionName
+            } catch (e: Exception) { null }
+
+            feedbackViewModel.submitFeedback(category, rating, message, appVersion)
+        }
+
+        lifecycleScope.launch {
+            feedbackViewModel.isSubmitting.collect { loading ->
+                sheetBinding.progressFeedback.visibility = if (loading) View.VISIBLE else View.GONE
+                sheetBinding.btnSubmitFeedback.isEnabled = !loading
+            }
+        }
+
+        lifecycleScope.launch {
+            feedbackViewModel.submitSuccess.collect { successMsg ->
+                if (successMsg != null) {
+                    showToast(successMsg)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            feedbackViewModel.submitError.collect { errorMsg ->
+                if (errorMsg != null) {
+                    showToast(errorMsg)
+                }
+            }
         }
 
         dialog.show()

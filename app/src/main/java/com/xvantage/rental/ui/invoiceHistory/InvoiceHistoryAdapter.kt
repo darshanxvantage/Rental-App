@@ -38,8 +38,7 @@ class InvoiceHistoryAdapter(
         holder.binding.tvPayment.text = "₹${invoice.amount.toLong()}"
         holder.binding.tvPaymentDate.text = formatDate(invoice.createdAt)
 
-        // Re-use the "Note:" row to show the month this invoice
-        // covers and its invoice number — e.g. "April 2026 • INV-00012"
+
         holder.binding.labelNote.text = "Invoice:"
         holder.binding.tvNote.text =
             listOfNotNull(invoice.monthLabel, invoice.invoiceNumber)
@@ -59,9 +58,7 @@ class InvoiceHistoryAdapter(
             }
             context.startActivity(intent)
         } catch (e: Exception) {
-            // No PDF viewer installed, or the link couldn't be
-            // opened directly — fall back to a plain browser view,
-            // which can usually render the PDF inline anyway.
+
             try {
                 val fullUrl = Constant.SERVER_ROOT_URL + relativePath
                 context.startActivity(

@@ -14,6 +14,8 @@ import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.network.response.DashboardResponse
 import com.xvantage.rental.utils.BaseApplication
+import com.xvantage.rental.network.request.feedback.FeedbackRequest
+import com.xvantage.rental.network.response.FeedbackResponse
 import jakarta.inject.Inject
 import com.xvantage.rental.network.response.TenantDetailsResponse
 import com.xvantage.rental.network.response.PaymentSuccessResponse
@@ -984,6 +986,14 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             ResultWrapper.Error(
                 e.localizedMessage ?: "Error"
             )
+        }
+    }
+    suspend fun submitFeedback(request: FeedbackRequest): ResultWrapper<FeedbackResponse> {
+        return try {
+            val response = apiInterface.submitFeedback(request)
+            NetworkHelper.handleApiResponse(response)
+        } catch (e: Exception) {
+            ResultWrapper.Error("Network error: ${e.localizedMessage}")
         }
     }
 }

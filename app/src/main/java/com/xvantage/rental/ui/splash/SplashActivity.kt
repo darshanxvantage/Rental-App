@@ -59,13 +59,28 @@ class SplashActivity : AppCompatActivity() {
 
             val intent = when {
 
-                // User already logged in
-                !appPreference.getToken().isNullOrEmpty() -> {
+                // Logged in AND finished the profile setup -> Dashboard
+                !appPreference.getToken().isNullOrEmpty() &&
+                        appPreference.isProfileComplete() -> {
 
                     Intent(
                         this,
                         DashboardActivity::class.java
                     )
+
+                }
+
+                // Logged in but never tapped "Continue" on Create Profile ->
+                // resume exactly there instead of opening the Dashboard
+                !appPreference.getToken().isNullOrEmpty() &&
+                        !appPreference.isProfileComplete() -> {
+
+                    Intent(
+                        this,
+                        AuthActivity::class.java
+                    ).apply {
+                        putExtra(AuthActivity.EXTRA_RESUME_PROFILE, true)
+                    }
 
                 }
 

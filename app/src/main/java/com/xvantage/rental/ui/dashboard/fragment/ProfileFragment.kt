@@ -63,6 +63,7 @@ class ProfileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         profileViewModel.loadDashboardData()
+        bindAvatar()
     }
 
 
@@ -272,11 +273,45 @@ class ProfileFragment : Fragment() {
                     return
                 }
             }
+
+            val remoteUrl = appPreference.getRemoteProfileImageUrl()
+            if (!remoteUrl.isNullOrEmpty()) {
+                binding.imgProfile.visibility = View.VISIBLE
+                binding.tvInitials.visibility = View.GONE
+
+                com.bumptech.glide.Glide.with(this)
+                    .load(remoteUrl)
+                    .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                        override fun onLoadFailed(
+                            e: com.bumptech.glide.load.engine.GlideException?,
+                            model: Any?,
+                            target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+
+                            showInitialsAvatar()
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: android.graphics.drawable.Drawable,
+                            model: Any,
+                            target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                            dataSource: com.bumptech.glide.load.DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean = false
+                    })
+                    .into(binding.imgProfile)
+                return
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        // Show initials avatar
+        showInitialsAvatar()
+    }
+
+    private fun showInitialsAvatar() {
         val name = appPreference.getUserName()?.trim().orEmpty()
         binding.tvInitials.text = initialsFor(name)
         binding.tvInitials.backgroundTintList = ColorStateList.valueOf(

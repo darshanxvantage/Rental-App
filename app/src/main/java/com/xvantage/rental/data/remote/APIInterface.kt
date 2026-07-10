@@ -11,21 +11,26 @@ import com.xvantage.rental.network.response.PropertyDetailsResponse
 import com.xvantage.rental.network.response.VerifyOTPResponse
 import com.xvantage.rental.network.response.PropertyListResponse
 import com.xvantage.rental.network.response.TenantListResponse
+import com.xvantage.rental.network.request.feedback.FeedbackRequest
+import com.xvantage.rental.network.response.FeedbackResponse
 import com.xvantage.rental.network.response.TenantDuesResponse
 import com.xvantage.rental.network.response.InvoiceHistoryResponse
 import com.xvantage.rental.network.response.PaymentSuccessResponse
 import com.xvantage.rental.network.response.DashboardResponse
 import com.xvantage.rental.network.response.StatementResponse
 import com.xvantage.rental.network.request.tenant.StatusRequest
-import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
+import com.xvantage.rental.data.model.ApiResponse
+import com.xvantage.rental.data.model.BillingCycle
+import com.xvantage.rental.data.model.InvoiceFileResponse
+import retrofit2.Response
+import retrofit2.http.GET
 import retrofit2.http.Path
+import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.response.TenantDetailsResponse
 import retrofit2.http.DELETE
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -103,6 +108,19 @@ interface   APIInterface {
     suspend fun getTenantDetails(
         @Path("id") id: String
     ): Response<TenantDetailsResponse>
+
+
+    @GET("landlord/tenant/billing-cycles/{tenantId}")
+    suspend fun getBillingCycles(
+        @Path("tenantId") tenantId: String
+    ): Response<ApiResponse<List<BillingCycle>>>
+
+
+    @GET("landlord/tenant/invoice-for-month/{tenantId}/{cycleMonth}")
+    suspend fun generateInvoiceForMonth(
+        @Path("tenantId") tenantId: String,
+        @Path("cycleMonth") cycleMonth: String
+    ): Response<ApiResponse<InvoiceFileResponse>>
 
 
     @Multipart
@@ -334,6 +352,11 @@ interface   APIInterface {
         document: List<MultipartBody.Part>?
 
     ): Response<JsonObject>
+
+    @POST("landlord/feedback/submit")
+    suspend fun submitFeedback(
+        @Body request: FeedbackRequest
+    ): Response<FeedbackResponse>
 
 
 
