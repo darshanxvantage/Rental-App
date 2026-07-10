@@ -143,7 +143,7 @@ class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
     /** Override or pass a callback in from the host screen as needed. */
     private fun onInvoiceGenerated(filePath: String) {
 
-        val baseUrl = "http://localhost:3006"
+        val baseUrl = "https://api.rental.xvantageinfotech.com"
 
         val pdfUrl = if (filePath.startsWith("http")) {
             filePath

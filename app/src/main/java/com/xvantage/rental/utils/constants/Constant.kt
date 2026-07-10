@@ -47,6 +47,6 @@ object Constant {
     // Server root (no /api/v1 suffix) — used to build full URLs for
     // files served statically, like generated invoice PDFs which
     // come back from the backend as relative paths (e.g. "/public/TenantInvoice-123.pdf").
-    const val SERVER_ROOT_URL = "http://localhost:3006"
+    const val SERVER_ROOT_URL = "https://api.rental.xvantageinfotech.com"
 
 }
