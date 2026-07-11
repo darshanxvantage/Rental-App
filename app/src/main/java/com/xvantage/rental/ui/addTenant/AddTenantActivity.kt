@@ -1171,9 +1171,17 @@ class AddTenantActivity : AppCompatActivity() {
                     .toString()
                     .trim(),
 
-            meterReading = "",
+            meterReading =
+                binding.llElectricityFinanceDetail
+                    .etElectricityMeter.text
+                    .toString()
+                    .trim(),
 
-            meterReadingWater = "",
+            meterReadingWater =
+                binding.llWaterFinanceDetail
+                    .etWaterMeterReading.text
+                    .toString()
+                    .trim(),
 
             costUnitWater =
                 binding.llWaterFinanceDetail
@@ -1261,9 +1269,17 @@ class AddTenantActivity : AppCompatActivity() {
                     .toString()
                     .trim(),
 
-            meterReading = "",
+            meterReading =
+                binding.llElectricityFinanceDetail
+                    .etElectricityMeter.text
+                    .toString()
+                    .trim(),
 
-            waterReading = "",
+            waterReading =
+                binding.llWaterFinanceDetail
+                    .etWaterMeterReading.text
+                    .toString()
+                    .trim(),
 
             costPerUnit =
                 binding.llElectricityFinanceDetail.etElectricityCostUnit.text
