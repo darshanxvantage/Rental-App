@@ -272,12 +272,16 @@ Occupied    = ${room.isOccupied}
 
                 binding.btnRcvPayment.setOnClickListener {
 
+
+                    val amountToCollect =
+                        if (room.paymentDue > 0) room.paymentDue else totalPayableForRoom
+
                     val sheet = ReceivePaymentBottomSheetFragment.newInstance(
                         tenantId = room.tenantId,
                         tenantName = room.tenantName,
                         roomId = room.roomId,
                         propertyName = room.propertyName,
-                        totalPayable = totalPayableForRoom,
+                        totalPayable = amountToCollect,
                         electricityMode = room.electricityMode,
                         waterMode = room.waterMode,
                         lastMeterReading = room.lastMeterReading,

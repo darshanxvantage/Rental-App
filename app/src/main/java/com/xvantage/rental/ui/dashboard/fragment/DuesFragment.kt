@@ -68,9 +68,7 @@ class DuesFragment : Fragment() {
             viewModel
         ) { tenant ->
 
-            // Opens as a bottom sheet now instead of pushing a whole new
-            // screen — "Collect Rent" no longer navigates the owner away
-            // from the Due Payments list they were looking at.
+
             val sheet = ReceivePaymentBottomSheetFragment.newInstance(
                 tenantId = tenant.id,
                 tenantName = tenant.tenant_name ?: "",
@@ -79,8 +77,13 @@ class DuesFragment : Fragment() {
                 totalPayable = tenant.totalDue ?: 0.0,
                 electricityMode = tenant.fixed_electricity ?: "",
                 waterMode = tenant.fixed_waterbill ?: "",
-                lastMeterReading = tenant.last_meter_reading ?: "",
-                lastWaterReading = tenant.last_meter_reading_water ?: "",
+
+                lastMeterReading = tenant.meter_reading
+                    ?.takeIf { it.isNotBlank() }
+                    ?: (tenant.last_meter_reading ?: ""),
+                lastWaterReading = tenant.meter_reading_water
+                    ?.takeIf { it.isNotBlank() }
+                    ?: (tenant.last_meter_reading_water ?: ""),
                 costPerUnit = tenant.cost_per_unit ?: "",
                 costUnitWater = tenant.cost_unit_water ?: ""
             )

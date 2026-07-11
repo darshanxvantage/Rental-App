@@ -53,6 +53,8 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     private var lastWaterReading: Double = 0.0
     private var electricityCostPerUnit: Double = 0.0
     private var waterCostPerUnit: Double = 0.0
+    private var currentElectricityCharge: Double = 0.0
+    private var currentWaterCharge: Double = 0.0
 
 
     private var onPaymentReceivedListener: (() -> Unit)? = null
@@ -160,6 +162,8 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
             arguments?.getString(ARG_COST_UNIT_WATER)?.toDoubleOrNull() ?: 0.0
 
         setupMeterReadingSections()
+        setupTotalSummaryListeners()
+        updateTotalPayable()
 
         val today = java.text.SimpleDateFormat(
             "yyyy-MM-dd",
@@ -217,8 +221,10 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
             binding.etElectricityMeterReading.text.toString().toDoubleOrNull() ?: 0.0
         val units = (current - lastElectricityReading).coerceAtLeast(0.0)
         val charge = units * electricityCostPerUnit
+        currentElectricityCharge = charge
         binding.tvElectricityCalculatedCharge.text =
             getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+        updateTotalPayable()
     }
 
     private fun updateWaterCharge() {
@@ -226,8 +232,40 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
             binding.etWaterMeterReading.text.toString().toDoubleOrNull() ?: 0.0
         val units = (current - lastWaterReading).coerceAtLeast(0.0)
         val charge = units * waterCostPerUnit
+        currentWaterCharge = charge
         binding.tvWaterCalculatedCharge.text =
             getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+        updateTotalPayable()
+    }
+
+    /** Rent amount field should also refresh the total live as the owner edits it. */
+    private fun setupTotalSummaryListeners() {
+        binding.llSummaryElectricityRow.visibility =
+            if (electricityMode.equals("metered", ignoreCase = true)) View.VISIBLE else View.GONE
+        binding.llSummaryWaterRow.visibility =
+            if (waterMode.equals("metered", ignoreCase = true)) View.VISIBLE else View.GONE
+
+        binding.etRentAmount.addTextChangedListener(
+            object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    updateTotalPayable()
+                }
+            }
+        )
+    }
+
+    /** Recomputes Rent + Electricity + Water and refreshes the Total Payable summary card. */
+    private fun updateTotalPayable() {
+        val rent = binding.etRentAmount.text.toString().toDoubleOrNull() ?: 0.0
+
+        binding.tvSummaryRent.text = "₹${rent.toLong()}"
+        binding.tvSummaryElectricity.text = "₹${currentElectricityCharge.toLong()}"
+        binding.tvSummaryWater.text = "₹${currentWaterCharge.toLong()}"
+
+        val total = rent + currentElectricityCharge + currentWaterCharge
+        binding.tvTotalPayable.text = "₹${total.toLong()}"
     }
 
     private fun setupListeners() {
@@ -452,8 +490,7 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         dialog.show()
 
-        // Expand fully on show — same behavior as the form sheet, just a
-        // shorter card so it naturally sits lower on screen.
+
         dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
             BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
         }

@@ -228,16 +228,16 @@ class TakeRentActivity : AppCompatActivity() {
 
 
                         lastMeterReading =
-                            tenant?.last_meter_reading
+                            tenant?.meter_reading
                                 ?.takeIf { it.isNotBlank() }
-                                ?: tenant?.meter_reading
+                                ?: tenant?.last_meter_reading
                                     ?.takeIf { it.isNotBlank() }
                                 ?: "0",
 
                         lastWaterReading =
-                            tenant?.last_meter_reading_water
+                            tenant?.meter_reading_water
                                 ?.takeIf { it.isNotBlank() }
-                                ?: tenant?.meter_reading_water
+                                ?: tenant?.last_meter_reading_water
                                     ?.takeIf { it.isNotBlank() }
                                 ?: "0",
 
