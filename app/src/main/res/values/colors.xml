@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Profile Page — Premium Palette -->
+    <color name="profile_gold">#2ECC71</color>
+    <color name="profile_gold_dark">#A9821A</color>
+    <color name="profile_navy">#16233D</color>
+    <color name="profile_bg">#F7F6F2</color>
+    <color name="profile_card_border">#EAE6DC</color>
+    <color name="profile_success">#16A34A</color>
+    <color name="profile_warning">#E8892B</color>
+
     <color name="black">#FF000000</color>
     <color name="black_cole">#1A1A1A</color>
     <color name="white">#FFFFFFFF</color>
@@ -53,6 +62,10 @@
     <color name="dark_grey_hint">#696F8C</color>
     <color name="pin_normal">#6B767E</color>
     <color name="gold">#FFC107</color>
+    <color name="spinner_border">#E2E8F0</color>
+    <color name="spinner_background">#FFFFFF</color>
+    <color name="spinner_text">#1E293B</color>
+    <color name="spinner_hint">#64748B</color>
 
 
 </resources>

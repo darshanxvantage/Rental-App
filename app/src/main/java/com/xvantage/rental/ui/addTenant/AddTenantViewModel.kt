@@ -28,14 +28,9 @@ class AddTenantViewModel @Inject constructor(
     val createTenantState =
         MutableStateFlow(false)
 
-    // Populated from the API response after a successful create/update, so
-    // the Activity can schedule a rent reminder against the REAL due date
-    // (instead of guessing one on-device).
     val createdTenantNextDueDate =
         MutableStateFlow<String?>(null)
 
-    // Real backend error message (validation failures etc.) so the user sees
-    // *why* saving failed, instead of nothing happening.
     val tenantErrorMessage =
         MutableStateFlow<String?>(null)
 
@@ -237,9 +232,6 @@ class AddTenantViewModel @Inject constructor(
 
                 is ResultWrapper.Success -> {
 
-                    // Backend now returns the freshly-created first billing
-                    // cycle's due date as the tenant's rent_end_date — use it
-                    // to schedule the rent reminder.
                     createdTenantNextDueDate.value =
                         result.value.get("data")
                             ?.asJsonObject

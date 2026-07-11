@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FB"
+    android:background="@color/white"
     android:clipToPadding="false"
     android:fitsSystemWindows="true"
     android:paddingBottom="130dp">
@@ -50,7 +50,7 @@
                     android:layout_gravity="top|center_horizontal"
                     app:cardCornerRadius="66dp"
                     app:cardElevation="12dp"
-                    app:strokeColor="#2962FF"
+                    app:strokeColor="@color/profile_success"
                     app:strokeWidth="4dp">
 
                     <FrameLayout
@@ -87,7 +87,7 @@
                     android:layout_gravity="bottom|end"
                     android:layout_marginEnd="2dp"
                     android:layout_marginBottom="22dp"
-                    app:cardBackgroundColor="#2962FF"
+                    app:cardBackgroundColor="@color/profile_navy"
                     app:cardCornerRadius="18dp"
                     app:cardElevation="6dp"
                     app:strokeColor="@android:color/white"
@@ -184,13 +184,14 @@
             </LinearLayout>
 
             <!-- PROFILE STRENGTH CARD -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="3dp">
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -217,7 +218,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0%"
-                            android:textColor="#2962FF"
+                            android:textColor="@color/profile_warning"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
@@ -244,9 +245,9 @@
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- STATS ROW: Properties | Tenants | Revenue -->
+            <!-- STATS ROW: Home page jaisi style — icon + title + value -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -254,46 +255,63 @@
                 android:layout_marginBottom="4dp"
                 android:orientation="horizontal">
 
-                <!-- Properties -->
+                <!-- Properties Card — same as total_property_card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardProperties"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="3dp">
+                    android:background="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:orientation="vertical"
+                        android:gravity="center"
                         android:padding="14dp">
 
+                        <ImageView
+                            android:id="@+id/ivPropIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/ic_total_property" />
+
                         <TextView
-                            android:id="@+id/tvListedCount"
+                            android:id="@+id/tvPropTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="#2962FF"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
+                            android:text="Properties"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvListedCount"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:text="Properties"
-                            android:textColor="#888888"
-                            android:textSize="12sp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/royal_blue"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:maxLines="1"
+                            app:autoSizeTextType="uniform"
+                            app:autoSizeMinTextSize="8sp"
+                            app:autoSizeMaxTextSize="20sp"
+                            app:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Tenants -->
+                <!-- Tenants Card — same as active_tenant_card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardTenants"
                     android:layout_width="0dp"
@@ -301,72 +319,106 @@
                     android:layout_marginStart="6dp"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="3dp">
+                    android:background="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:orientation="vertical"
+                        android:gravity="center"
                         android:padding="14dp">
 
+                        <ImageView
+                            android:id="@+id/ivTenantIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/ic_tenants" />
+
                         <TextView
-                            android:id="@+id/tvRentedCount"
+                            android:id="@+id/tvTenantTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="#2962FF"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
+                            android:text="Tenants"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvRentedCount"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:text="Tenants"
-                            android:textColor="#888888"
-                            android:textSize="12sp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/royal_blue"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:maxLines="1"
+                            app:autoSizeTextType="uniform"
+                            app:autoSizeMinTextSize="8sp"
+                            app:autoSizeMaxTextSize="20sp"
+                            app:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Revenue -->
+                <!-- Revenue Card — same as total_payment_card but GREEN -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardRevenue"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="3dp">
+                    android:background="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:orientation="vertical"
+                        android:gravity="center"
                         android:padding="14dp">
 
+                        <ImageView
+                            android:id="@+id/ivRevenueIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/ic_receive_payment" />
+
                         <TextView
-                            android:id="@+id/tvRevenue"
+                            android:id="@+id/tvRevenueTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="₹0"
-                            android:textColor="#2962FF"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
+                            android:text="Revenue"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvRevenue"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:text="Revenue"
-                            android:textColor="#888888"
-                            android:textSize="12sp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="₹0"
+                            android:textColor="#2ECC71"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:maxLines="1"
+                            app:autoSizeTextType="uniform"
+                            app:autoSizeMinTextSize="8sp"
+                            app:autoSizeMaxTextSize="20sp"
+                            app:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
 
@@ -374,14 +426,16 @@
 
             </LinearLayout>
 
+
             <!-- LANDLORD TIER CARD -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp">
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -451,16 +505,17 @@
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- ACCOUNT INFORMATION CARD -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp">
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -586,16 +641,17 @@
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- QUICK ACTIONS CARD -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp">
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -622,7 +678,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="4">
+                        android:weightSum="3">
 
                         <!-- EDIT PROFILE (was Settings) -->
                         <LinearLayout
@@ -658,45 +714,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
                                 android:text="Edit"
-                                android:textColor="#444444"
-                                android:textSize="11sp" />
-
-                        </LinearLayout>
-
-                        <!-- SECURITY -->
-                        <LinearLayout
-                            android:id="@+id/btnQuickSecurity"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp">
-
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="44dp"
-                                android:layout_height="44dp"
-                                app:cardBackgroundColor="#F3EEFF"
-                                app:cardCornerRadius="14dp"
-                                app:cardElevation="0dp">
-
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_shield_lock" />
-
-                            </androidx.cardview.widget.CardView>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Security"
                                 android:textColor="#444444"
                                 android:textSize="11sp" />
 
@@ -784,7 +801,7 @@
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

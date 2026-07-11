@@ -88,7 +88,7 @@ class AddPropertyViewModel @Inject constructor(
 
             is ResultWrapper.Success -> {
 
-                _propertyTypes.value = res.value
+                _propertyTypes.value = res.value.distinctBy { it.name }
 
                 Log.d(
                     "PROPERTY_TYPE_API",

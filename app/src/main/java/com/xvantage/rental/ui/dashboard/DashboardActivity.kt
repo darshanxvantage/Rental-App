@@ -130,19 +130,53 @@ class DashboardActivity : BaseActivity() {
             }
             // ── Share App ──
             findViewById<View>(R.id.shaer_app_tv)?.setOnClickListener {
+                val playStoreLink = "https://play.google.com/store/apps/details?id=com.xv.rentalmaster&hl=en_IN"
+                val shareText = """
+🏠 xVantage Rental Master
+
+Managing rental properties has never been easier!
+✅ Track tenants & payments
+✅ Due payment reminders
+✅ Property management at your fingertips
+
+📲 Download now:
+$playStoreLink
+                """.trimIndent()
+
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "RentMaster")
-                    putExtra(Intent.EXTRA_TEXT,
-                        "Download RentMaster App:\nhttps://play.google.com/store/apps/details?id=$packageName")
+                    putExtra(Intent.EXTRA_SUBJECT, "xVantage Rental Master App")
+                    putExtra(Intent.EXTRA_TEXT, shareText)
                 }
-                startActivity(Intent.createChooser(shareIntent, "Share RentMaster"))
+                startActivity(Intent.createChooser(shareIntent, "Share xVantage Rental Master"))
                 closeDrawer()
             }
-            // ── Rate Us ──
+// ── Rate Us ──
             findViewById<View>(R.id.rate_us_tv)?.setOnClickListener {
-                CommonFunction().showRatingDialog(this@DashboardActivity)
+
                 closeDrawer()
+
+                val playStorePackage = "com.xv.rentalmaster"
+
+                try {
+
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$playStorePackage")
+                    )
+
+                    intent.setPackage("com.android.vending")
+                    startActivity(intent)
+
+                } catch (e: Exception) {
+
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$playStorePackage")
+                    )
+
+                    startActivity(intent)
+                }
             }
             findViewById<View>(R.id.policy_tv)?.setOnClickListener {
                 startActivity(Intent(this@DashboardActivity, PrivacyPolicyActivity::class.java))

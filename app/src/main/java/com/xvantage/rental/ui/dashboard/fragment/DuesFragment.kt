@@ -99,7 +99,7 @@ class DuesFragment : Fragment() {
         binding.tabAll.setOnClickListener {
             currentTab = TAB_ALL
             updateTabUI()
-            showList(viewModel.allTenants.value)
+            showList(viewModel.getAllDueTenants())
         }
         binding.tabOverdue.setOnClickListener {
             currentTab = TAB_OVERDUE
@@ -136,7 +136,7 @@ class DuesFragment : Fragment() {
                 val listToShow = when (currentTab) {
                     TAB_OVERDUE -> viewModel.getOverdueTenants()
                     TAB_NO_DUE  -> viewModel.getNoDueTenants()
-                    else -> tenants.filter { (it.totalDue ?: 0.0) > 0.0 }
+                    else -> viewModel.getAllDueTenants()
                 }
                 showList(listToShow)
             }
@@ -166,12 +166,36 @@ class DuesFragment : Fragment() {
     }
 
     private fun updateTabUI() {
-        val activeColor   = ContextCompat.getColor(requireContext(), R.color.royal_blue)
-        val inactiveColor = ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
 
-        binding.tabAll.setTextColor(if (currentTab == TAB_ALL) activeColor else inactiveColor)
-        binding.tabOverdue.setTextColor(if (currentTab == TAB_OVERDUE) activeColor else inactiveColor)
-        binding.tabNoDue.setTextColor(if (currentTab == TAB_NO_DUE) activeColor else inactiveColor)
+        val blue = ContextCompat.getColor(requireContext(), R.color.royal_blue)
+        val white = ContextCompat.getColor(requireContext(), android.R.color.white)
+
+        // ALL
+        if (currentTab == TAB_ALL) {
+            binding.tabAll.setBackgroundResource(R.drawable.bg_tab_selected)
+            binding.tabAll.setTextColor(white)
+        } else {
+            binding.tabAll.setBackgroundResource(R.drawable.bg_tab_unselected)
+            binding.tabAll.setTextColor(blue)
+        }
+
+        // OVERDUE
+        if (currentTab == TAB_OVERDUE) {
+            binding.tabOverdue.setBackgroundResource(R.drawable.bg_tab_selected)
+            binding.tabOverdue.setTextColor(white)
+        } else {
+            binding.tabOverdue.setBackgroundResource(R.drawable.bg_tab_unselected)
+            binding.tabOverdue.setTextColor(blue)
+        }
+
+        // NO DUE
+        if (currentTab == TAB_NO_DUE) {
+            binding.tabNoDue.setBackgroundResource(R.drawable.bg_tab_selected)
+            binding.tabNoDue.setTextColor(white)
+        } else {
+            binding.tabNoDue.setBackgroundResource(R.drawable.bg_tab_unselected)
+            binding.tabNoDue.setTextColor(blue)
+        }
     }
 
     override fun onDestroyView() {

@@ -8,17 +8,15 @@ import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.widget.TextView
 import android.net.Uri
+import androidx.core.app.ShareCompat
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -29,7 +27,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentProfileBinding
-import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
 import com.xvantage.rental.ui.manageProperty.ManagePropertyActivity
@@ -128,7 +125,7 @@ class ProfileFragment : Fragment() {
                 binding.tvTierHint.text = tier.hint
                 binding.pbTier.progress = tier.progress
                 binding.pbTier.progressTintList = ColorStateList.valueOf(tierColor)
-                binding.cardAvatar.strokeColor = tierColor
+                binding.cardAvatar.strokeColor = Color.parseColor("#2ECC71")
             }
         }
 
@@ -170,10 +167,6 @@ class ProfileFragment : Fragment() {
         // Settings button is now Edit Profile
         binding.btnQuickSettings.setOnClickListener {
             showEditProfileBottomSheet()
-        }
-
-        binding.btnQuickSecurity.setOnClickListener {
-            showSecurityDialog()
         }
 
         binding.btnQuickHelp.setOnClickListener {
@@ -377,10 +370,13 @@ class ProfileFragment : Fragment() {
             else -> "Almost there"
         }
 
+        val strengthColor = if (percent >= 100) "#16A34A" else "#E8892B"
+
         binding.tvCompletionPercent.text = "$percent%"
+        binding.tvCompletionPercent.setTextColor(Color.parseColor(strengthColor))
         binding.pbCompletion.progress = percent
         binding.pbCompletion.progressTintList = ColorStateList.valueOf(
-            Color.parseColor(if (percent >= 100) "#16A34A" else "#2962FF")
+            Color.parseColor(strengthColor)
         )
         binding.tvCompletionHint.text = hint
     }
@@ -398,65 +394,6 @@ class ProfileFragment : Fragment() {
 
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).toInt()
-
-    private fun showSecurityDialog() {
-
-        val context = requireContext()
-
-        val container = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(20), dp(24), dp(8))
-        }
-
-        val switchBiometric = Switch(context).apply {
-            text = "Biometric Lock"
-            textSize = 16f
-            isChecked = appPreference.isBiometricEnabled()
-        }
-
-        val switchTwoStep = Switch(context).apply {
-            text = "Two-Step Verification"
-            textSize = 16f
-            isChecked = appPreference.isTwoStepEnabled()
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(18) }
-        }
-
-        container.addView(switchBiometric)
-        container.addView(switchTwoStep)
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("Security")
-            .setView(container)
-            .setCancelable(true)
-            .setPositiveButton("Save", null)
-            .setNegativeButton("Cancel", null)
-            .create()
-
-        dialog.setOnShowListener {
-
-            val btnSave = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            val btnCancel = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-
-            btnSave.isAllCaps = false
-            btnCancel.isAllCaps = false
-            btnSave.setTextColor(Color.parseColor("#2962FF"))
-            btnCancel.setTextColor(Color.parseColor("#FF3B30"))
-
-            btnSave.setOnClickListener {
-                appPreference.setBiometricEnabled(switchBiometric.isChecked)
-                appPreference.setTwoStepEnabled(switchTwoStep.isChecked)
-                Toast.makeText(context, "Security Updated Successfully", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-
-            btnCancel.setOnClickListener { dialog.dismiss() }
-        }
-
-        dialog.show()
-    }
 
     private fun showHelpDialog() {
 
@@ -501,11 +438,26 @@ class ProfileFragment : Fragment() {
     }
 
     private fun shareApp() {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "I'm managing my rental properties with this app — give it a try!")
-        }
-        startActivity(Intent.createChooser(intent, "Share via"))
+        val playStoreLink = "https://play.google.com/store/apps/details?id=com.xv.rentalmaster&hl=en_IN"
+        val shareText = """
+🏠 xVantage Rental Master
+
+Managing rental properties has never been easier!
+✅ Track tenants & payments
+✅ Due payment reminders  
+✅ Property management at your fingertips
+
+📲 Download now:
+$playStoreLink
+    """.trimIndent()
+
+        // ✅ ShareCompat — app name share sheet mein dikhega
+        ShareCompat.IntentBuilder(requireActivity())
+            .setType("text/plain")
+            .setSubject("xVantage Rental Master App")
+            .setText(shareText)
+            .setChooserTitle("Share xVantage Rental Master")
+            .startChooser()
     }
 
     private fun formatRupees(amount: Double): String {

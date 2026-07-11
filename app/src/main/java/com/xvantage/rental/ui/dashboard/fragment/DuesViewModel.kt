@@ -139,4 +139,7 @@ class DuesViewModel @Inject constructor(
 
     fun getNoDueTenants(): List<TenantItem> =
         allTenants.value.filter { (it.totalDue ?: 0.0) <= 0.0 }
+
+    fun getAllDueTenants(): List<TenantItem> =
+        allTenants.value.filter { (it.totalDue ?: 0.0) > 0.0 }
 }

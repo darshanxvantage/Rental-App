@@ -92,8 +92,8 @@
     <string name="property_name">Property Name</string>
     <string name="enter_property_name">Enter Property Name Here</string>
     <string name="enter_property_address">Enter Property Address Here</string>
-    <string name="enter_home_number">Enter Home Number</string>
-    <string name="home_number">Home Number</string>
+    <string name="enter_home_number">Enter Number of Rooms</string>
+    <string name="home_number">Number of Rooms</string>
     <string name="number_of_flats">Number of flats</string>
     <string name="number_of_rooms">Number of Rooms</string>
     <string name="type_rooms">Rooms Type</string>

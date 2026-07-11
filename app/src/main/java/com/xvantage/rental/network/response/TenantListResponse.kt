@@ -57,11 +57,11 @@ data class TenantItem(
     val payment_mode: String?,
     val note: String?,
 
-    val documents: List<TenantDocument>,
+    val documents: List<TenantDocument> = emptyList(),
 
-    val property_fk: String,
+    val property_fk: String = "",
 
-    val room_fk: String,
+    val room_fk: String = "",
 
     val tenant_details: TenantRoomDetails?,
 

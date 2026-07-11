@@ -336,7 +336,9 @@ class AddTenantActivity : AppCompatActivity() {
 
                     this@AddTenantActivity,
 
-                    android.R.layout.simple_dropdown_item_1line,
+                    R.layout.item_dropdown_text,
+
+                    R.id.tvDropdownText,
 
                     propertyNames
 
@@ -631,7 +633,8 @@ class AddTenantActivity : AppCompatActivity() {
 
         val adapter = ArrayAdapter(
             this,
-            android.R.layout.simple_dropdown_item_1line,
+            R.layout.item_dropdown_text,
+            R.id.tvDropdownText,
             roomList
         )
 

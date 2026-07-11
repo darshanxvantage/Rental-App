@@ -19,6 +19,9 @@ class TenantListViewModel @Inject constructor(
     val tenantList =
         MutableStateFlow<List<TenantItem>>(emptyList())
 
+    val tenantListError =
+        MutableStateFlow<String?>(null)
+
     fun loadTenants() {
 
         viewModelScope.launch {
@@ -30,8 +33,20 @@ class TenantListViewModel @Inject constructor(
 
                 is ResultWrapper.Success -> {
 
+                    tenantListError.value = null
+
                     tenantList.value =
                         response.value.data.rows
+                }
+
+                is ResultWrapper.Error -> {
+
+                    android.util.Log.e(
+                        "TENANT_LIST_ERROR",
+                        "Failed to load tenant list. statusCode=${response.statusCode}, message=${response.message}"
+                    )
+
+                    tenantListError.value = response.message
                 }
 
                 else -> {}

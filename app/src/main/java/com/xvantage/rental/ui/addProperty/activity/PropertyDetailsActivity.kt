@@ -8,6 +8,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -130,11 +133,6 @@ class PropertyDetailsActivity : AppCompatActivity() {
     }
     private fun bindHeader(details: PropertyDetailsResponse) {
 
-        // NOTE: binding.tvPropertyName / tvPropertyAddress point to a hidden
-        // TextView inside the (visibility="gone") property_summary_card in
-        // activity_property_details.xml, NOT the visible banner. The visible
-        // banner's views live inside the included property_header_toolbar,
-        // so they must be updated via binding.toolbar.* instead.
         binding.toolbar.tvPropertyName.text =
             details.data?.name ?: ""
 
@@ -239,14 +237,38 @@ class PropertyDetailsActivity : AppCompatActivity() {
         )
     }
 
+    private val addTenantLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+
+            if (result.resultCode == RESULT_OK) {
+
+                // Reload Property
+
+                viewModel.loadPropertyDetails(propertyId)
+
+                // Reload Tenant List
+
+                supportFragmentManager.fragments.forEach {
+
+                    if (it is TenantsFragment) {
+
+                        it.refreshTenantList()
+                    }
+                }
+            }
+        }
+
     private fun showAddTenantBottomSheet() {
 
-        val intent = Intent(
-            this,
-            com.xvantage.rental.ui.addTenant.AddTenantActivity::class.java
-        )
+        val intent =
+            Intent(
+                this,
+                AddTenantActivity::class.java
+            )
 
-        startActivity(intent)
+        addTenantLauncher.launch(intent)
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -89,6 +89,7 @@
                             android:layout_height="48dp"
                             android:background="@drawable/grey_border_background"
                             android:paddingStart="12dp"
+                            android:popupBackground="@drawable/spinner_popup"
                             android:paddingEnd="36dp"
                             android:spinnerMode="dropdown" />
 
@@ -132,6 +133,8 @@
                             android:background="@drawable/grey_border_background"
                             android:hint="@string/enter_home_number"
                             android:textColorHint="@color/grey_hint"
+                            android:inputType="number"
+                            android:maxLength="3"
                             android:padding="@dimen/space8" />
                     </LinearLayout>
 

@@ -18,6 +18,9 @@ class TenantDetailsViewModel @Inject constructor(
     val tenant =
         MutableStateFlow<TenantDetailsResponse?>(null)
 
+    val tenantError =
+        MutableStateFlow<String?>(null)
+
     val statusUpdateState =
         MutableStateFlow(false)
 
@@ -35,8 +38,33 @@ class TenantDetailsViewModel @Inject constructor(
 
                 is ResultWrapper.Success -> {
 
-                    tenant.value =
-                        response.value
+                    tenantError.value = null
+
+                    if (response.value.data == null) {
+
+                        android.util.Log.e(
+                            "TENANT_DETAILS_ERROR",
+                            "Tenant $id: server returned success but data=null (tenant not found)"
+                        )
+
+                        tenantError.value =
+                            "Could not load this tenant's details. It may have been deleted."
+
+                    } else {
+
+                        tenant.value =
+                            response.value
+                    }
+                }
+
+                is ResultWrapper.Error -> {
+
+                    android.util.Log.e(
+                        "TENANT_DETAILS_ERROR",
+                        "Failed to load tenant $id. statusCode=${response.statusCode}, message=${response.message}"
+                    )
+
+                    tenantError.value = response.message
                 }
 
                 else -> {}

@@ -150,26 +150,6 @@ class TakeRentActivity : AppCompatActivity() {
                                 t.status.equals("ACTIVE", ignoreCase = true)
                     }
 
-                    android.util.Log.d(
-                        "TENANT_IMAGE",
-                        "Tenant = ${tenant?.tenant_name}"
-                    )
-                    android.util.Log.e(
-                        "DUE_CYCLE_DEBUG",
-                        """
-Tenant = ${tenant?.tenant_name}
-
-DueCycles = ${tenant?.dueCycles}
-
-First Total = ${tenant?.dueCycles?.firstOrNull()?.totalAmount}
-
-Rent = ${tenant?.rent}
-
-Fixed Electricity = ${tenant?.fixed_electricity_amount}
-
-Fixed Water = ${tenant?.fixed_waterbill_amount}
-""".trimIndent()
-                    )
                     RoomItem(
                         roomId = room.id,
                         roomNo = room.room_no,

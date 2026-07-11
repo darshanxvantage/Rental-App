@@ -4,7 +4,6 @@ import android.Manifest
 import com.bumptech.glide.Glide
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,11 +11,9 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import com.xvantage.rental.utils.AppSpinnerAdapter
 import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Bitmap
@@ -687,96 +684,17 @@ class AddPropertyActivity : AppCompatActivity() {
      */
     private fun setupSpinner(
         spinner: Spinner,
-        items: List<String>,
-        defaultTextColor: Int = Color.GRAY,
-        selectedTextColor: Int = Color.BLACK
+        items: List<String>
     ) {
 
-        val adapter =
-            object : ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_spinner_item,
-                items
-            ) {
-
-                override fun getView(
-                    position: Int,
-                    convertView: View?,
-                    parent: ViewGroup
-                ): View {
-
-                    val view =
-                        super.getView(
-                            position,
-                            convertView,
-                            parent
-                        ) as TextView
-
-                    view.text = items[position]
-
-                    view.setTextColor(
-                        if (position == 0)
-                            defaultTextColor
-                        else
-                            selectedTextColor
-                    )
-
-                    view.textSize = 16f
-
-                    view.setPadding(
-                        12,
-                        0,
-                        12,
-                        0
-                    )
-
-                    return view
-                }
-
-
-                override fun getDropDownView(
-                    position: Int,
-                    convertView: View?,
-                    parent: ViewGroup
-                ): View {
-
-                    val view =
-                        super.getDropDownView(
-                            position,
-                            convertView,
-                            parent
-                        ) as TextView
-
-                    view.text = items[position]
-
-                    view.setTextColor(
-                        if (position == 0)
-                            defaultTextColor
-                        else
-                            selectedTextColor
-                    )
-
-                    view.setBackgroundColor(Color.WHITE)
-
-                    view.textSize = 16f
-
-                    view.setPadding(
-                        32,
-                        28,
-                        32,
-                        28
-                    )
-
-                    return view
-                }
-            }
-
-
-        adapter.setDropDownViewResource(
-            android.R.layout.simple_spinner_dropdown_item
+        val adapter = AppSpinnerAdapter(
+            this@AddPropertyActivity,
+            items
         )
 
         spinner.adapter = adapter
+
+        spinner.dropDownVerticalOffset = 8
     }
 
     /**
