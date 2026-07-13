@@ -51,7 +51,7 @@ class CreateProfileFragment : Fragment() {
             // User ne GPS ON kari didhu → have location fetch kar
             requestFreshLocation()
         } else {
-            Toast.makeText(requireContext(), "Please turn on location to auto-fill address", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "Please turn on location to auto-fill address", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -62,7 +62,7 @@ class CreateProfileFragment : Fragment() {
         if (granted) {
             checkLocationSettingsAndFetch()
         } else {
-            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -142,7 +142,7 @@ class CreateProfileFragment : Fragment() {
     private fun setupStateDropdown() {
         val stateList = StateProvider.getStates(requireContext())
         if (stateList.isEmpty()) {
-            Toast.makeText(requireContext(), "State list not loaded", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "State list not loaded", Toast.LENGTH_SHORT).show()
             return
         }
         val adapter = ArrayAdapter(
@@ -265,15 +265,15 @@ class CreateProfileFragment : Fragment() {
                 if (location != null) {
                     getAddressFromLocation(location.latitude, location.longitude)
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Location not found. Please move to an open area and try again",
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Location not found. Please move to an open area and try again",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -287,9 +287,9 @@ class CreateProfileFragment : Fragment() {
                         val address = addresses[0]
                         binding.etState.setText(address.adminArea ?: "")
                         binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
-                        Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -300,9 +300,9 @@ class CreateProfileFragment : Fragment() {
                 val address = addresses[0]
                 binding.etState.setText(address.adminArea ?: "")
                 binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
-                Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
+//ProfileFragment.kt
             }
         }
     }

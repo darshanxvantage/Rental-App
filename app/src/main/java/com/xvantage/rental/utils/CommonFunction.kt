@@ -30,7 +30,7 @@ class CommonFunction {
         context.startActivity(intent)
     }
     fun toast(context: Context, message:String) {
-        Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
     }
 
     fun getFileName(context: Context, uri: Uri): String {

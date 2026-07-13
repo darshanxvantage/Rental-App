@@ -159,7 +159,7 @@ class ProfileFragment : Fragment() {
             try {
                 startActivityForResult(intent, IMAGE_PICK_CODE)
             } catch (e: Exception) {
-                Toast.makeText(context, "Unable to Open Gallery", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "Unable to Open Gallery", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -551,18 +551,49 @@ $playStoreLink
 
                     binding.tvUserName.text = "$firstName $lastName"
                     binding.tvEmail.text = email
-                    bindAccountInfo()
-                    bindVerificationBadges()
-                    bindProfileCompleteness()
-                    bindAvatar()
 
-                    Toast.makeText(requireContext(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show()
-                    bottomSheet.dismiss()
+                    btnSave.isEnabled = false
+                    viewModel.updateProfileImage(
+                        firstName = firstName,
+                        lastName = lastName
+                    )
                 }
             }
         }
 
         bottomSheet.show()
+        viewModel.resetAuthState()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.authState.collect { state ->
+                when (state) {
+                    is com.xvantage.rental.ui.auth.fragment.sealed.AuthState.Success -> {
+
+                        bindAccountInfo()
+                        bindVerificationBadges()
+                        bindProfileCompleteness()
+                        bindAvatar()
+
+                        Toast.makeText(requireContext(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show()
+
+                        if (bottomSheet.isShowing) bottomSheet.dismiss()
+
+                        viewModel.resetAuthState()
+                    }
+
+                    is com.xvantage.rental.ui.auth.fragment.sealed.AuthState.Error -> {
+
+                        btnSave.isEnabled = true
+
+                        Toast.makeText(requireContext(), state.error, Toast.LENGTH_SHORT).show()
+
+                        viewModel.resetAuthState()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
     }
 
 
@@ -602,13 +633,12 @@ $playStoreLink
                     bindProfileCompleteness()
 
                     viewModel.updateProfileImage(
-                        appPreference.getUserName() ?: "User",
-                        file
+                        imageFile = file
                     )
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, e.message ?: "Unknown Error", Toast.LENGTH_LONG).show()
+//                Toast.makeText(context, e.message ?: "Unknown Error", Toast.LENGTH_LONG).show()
             }
         }
     }

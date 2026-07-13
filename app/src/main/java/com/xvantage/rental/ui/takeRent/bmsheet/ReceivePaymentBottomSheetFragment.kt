@@ -414,11 +414,11 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
                         binding.btnRcvPayment.isEnabled = true
                         binding.toolbar.btnSave.isEnabled = true
 
-                        Toast.makeText(
-                            requireContext(),
-                            result.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+//                        Toast.makeText(
+//                            requireContext(),
+//                            result.message,
+//                            Toast.LENGTH_SHORT
+//                        ).show()
                     }
 
                     else -> {}

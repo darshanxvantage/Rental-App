@@ -261,7 +261,7 @@ class AddPropertyActivity : AppCompatActivity() {
                         finish()
                     }
                     is CreatePropertyState.Error -> {
-                        Toast.makeText(this@AddPropertyActivity, state.message, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(this@AddPropertyActivity, state.message, Toast.LENGTH_SHORT).show()
                     }
                     else -> { /* Idle – no op */ }
                 }
@@ -485,11 +485,11 @@ class AddPropertyActivity : AppCompatActivity() {
                     e
                 )
 
-                Toast.makeText(
-                    this@AddPropertyActivity,
-                    "Failed to process property image",
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    this@AddPropertyActivity,
+//                    "Failed to process property image",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }
@@ -550,11 +550,11 @@ class AddPropertyActivity : AppCompatActivity() {
                     e
                 )
 
-                Toast.makeText(
-                    this@AddPropertyActivity,
-                    "Failed to process property image",
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    this@AddPropertyActivity,
+//                    "Failed to process property image",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }
@@ -665,11 +665,11 @@ class AddPropertyActivity : AppCompatActivity() {
                         listOf("Unable to load property types")
                     )
 
-                    Toast.makeText(
-                        this@AddPropertyActivity,
-                        error,
-                        Toast.LENGTH_LONG
-                    ).show()
+//                    Toast.makeText(
+//                        this@AddPropertyActivity,
+//                        error,
+//                        Toast.LENGTH_LONG
+//                    ).show()
                 }
             }
         }
@@ -755,10 +755,11 @@ class AddPropertyActivity : AppCompatActivity() {
                         updatePhotoUI(it)
                     } catch (e: IOException) {
                         Log.e("AddProperty", "Camera image file not accessible", e)
-                        Toast.makeText(this, "Failed to process photo: ${e.message}", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(this, "Failed to process photo: ${e.message}", Toast.LENGTH_SHORT).show()
                         propertyImage = null
                     }
-                } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
+                }
+                    ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Photo capture cancelled!", Toast.LENGTH_SHORT).show()
             }
@@ -806,7 +807,7 @@ class AddPropertyActivity : AppCompatActivity() {
             binding.llAddPhoto.visibility = View.GONE
         } catch (e: Exception) {
             Log.e("AddProperty", "Error updating photo UI", e)
-            Toast.makeText(this, "Error displaying image: ${e.message}", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error displaying image: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -831,11 +832,11 @@ class AddPropertyActivity : AppCompatActivity() {
             if (intent.resolveActivity(packageManager) != null) {
                 cameraLauncher.launch(intent)
             } else {
-                Toast.makeText(this, "No camera app available", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "No camera app available", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Log.e("AddProperty", "Error opening camera", e)
-            Toast.makeText(this, "Error opening camera: ${e.message}", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Error opening camera: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -854,7 +855,7 @@ class AddPropertyActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 showPhotoOptionsDialog()
             } else {
-                Toast.makeText(this, "Permissions are required to proceed", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Permissions are required to proceed", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -79,7 +79,8 @@ class TakeRentActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.isGeneratingStatement.collect { generating ->
                 if (generating) {
-                    android.widget.Toast.makeText(
+                    android.widget.
+                    Toast.makeText(
                         this@TakeRentActivity,
                         "Generating statement…",
                         android.widget.Toast.LENGTH_SHORT

@@ -79,7 +79,7 @@ class LoginFragment : BaseFragment() {
             viewModel.authState.collect {
                 when (it) {
                     is AuthState.Error -> {
-                        Toast.makeText(context, it.error, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, it.error, Toast.LENGTH_SHORT).show()
                     }
                     else -> Unit
                 }

@@ -1,4 +1,3 @@
-
 package com.xvantage.rental.data.source
 
 import com.xvantage.rental.data.remote.APIInterface
@@ -193,32 +192,42 @@ class AuthRepository @Inject constructor(
 
     }
     suspend fun updateProfileImage(
-        firstName: String,
-        imageFile: File
+        firstName: String? = null,
+        lastName: String? = null,
+        imageFile: File? = null
     ): ResultWrapper<CreateProfileResponse> {
 
         return try {
 
             val firstNameBody =
-                firstName.toRequestBody(
+                firstName?.takeIf { it.isNotBlank() }?.toRequestBody(
                     "text/plain".toMediaTypeOrNull()
                 )
 
-            val requestFile =
-                imageFile.asRequestBody(
-                    "image/*".toMediaTypeOrNull()
+            val lastNameBody =
+                lastName?.takeIf { it.isNotBlank() }?.toRequestBody(
+                    "text/plain".toMediaTypeOrNull()
                 )
 
             val imagePart =
-                MultipartBody.Part.createFormData(
-                    "profile_pic",
-                    imageFile.name,
-                    requestFile
-                )
+                imageFile?.let { file ->
+
+                    val requestFile =
+                        file.asRequestBody(
+                            "image/*".toMediaTypeOrNull()
+                        )
+
+                    MultipartBody.Part.createFormData(
+                        "profile_pic",
+                        file.name,
+                        requestFile
+                    )
+                }
 
             val response =
                 apiInterface.updateProfileImage(
                     firstNameBody,
+                    lastNameBody,
                     imagePart
                 )
 
@@ -252,4 +261,3 @@ class AuthRepository @Inject constructor(
         }
     }
 }
-

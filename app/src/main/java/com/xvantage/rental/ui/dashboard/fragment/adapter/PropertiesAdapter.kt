@@ -81,11 +81,11 @@ class PropertiesAdapter(
 
             itemBinding.moreButton.setOnClickListener {
 
-                android.widget.Toast.makeText(
-                    context,
-                    "Opening ${data.name}",
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
+//                android.widget.Toast.makeText(
+//                    context,
+//                    "Opening ${data.name}",
+//                    android.widget.Toast.LENGTH_SHORT
+//                ).show()
 
                 val intent = Intent(
                     context,

@@ -93,114 +93,142 @@
             android:progressTint="#C9A227"
             android:secondaryProgressTint="#E0D2A0" />
 
-        <!-- Category chips -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="18dp"
-            android:text="What's this about?"
-            android:textColor="#111111"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            app:singleSelection="true"
-            app:selectionRequired="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipSuggestion"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="💡 Suggestion"
-                app:checkedIconVisible="false"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipBug"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🐞 Bug Report"
-                app:checkedIconVisible="false"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipComplaint"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚠️ Complaint"
-                app:checkedIconVisible="false"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipCompliment"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="❤️ Compliment"
-                app:checkedIconVisible="false"
-                app:chipStrokeWidth="0dp" />
-        </com.google.android.material.chip.ChipGroup>
-
-        <!-- Message box -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFeedbackMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="18dp"
-            android:hint="Tell us more..."
-            app:counterEnabled="true"
-            app:counterMaxLength="500"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:hintEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFeedbackMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|start"
-                android:inputType="textMultiLine"
-                android:maxLength="500"
-                android:minLines="4"
-                android:textSize="14sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Submit button -->
+        <!-- ✅ PlayStore Review Button (4-5 star pe dikhega) -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSubmitFeedback"
+            android:id="@+id/btnRateOnPlayStore"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="22dp"
-            android:backgroundTint="#0B2140"
-            android:text="Submit Feedback"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#C9A227"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="8dp"
+            android:text="Rate us on Play Store ⭐"
             android:textAllCaps="false"
-            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
             android:textStyle="bold"
+            android:visibility="gone"
             app:cornerRadius="14dp" />
 
-        <ProgressBar
-            android:id="@+id/progressFeedback"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="14dp"
-            android:visibility="gone" />
+        <!-- ✅ Feedback form (1-3 star pe dikhega) -->
+        <LinearLayout
+            android:id="@+id/layoutFeedbackForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <!-- Category chips -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:text="What's this about?"
+                android:textColor="#111111"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSuggestion"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="💡 Suggestion"
+                    app:checkedIconVisible="false"
+                    app:chipStrokeWidth="0dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBug"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🐞 Bug Report"
+                    app:checkedIconVisible="false"
+                    app:chipStrokeWidth="0dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipComplaint"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚠️ Complaint"
+                    app:checkedIconVisible="false"
+                    app:chipStrokeWidth="0dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCompliment"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="❤️ Compliment"
+                    app:checkedIconVisible="false"
+                    app:chipStrokeWidth="0dp" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Message box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFeedbackMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="18dp"
+                android:hint="Tell us more..."
+                app:counterEnabled="true"
+                app:counterMaxLength="500"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:hintEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFeedbackMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:maxLength="500"
+                    android:minLines="4"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Submit button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="22dp"
+                android:backgroundTint="#0B2140"
+                android:text="Submit Feedback"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="14dp" />
+
+            <ProgressBar
+                android:id="@+id/progressFeedback"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

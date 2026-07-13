@@ -98,13 +98,6 @@ AuthViewModel @Inject constructor(
 
                     val data = response.value.data
                     val newPhone = data?.phone_number ?: ""
-
-                    // Only wipe locally cached data (photo, city, state, etc.)
-                    // when the number logging in is DIFFERENT from the one
-                    // previously stored on this device — i.e. a genuine
-                    // account switch. The same user logging back in must
-                    // keep their cached data, since it's never re-fetched
-                    // from the server after login.
                     val previousPhone = appPreference.getPhone()
                     if (!previousPhone.isNullOrEmpty() && previousPhone != newPhone) {
                         appPreference.logoutUser()
@@ -121,11 +114,7 @@ AuthViewModel @Inject constructor(
                     appPreference.setState(data?.state ?: "")
                     appPreference.setIsProfileComplete(data?.is_profile_complete == true)
 
-                    // Server is the source of truth for the photo. If the
-                    // account already has one saved there (e.g. after a
-                    // logout + re-login, or a different device), use that
-                    // URL so the avatar isn't stuck blank until the user
-                    // re-uploads it locally.
+
                     if (!data?.profile_pic.isNullOrEmpty()) {
                         appPreference.setRemoteProfileImageUrl(data?.profile_pic ?: "")
                     }
@@ -185,10 +174,6 @@ AuthViewModel @Inject constructor(
                         AuthState.Success(
                             "Profile Created"
                         )
-
-                    // Profile setup is now finished on the server — persist
-                    // that locally so Splash is allowed to open Dashboard
-                    // directly on the next app launch.
                     appPreference.setIsProfileComplete(true)
 
                     currentScreenFlow.value =
@@ -210,8 +195,9 @@ AuthViewModel @Inject constructor(
 
     }
     fun updateProfileImage(
-        firstName: String,
-        imageFile: File
+        firstName: String? = null,
+        lastName: String? = null,
+        imageFile: File? = null
     ) {
 
         viewModelScope.launch {
@@ -220,6 +206,7 @@ AuthViewModel @Inject constructor(
                 val response =
                     repository.updateProfileImage(
                         firstName,
+                        lastName,
                         imageFile
                     )
             ) {
@@ -228,7 +215,7 @@ AuthViewModel @Inject constructor(
 
                     authStateFlow.value =
                         AuthState.Success(
-                            "Profile Image Updated"
+                            "Profile Updated"
                         )
                 }
 
@@ -236,7 +223,7 @@ AuthViewModel @Inject constructor(
 
                     authStateFlow.value =
                         AuthState.Error(
-                            response.message ?: "Upload Failed"
+                            response.message ?: "Update Failed"
                         )
                 }
 

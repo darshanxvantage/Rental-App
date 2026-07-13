@@ -65,11 +65,11 @@ class InvoiceHistoryAdapter(
                     Intent(Intent.ACTION_VIEW, Uri.parse(fullUrl))
                 )
             } catch (e2: Exception) {
-                Toast.makeText(
-                    context,
-                    "Couldn't open the invoice. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    context,
+//                    "Couldn't open the invoice. Please try again.",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }

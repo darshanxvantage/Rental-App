@@ -249,6 +249,7 @@ $playStoreLink
 
         feedbackViewModel.resetState()
 
+        // ── Chip colors ───────────────────────────────────────────────────────
         val chipBg = ColorStateList(
             arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
             intArrayOf(Color.parseColor("#0B2140"), Color.parseColor("#F0F1F4"))
@@ -267,6 +268,39 @@ $playStoreLink
             chip.setTextColor(chipText)
         }
 
+        // ── Helper: open PlayStore ────────────────────────────────────────────
+        fun openPlayStoreReview() {
+            val uri = android.net.Uri.parse("market://details?id=com.xv.rentalmaster")
+            try {
+                startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+            } catch (e: android.content.ActivityNotFoundException) {
+                startActivity(android.content.Intent(
+                    android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.xv.rentalmaster&hl=en_IN")
+                ))
+            }
+            dialog.dismiss()
+        }
+
+        sheetBinding.ratingBarFeedback.setOnRatingBarChangeListener { _, rating, fromUser ->
+            if (!fromUser) return@setOnRatingBarChangeListener
+            if (rating >= 4f) {
+                sheetBinding.btnRateOnPlayStore.visibility = View.VISIBLE
+                sheetBinding.layoutFeedbackForm.visibility = View.GONE
+            } else {
+                sheetBinding.btnRateOnPlayStore.visibility = View.GONE
+                sheetBinding.layoutFeedbackForm.visibility = View.VISIBLE
+            }
+        }
+
+        // ── PlayStore button click ────────────────────────────────────────────
+        sheetBinding.btnRateOnPlayStore.setOnClickListener {
+            openPlayStoreReview()
+        }
+
+        // ── Submit feedback button ────────────────────────────────────────────
         sheetBinding.btnSubmitFeedback.setOnClickListener {
             val message = sheetBinding.etFeedbackMessage.text.toString().trim()
             val rating = sheetBinding.ratingBarFeedback.rating.toInt()
@@ -292,6 +326,7 @@ $playStoreLink
             feedbackViewModel.submitFeedback(category, rating, message, appVersion)
         }
 
+        // ── Loading state ─────────────────────────────────────────────────────
         lifecycleScope.launch {
             feedbackViewModel.isSubmitting.collect { loading ->
                 sheetBinding.progressFeedback.visibility = if (loading) View.VISIBLE else View.GONE
@@ -299,24 +334,88 @@ $playStoreLink
             }
         }
 
+        // ── ✅ Success — popup dikhao ─────────────────────────────────────────
         lifecycleScope.launch {
             feedbackViewModel.submitSuccess.collect { successMsg ->
                 if (successMsg != null) {
-                    showToast(successMsg)
                     dialog.dismiss()
+                    showFeedbackSuccessDialog()
                 }
             }
         }
 
+        // ── Error ─────────────────────────────────────────────────────────────
         lifecycleScope.launch {
             feedbackViewModel.submitError.collect { errorMsg ->
                 if (errorMsg != null) {
-                    showToast(errorMsg)
+                    showToast("❌ $errorMsg")
                 }
             }
         }
 
         dialog.show()
+    }
+
+    // ✅ Beautiful success popup after feedback submit
+    private fun showFeedbackSuccessDialog() {
+        val dialogView = layoutInflater.inflate(android.R.layout.simple_list_item_1, null)
+        val successDialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .create()
+
+        successDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Custom view banao
+        val layout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            gravity = android.view.Gravity.CENTER
+            setPadding(60, 60, 60, 50)
+            setBackgroundResource(android.R.drawable.dialog_holo_light_frame)
+        }
+
+        val emoji = android.widget.TextView(this).apply {
+            text = "🎉"
+            textSize = 48f
+            gravity = android.view.Gravity.CENTER
+        }
+
+        val title = android.widget.TextView(this).apply {
+            text = "Thank You!"
+            textSize = 22f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(Color.parseColor("#0B2140"))
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, 16, 0, 8)
+        }
+
+        val message = android.widget.TextView(this).apply {
+            text = "Your feedback has been submitted successfully.\nWe\'ll use it to make RentMaster even better! 🏠"
+            textSize = 14f
+            setTextColor(Color.parseColor("#444444"))
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, 0, 0, 24)
+        }
+
+        val btnOk = com.google.android.material.button.MaterialButton(this).apply {
+            text = "Great! 👍"
+            textSize = 15f
+            setBackgroundColor(Color.parseColor("#0B2140"))
+            setTextColor(Color.WHITE)
+            cornerRadius = 40
+            setPadding(40, 0, 40, 0)
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                120
+            ).apply { gravity = android.view.Gravity.CENTER }
+            setOnClickListener { successDialog.dismiss() }
+        }
+
+        layout.addView(emoji)
+        layout.addView(title)
+        layout.addView(message)
+        layout.addView(btnOk)
+
+        successDialog.setView(layout)
+        successDialog.show()
     }
 
     private fun loadAppIcon(

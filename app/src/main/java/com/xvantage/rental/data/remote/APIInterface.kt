@@ -426,7 +426,10 @@ interface   APIInterface {
     suspend fun updateProfileImage(
 
         @Part("first_name")
-        firstName: RequestBody,
+        firstName: RequestBody?,
+
+        @Part("last_name")
+        lastName: RequestBody?,
 
         @Part
         profilePic: MultipartBody.Part?

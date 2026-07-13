@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -34,9 +33,6 @@ import com.xvantage.rental.databinding.ActivityAddTenantBinding
 import com.xvantage.rental.network.request.tenant.UpdateTenantRequest
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.CommonFunction
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.widget.Button
 import android.widget.TextView
 import java.io.File
@@ -237,10 +233,6 @@ class AddTenantActivity : AppCompatActivity() {
                         tenant.cost_per_unit ?: ""
                     )
 
-                    // Electricity Plan spinner: "No cost" was showing for
-                    // every tenant because only the amount fields were being
-                    // filled — the spinner selection itself (which controls
-                    // which of those fields is even visible) was never set.
                     binding.llElectricityFinanceDetail.spElectricity.setSelection(
                         when (tenant.fixed_electricity) {
                             "fix" -> 1
@@ -275,8 +267,7 @@ class AddTenantActivity : AppCompatActivity() {
                         binding.llAddTenantPhoto.visibility = View.GONE
                     }
 
-                    // Aadhar document previews (front = index 0, back = index 1,
-                    // matching the same order they're uploaded in).
+
                     val frontDoc = tenant.documents.getOrNull(0)
                     val backDoc = tenant.documents.getOrNull(1)
 
@@ -429,11 +420,11 @@ class AddTenantActivity : AppCompatActivity() {
 
                 if (!message.isNullOrBlank()) {
 
-                    Toast.makeText(
-                        this@AddTenantActivity,
-                        message,
-                        Toast.LENGTH_LONG
-                    ).show()
+//                    Toast.makeText(
+//                        this@AddTenantActivity,
+//                        message,
+//                        Toast.LENGTH_LONG
+//                    ).show()
 
                 }
 
@@ -441,12 +432,6 @@ class AddTenantActivity : AppCompatActivity() {
 
         }
     }
-
-    /**
-     * Schedules the local rent reminder against the REAL due date the
-     * backend just calculated for this tenant (instead of never being
-     * called at all, which is what happened before).
-     */
     private fun scheduleReminderIfPossible() {
 
         val dueDate = viewModel.createdTenantNextDueDate.value
@@ -465,15 +450,6 @@ class AddTenantActivity : AppCompatActivity() {
 
     }
 
-
-
-
-
-
-
-    /**
-     * Sets up click event listeners for the activity.
-     */
     private fun setupClickEvents() {
         // Photo selection click listeners
         binding.llAddTenantPhoto.setOnClickListener {
@@ -604,11 +580,11 @@ class AddTenantActivity : AppCompatActivity() {
             binding.actRoom.setText("")
             binding.actRoom.setAdapter(null)
 
-            Toast.makeText(
-                this,
-                "No rooms found in this property",
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(
+//                this,
+//                "No rooms found in this property",
+//                Toast.LENGTH_SHORT
+//            ).show()
 
             return
         }
@@ -683,11 +659,25 @@ class AddTenantActivity : AppCompatActivity() {
 
             } else {
 
-                Toast.makeText(
-                    this,
-                    "Selected Room ${selectedRoom?.room_no}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val roomRent =
+                    selectedRoom?.rent
+                        ?.toDoubleOrNull()
+                        ?.takeIf { it > 0 }
+
+                binding.llRentFinanceDetail.etRentAmount.setText(
+                    roomRent?.let {
+                        if (it == it.toLong().toDouble())
+                            it.toLong().toString()
+                        else
+                            it.toString()
+                    } ?: ""
+                )
+
+//                Toast.makeText(
+//                    this,
+//                    "Selected Room ${selectedRoom?.room_no}",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }
@@ -883,7 +873,8 @@ class AddTenantActivity : AppCompatActivity() {
                 3 -> backAdharImageUri = it
             }
             updateUi(it)
-        } ?: Toast.makeText(this, "Failed to upload photo!", Toast.LENGTH_SHORT).show()
+        }
+//            ?: Toast.makeText(this, "Failed to upload photo!", Toast.LENGTH_SHORT).show()
     }
 
     // ActivityResultLauncher for camera capture
@@ -895,7 +886,7 @@ class AddTenantActivity : AppCompatActivity() {
                 3 -> backAdharImageUri?.let { updateUi(it) } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "Photo capture cancelled!", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Photo capture cancelled!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -905,7 +896,7 @@ class AddTenantActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 showOptionsDialog()
             } else {
-                Toast.makeText(this, "Permissions are required to proceed", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Permissions are required to proceed", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -1395,10 +1386,10 @@ class AddTenantActivity : AppCompatActivity() {
 
         androidx.work.WorkManager.getInstance(this).enqueue(request)
 
-        Toast.makeText(
-            this,
-            "Rent reminder set for $tenantName",
-            Toast.LENGTH_SHORT
-        ).show()
+//        Toast.makeText(
+//            this,
+//            "Rent reminder set for $tenantName",
+//            Toast.LENGTH_SHORT
+//        ).show()
     }
 }

@@ -118,7 +118,7 @@ class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
                 if (response.isSuccessful && response.body()?.success == true) {
                     val filePath = response.body()?.data?.filePath
                     if (filePath != null) {
-                        Toast.makeText(requireContext(), "Invoice generated", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Invoice generated", Toast.LENGTH_SHORT).show()
                         // TODO: hand off `filePath` to however you already open/download
                         // generated PDFs elsewhere in the app (e.g. same flow used for
                         // the statement / current-month invoice download).
@@ -126,7 +126,7 @@ class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
                         dismiss()
                     } else {
                         showList(currentList())
-                        Toast.makeText(requireContext(), "Invoice generated but no file path returned", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Invoice generated but no file path returned", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     val message = response.body()?.message ?: "Failed to generate invoice"
@@ -135,7 +135,7 @@ class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
                 }
             } catch (e: Exception) {
                 showList(currentList())
-                Toast.makeText(requireContext(), e.message ?: "Something went wrong", Toast.LENGTH_LONG).show()
+//                Toast.makeText(requireContext(), e.message ?: "Something went wrong", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -159,11 +159,11 @@ class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
             startActivity(intent)
 
         } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "Unable to open invoice PDF",
-                Toast.LENGTH_LONG
-            ).show()
+//            Toast.makeText(
+//                requireContext(),
+//                "Unable to open invoice PDF",
+//                Toast.LENGTH_LONG
+//            ).show()
         }
     }
 
