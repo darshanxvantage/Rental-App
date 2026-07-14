@@ -1,5 +1,6 @@
 package com.xvantage.rental.ui.auth.fragment
 
+import com.xvantage.rental.R
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -142,7 +143,7 @@ class CreateProfileFragment : Fragment() {
     private fun setupStateDropdown() {
         val stateList = StateProvider.getStates(requireContext())
         if (stateList.isEmpty()) {
-//            Toast.makeText(requireContext(), "State list not loaded", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "State list not loaded", Toast.LENGTH_SHORT).show()
             return
         }
         val adapter = ArrayAdapter(
@@ -167,7 +168,8 @@ class CreateProfileFragment : Fragment() {
         val genders = listOf("Male", "Female", "Other")
         val adapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
+            R.layout.item_dropdown_text,
+            R.id.tvDropdownText,
             genders
         )
         binding.etGender.setAdapter(adapter)
@@ -214,10 +216,10 @@ class CreateProfileFragment : Fragment() {
                             IntentSenderRequest.Builder(exception.resolution).build()
                         locationSettingsLauncher.launch(intentSenderRequest)
                     } catch (sendEx: IntentSender.SendIntentException) {
-                        Toast.makeText(requireContext(), "Unable to open location settings", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "Unable to open location settings", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Location services unavailable on this device", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(requireContext(), "Location services unavailable on this device", Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -231,7 +233,7 @@ class CreateProfileFragment : Fragment() {
             ) != PackageManager.PERMISSION_GRANTED
         ) return
 
-        Toast.makeText(requireContext(), "Fetching location...", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(requireContext(), "Fetching location...", Toast.LENGTH_SHORT).show()
 
         fusedClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
@@ -302,7 +304,7 @@ class CreateProfileFragment : Fragment() {
                 binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
 //                Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
             } else {
-//ProfileFragment.kt
+//                Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
             }
         }
     }

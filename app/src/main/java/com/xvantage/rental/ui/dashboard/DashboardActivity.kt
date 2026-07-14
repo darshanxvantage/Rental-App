@@ -268,7 +268,7 @@ $playStoreLink
             chip.setTextColor(chipText)
         }
 
-      
+
         fun openPlayStoreReview() {
             val uri = android.net.Uri.parse("market://details?id=com.xv.rentalmaster")
             try {
