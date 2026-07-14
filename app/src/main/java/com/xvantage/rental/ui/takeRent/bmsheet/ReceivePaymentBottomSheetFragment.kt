@@ -266,6 +266,10 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         val total = rent + currentElectricityCharge + currentWaterCharge
         binding.tvTotalPayable.text = "₹${total.toLong()}"
+
+        // ✅ FIX: Total se Amount Received auto-fill karo
+        // Owner change kar sakta hai agar partial payment ho
+        binding.etAmountReceived.setText(total.toLong().toString())
     }
 
     private fun setupListeners() {
@@ -316,7 +320,8 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     private fun validateFields(): Boolean {
         val basicValid =
             validateEditText(binding.etRentAmount, getString(R.string.rent_amount_required)) &&
-                    validateEditText(binding.etRentRcvDate, getString(R.string.rent_receive_date_required))
+                    validateEditText(binding.etRentRcvDate, getString(R.string.rent_receive_date_required)) &&
+                    validateEditText(binding.etAmountReceived, "Please enter amount received")
 
         if (!basicValid) return false
 
@@ -368,7 +373,10 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun storeValues() {
-        rentAmount = binding.etRentAmount.text.toString().trim()
+        // ✅ FIX: Jo amount owner ne actually receive kiya wo save karo
+        // Total nahi — owner ne jo likha wo
+        rentAmount = binding.etAmountReceived.text.toString().trim()
+            .ifEmpty { binding.etRentAmount.text.toString().trim() }
         rentRcvDate = binding.etRentRcvDate.text.toString().trim()
         paymentMode = getSelectedPaymentMode()
         note = binding.etNote.text.toString().trim()
