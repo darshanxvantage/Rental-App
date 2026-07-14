@@ -18,7 +18,7 @@
             <include
                 android:id="@+id/toolbar"
                 layout="@layout/property_header_toolbar"
-                 />
+                />
 
             <!-- Property Summary Card -->
             <androidx.cardview.widget.CardView
@@ -131,7 +131,7 @@
             app:tint="@android:color/white"
             android:backgroundTint="@color/black_cole"
             android:src="@drawable/baseline_add_24"
-      />
+            />
 
     </RelativeLayout>
 </layout>

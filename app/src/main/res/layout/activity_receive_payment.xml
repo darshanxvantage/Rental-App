@@ -299,7 +299,6 @@
                                     android:textColor="@color/text_dark_blue" />
                             </LinearLayout>
                         </LinearLayout>
-
                         <!-- TOTAL PAYABLE SUMMARY — auto-updates as rent / meter readings change -->
                         <LinearLayout
                             android:id="@+id/ll_total_summary"
