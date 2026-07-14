@@ -67,5 +67,9 @@
     <color name="spinner_text">#1E293B</color>
     <color name="spinner_hint">#64748B</color>
 
+    <!-- Feedback bottom sheet fix -->
+    <color name="feedback_navy">#0B2140</color>
+    <color name="feedback_hint_gray">#9E9E9E</color>
+    <color name="feedback_counter_gray">#767676</color>
 
 </resources>

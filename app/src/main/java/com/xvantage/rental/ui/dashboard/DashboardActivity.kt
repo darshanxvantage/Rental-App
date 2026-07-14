@@ -268,7 +268,7 @@ $playStoreLink
             chip.setTextColor(chipText)
         }
 
-        // ── Helper: open PlayStore ────────────────────────────────────────────
+      
         fun openPlayStoreReview() {
             val uri = android.net.Uri.parse("market://details?id=com.xv.rentalmaster")
             try {
@@ -281,22 +281,9 @@ $playStoreLink
                     android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.xv.rentalmaster&hl=en_IN")
                 ))
             }
-            dialog.dismiss()
         }
-
-        sheetBinding.ratingBarFeedback.setOnRatingBarChangeListener { _, rating, fromUser ->
+        sheetBinding.ratingBarFeedback.setOnRatingBarChangeListener { _, _, fromUser ->
             if (!fromUser) return@setOnRatingBarChangeListener
-            if (rating >= 4f) {
-                sheetBinding.btnRateOnPlayStore.visibility = View.VISIBLE
-                sheetBinding.layoutFeedbackForm.visibility = View.GONE
-            } else {
-                sheetBinding.btnRateOnPlayStore.visibility = View.GONE
-                sheetBinding.layoutFeedbackForm.visibility = View.VISIBLE
-            }
-        }
-
-        // ── PlayStore button click ────────────────────────────────────────────
-        sheetBinding.btnRateOnPlayStore.setOnClickListener {
             openPlayStoreReview()
         }
 
