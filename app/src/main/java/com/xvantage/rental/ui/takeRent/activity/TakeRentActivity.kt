@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.takeRent.activity
 
 import    android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -29,6 +30,7 @@ class TakeRentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         layoutBinding = DataBindingUtil.setContentView(this, R.layout.activity_take_rent)
         appPreference = AppPreference(this)
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         layoutBinding.toolbar.tvTitle.setText(R.string.take_rent)

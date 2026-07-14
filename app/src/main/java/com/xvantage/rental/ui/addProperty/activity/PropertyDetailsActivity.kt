@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.xvantage.rental.ui.addTenant.AddTenantActivity
 import androidx.lifecycle.Lifecycle
@@ -23,7 +22,6 @@ import com.xvantage.rental.databinding.ActivityPropertyDetailsBinding
 import com.xvantage.rental.network.response.PropertyDetailsResponse
 import com.xvantage.rental.ui.addProperty.PropertyDetailsViewModel
 import com.xvantage.rental.ui.addProperty.bmsheet.AddRoomBottomSheetFragment
-import com.xvantage.rental.ui.addProperty.bmsheet.AddTenantBottomSheetFragment
 import com.xvantage.rental.ui.addProperty.fragment.FinancialsFragment
 import com.xvantage.rental.ui.addProperty.fragment.RoomsFragment
 import com.xvantage.rental.ui.addProperty.fragment.TenantsFragment
@@ -141,8 +139,8 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
         Glide.with(this)
             .load(details.data?.propertyImage)
-            .placeholder(R.drawable.image)
-            .error(R.drawable.image)
+            .placeholder(R.drawable.add_property_no_image)
+            .error(R.drawable.add_property_no_image)
             .into(binding.toolbar.ivPropertyImage)
     }
 

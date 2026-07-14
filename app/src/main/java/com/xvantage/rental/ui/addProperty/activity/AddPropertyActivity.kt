@@ -15,6 +15,7 @@ import android.widget.AdapterView
 import com.xvantage.rental.utils.AppSpinnerAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -73,6 +74,7 @@ class AddPropertyActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_property)
         appPreference = AppPreference(this)
 
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding.toolbar.tvTitle.setText(R.string.add_property_bottom_n)
@@ -171,8 +173,8 @@ class AddPropertyActivity : AppCompatActivity() {
 
                     Glide.with(this@AddPropertyActivity)
                         .load(details.propertyImage)
-                        .placeholder(R.drawable.image)
-                        .error(R.drawable.image)
+                        .placeholder(R.drawable.add_property_no_image)
+                        .error(R.drawable.add_property_no_image)
                         .into(binding.llPropertyPhoto.ivThumbnail)
 
                     binding.llPropertyPhoto.tvFileName.text =

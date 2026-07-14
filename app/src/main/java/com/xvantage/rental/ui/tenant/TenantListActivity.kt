@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.tenant
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +33,9 @@ class TenantListActivity : AppCompatActivity() {
             ActivityTenantListBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+        enableEdgeToEdge()
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding.toolbar.setNavigationOnClickListener {
 

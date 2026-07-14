@@ -79,12 +79,15 @@ class CommonFunction {
         // Create and show the DatePickerDialog
         val datePickerDialog = DatePickerDialog(
             context,
-            AlertDialog.THEME_HOLO_LIGHT, // Change theme as needed
+            AlertDialog.THEME_HOLO_LIGHT,
             dateListener,
             initialDate.get(Calendar.YEAR),
             initialDate.get(Calendar.MONTH),
             initialDate.get(Calendar.DAY_OF_MONTH)
         )
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
+
         datePickerDialog.show()
     }
 

@@ -15,6 +15,7 @@ import com.xvantage.rental.utils.CommonFunction
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.app.Dialog
 import com.xvantage.rental.databinding.DialogRoomOccupiedBinding
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.xvantage.rental.ui.manageProperty.adapter.PropertyGroupAdapter
@@ -43,6 +44,7 @@ class ManagePropertyActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_manage_property)
         appPreference = AppPreference(this)
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Set toolbar title

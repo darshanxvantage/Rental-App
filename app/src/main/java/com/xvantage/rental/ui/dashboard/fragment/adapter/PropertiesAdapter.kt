@@ -52,14 +52,14 @@ class PropertiesAdapter(
 
                 Glide.with(context)
                     .load(data.property_images[0].image)
-                    .placeholder(R.drawable.image)
-                    .error(R.drawable.image)
+                    .placeholder(R.drawable.add_property_no_image)
+                    .error(R.drawable.add_property_no_image)
                     .into(itemBinding.itemImage)
 
             } else {
 
                 itemBinding.itemImage.setImageResource(
-                    R.drawable.image
+                    R.drawable.add_property_no_image
                 )
             }
 

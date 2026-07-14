@@ -1,6 +1,7 @@
 package com.xvantage.rental.ui.rentInvoice
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
@@ -15,6 +16,7 @@ class RentInvoiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         layoutBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_invoice)
         appPreference = AppPreference(this)
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         layoutBinding.toolbar.tvTitle.setText(R.string.rent_invoice)
         layoutBinding.toolbar.back.setOnClickListener {

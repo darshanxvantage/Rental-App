@@ -222,8 +222,18 @@ class AddTenantActivity : AppCompatActivity() {
                         tenant.fixed_electricity_amount ?: ""
                     )
 
+                    // ✅ FIX: Meter reading prefill karo edit mode mein
+                    binding.llElectricityFinanceDetail.etElectricityMeter.setText(
+                        tenant.meter_reading ?: ""
+                    )
+
                     binding.llWaterFinanceDetail.etWaterFixedAmount.setText(
                         tenant.fixed_waterbill_amount ?: ""
+                    )
+
+                    // ✅ FIX: Water meter reading prefill karo edit mode mein
+                    binding.llWaterFinanceDetail.etWaterMeterReading.setText(
+                        tenant.meter_reading_water ?: ""
                     )
 
                     binding.llWaterFinanceDetail.etWaterCostUnit.setText(

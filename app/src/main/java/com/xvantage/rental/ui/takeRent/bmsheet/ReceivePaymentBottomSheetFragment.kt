@@ -267,8 +267,7 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
         val total = rent + currentElectricityCharge + currentWaterCharge
         binding.tvTotalPayable.text = "₹${total.toLong()}"
 
-        // ✅ FIX: Total se Amount Received auto-fill karo
-        // Owner change kar sakta hai agar partial payment ho
+
         binding.etAmountReceived.setText(total.toLong().toString())
     }
 
@@ -325,37 +324,30 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         if (!basicValid) return false
 
+
         if (electricityMode.equals("metered", ignoreCase = true)) {
             val reading = binding.etElectricityMeterReading.text.toString().trim()
-            if (reading.isEmpty()) {
-                binding.etElectricityMeterReading.error =
-                    getString(R.string.meter_reading_required)
-                binding.etElectricityMeterReading.requestFocus()
-                return false
-            }
-            val readingValue = reading.toDoubleOrNull()
-            if (readingValue == null || readingValue < lastElectricityReading) {
-                binding.etElectricityMeterReading.error =
-                    getString(R.string.meter_reading_invalid)
-                binding.etElectricityMeterReading.requestFocus()
-                return false
+            if (reading.isNotEmpty()) {
+                val readingValue = reading.toDoubleOrNull()
+                if (readingValue == null || readingValue < lastElectricityReading) {
+                    binding.etElectricityMeterReading.error =
+                        getString(R.string.meter_reading_invalid)
+                    binding.etElectricityMeterReading.requestFocus()
+                    return false
+                }
             }
         }
 
         if (waterMode.equals("metered", ignoreCase = true)) {
             val reading = binding.etWaterMeterReading.text.toString().trim()
-            if (reading.isEmpty()) {
-                binding.etWaterMeterReading.error =
-                    getString(R.string.meter_reading_required)
-                binding.etWaterMeterReading.requestFocus()
-                return false
-            }
-            val readingValue = reading.toDoubleOrNull()
-            if (readingValue == null || readingValue < lastWaterReading) {
-                binding.etWaterMeterReading.error =
-                    getString(R.string.meter_reading_invalid)
-                binding.etWaterMeterReading.requestFocus()
-                return false
+            if (reading.isNotEmpty()) {
+                val readingValue = reading.toDoubleOrNull()
+                if (readingValue == null || readingValue < lastWaterReading) {
+                    binding.etWaterMeterReading.error =
+                        getString(R.string.meter_reading_invalid)
+                    binding.etWaterMeterReading.requestFocus()
+                    return false
+                }
             }
         }
 
@@ -373,8 +365,6 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun storeValues() {
-        // ✅ FIX: Jo amount owner ne actually receive kiya wo save karo
-        // Total nahi — owner ne jo likha wo
         rentAmount = binding.etAmountReceived.text.toString().trim()
             .ifEmpty { binding.etRentAmount.text.toString().trim() }
         rentRcvDate = binding.etRentRcvDate.text.toString().trim()

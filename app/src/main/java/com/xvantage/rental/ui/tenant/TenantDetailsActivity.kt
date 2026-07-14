@@ -47,11 +47,20 @@ class TenantDetailsActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
+
+        binding.toolbar.post {
+            binding.toolbar.menu.findItem(R.id.action_edit)?.icon?.setTint(
+                ContextCompat.getColor(this, android.R.color.white)
+            )
+        }
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.toolbar.navigationIcon?.setTint(
             ContextCompat.getColor(this, android.R.color.black)
+        )
+        binding.toolbar.overflowIcon?.setTint(
+            ContextCompat.getColor(this, android.R.color.white)
         )
 
         tenantId = intent.getStringExtra("tenantId") ?: return
@@ -207,8 +216,8 @@ class TenantDetailsActivity : AppCompatActivity() {
                         .apply(
                             RequestOptions()
                                 .transform(CircleCrop())
-                                .placeholder(R.drawable.image)
-                                .error(R.drawable.image)
+                                .placeholder(R.drawable.ic_profile_placeholder)
+                                .error(R.drawable.ic_profile_placeholder)
                         )
                         .into(binding.ivTenant)
                 }
