@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_rounded_white"
+    android:elevation="24dp"
+    android:outlineProvider="background"
+    android:paddingStart="26dp"
+    android:paddingEnd="26dp"
+    android:paddingTop="30dp"
+    android:paddingBottom="22dp">
+
+    <!-- App logo badge, with a small "paid" check overlapping the corner -->
+    <FrameLayout
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_gravity="center_horizontal">
+
+        <View
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:background="@drawable/bg_circle_gold_soft" />
+
+        <ImageView
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/app_logo" />
+
+        <FrameLayout
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|end">
+
+            <View
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/bg_circle_check_badge" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@android:drawable/checkbox_on_background"
+                app:tint="@android:color/white" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvAdvanceDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:text="Already Paid This Month"
+        android:textColor="#0B2140"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvAdvanceDialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:textColor="#5A6472"
+        android:textSize="14.5sp" />
+
+    <!-- Amount highlight chip -->
+<!--    <TextView-->
+<!--        android:id="@+id/tvAdvanceDialogAmount"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--&lt;!&ndash;        android:background="@drawable/bg_chip_gold_soft"&ndash;&gt;-->
+<!--        android:paddingStart="18dp"-->
+<!--        android:paddingEnd="18dp"-->
+<!--        android:paddingTop="9dp"-->
+<!--        android:paddingBottom="9dp"-->
+<!--        android:textColor="#A9821A"-->
+<!--        android:textSize="15sp"-->
+<!--        android:textStyle="bold" />-->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="#EDEFF3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAdvanceDialogCancel"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="#5A6472"
+            android:textSize="15sp"
+            app:cornerRadius="14dp"
+            app:strokeColor="#DADFE6" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAdvanceDialogConfirm"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:backgroundTint="#0B2140"
+            android:text="Collect Advance"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

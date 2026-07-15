@@ -250,27 +250,7 @@ Occupied    = ${room.isOccupied}
                 binding.callIcon.visibility     = View.VISIBLE
 
                 binding.whatsappIcon.setOnClickListener {
-
-                    val appName = context.getString(R.string.app_name)
-
-                    val dueAmountText =
-                        if (room.paymentDue > 0) "₹${room.paymentDue.toLong()}" else "₹0"
-
-                    val message = buildString {
-                        append("🏠 *Rent Reminder – ${room.propertyName}*\n\n")
-                        append("Hello *${room.tenantName}* 👋\n")
-                        append("Room No: *${room.roomNo}*\n\n")
-                        append("📋 *Payment Details*\n")
-                        append("Monthly Rent: ₹${room.monthlyRent.toLong()}\n")
-                        if (room.nextDueDate.isNotEmpty()) {
-                            append("Due Date: *${room.nextDueDate}*\n")
-                        }
-                        append("Amount Due: *$dueAmountText*\n\n")
-                        append("Kindly clear your payment at the earliest. Thank you! 🙏\n\n")
-                        append("_Sent via ${appName}_")
-                    }
-
-                    val url = "https://wa.me/91${room.phone}?text=${Uri.encode(message)}"
+                    val url = "https://wa.me/91${room.phone}"
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     context.startActivity(intent)
                 }
@@ -292,31 +272,43 @@ Occupied    = ${room.isOccupied}
 
                 binding.btnRcvPayment.setOnClickListener {
 
-
                     val amountToCollect =
                         if (room.paymentDue > 0) room.paymentDue else totalPayableForRoom
 
-                    val sheet = ReceivePaymentBottomSheetFragment.newInstance(
-                        tenantId = room.tenantId,
-                        tenantName = room.tenantName,
-                        roomId = room.roomId,
-                        propertyName = room.propertyName,
-                        totalPayable = amountToCollect,
-                        electricityMode = room.electricityMode,
-                        waterMode = room.waterMode,
-                        lastMeterReading = room.lastMeterReading,
-                        lastWaterReading = room.lastWaterReading,
-                        costPerUnit = room.costPerUnit,
-                        costUnitWater = room.costUnitWater
-                    )
+                    fun openReceivePaymentSheet() {
+                        val sheet = ReceivePaymentBottomSheetFragment.newInstance(
+                            tenantId = room.tenantId,
+                            tenantName = room.tenantName,
+                            roomId = room.roomId,
+                            propertyName = room.propertyName,
+                            totalPayable = amountToCollect,
+                            electricityMode = room.electricityMode,
+                            waterMode = room.waterMode,
+                            lastMeterReading = room.lastMeterReading,
+                            lastWaterReading = room.lastWaterReading,
+                            costPerUnit = room.costPerUnit,
+                            costUnitWater = room.costUnitWater
+                        )
 
-                    sheet.setOnPaymentReceivedListener {
-                        onPaymentReceived()
+                        sheet.setOnPaymentReceivedListener {
+                            onPaymentReceived()
+                        }
+
+                        (context as? androidx.fragment.app.FragmentActivity)
+                            ?.supportFragmentManager
+                            ?.let { fm -> sheet.show(fm, "ReceivePayment") }
                     }
 
-                    (context as? androidx.fragment.app.FragmentActivity)
-                        ?.supportFragmentManager
-                        ?.let { fm -> sheet.show(fm, "ReceivePayment") }
+                    if (room.paymentDue <= 0) {
+
+                        showAdvancePaymentConfirmDialog(
+                            tenantName = room.tenantName,
+                            amount = amountToCollect,
+                            onConfirm = { openReceivePaymentSheet() }
+                        )
+                    } else {
+                        openReceivePaymentSheet()
+                    }
                 }
 
                 binding.btnGenerateInvoice.setOnClickListener {
@@ -343,5 +335,56 @@ Occupied    = ${room.isOccupied}
             }
         }
         return list
+    }
+
+    private fun showAdvancePaymentConfirmDialog(
+        tenantName: String,
+        amount: Double,
+        onConfirm: () -> Unit
+    ) {
+        val amountText = "₹${amount.toLong()}"
+
+        val dialog = android.app.Dialog(context, android.R.style.Theme_Translucent_NoTitleBar)
+        dialog.window?.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
+        )
+
+        val view = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_advance_payment_confirm, null)
+
+        dialog.setContentView(view)
+        dialog.setCancelable(true)
+
+        dialog.window?.apply {
+            setDimAmount(0.6f)
+            addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }
+
+        view.findViewById<android.widget.TextView>(R.id.tvAdvanceDialogMessage).text =
+            "$tenantName has no dues this cycle. $amountText will be added " +
+                    "as advance and auto-adjusted next month."
+
+//        view.findViewById<android.widget.TextView>(R.id.tvAdvanceDialogAmount).text =
+//            "Collecting $amountText"
+
+        view.findViewById<com.google.android.material.button.MaterialButton>(
+            R.id.btnAdvanceDialogCancel
+        ).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        view.findViewById<com.google.android.material.button.MaterialButton>(
+            R.id.btnAdvanceDialogConfirm
+        ).setOnClickListener {
+            dialog.dismiss()
+            onConfirm()
+        }
+
+        dialog.show()
+
+        dialog.window?.setLayout(
+            (context.resources.displayMetrics.widthPixels * 0.88).toInt(),
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 }
