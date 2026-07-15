@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.network.response.PropertyRoom
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -124,6 +125,7 @@ class AddTenantActivity : AppCompatActivity() {
 
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
 
         // Set toolbar title
         if (isEditMode) {
@@ -222,18 +224,8 @@ class AddTenantActivity : AppCompatActivity() {
                         tenant.fixed_electricity_amount ?: ""
                     )
 
-                    // ✅ FIX: Meter reading prefill karo edit mode mein
-                    binding.llElectricityFinanceDetail.etElectricityMeter.setText(
-                        tenant.meter_reading ?: ""
-                    )
-
                     binding.llWaterFinanceDetail.etWaterFixedAmount.setText(
                         tenant.fixed_waterbill_amount ?: ""
-                    )
-
-                    // ✅ FIX: Water meter reading prefill karo edit mode mein
-                    binding.llWaterFinanceDetail.etWaterMeterReading.setText(
-                        tenant.meter_reading_water ?: ""
                     )
 
                     binding.llWaterFinanceDetail.etWaterCostUnit.setText(
@@ -588,7 +580,7 @@ class AddTenantActivity : AppCompatActivity() {
         if (rooms.isEmpty()) {
 
             binding.actRoom.setText("")
-            binding.actRoom.setAdapter(null)
+            binding.actRoom.setOnClickListener(null)
 
 //            Toast.makeText(
 //                this,
@@ -599,32 +591,11 @@ class AddTenantActivity : AppCompatActivity() {
             return
         }
 
-        // Room list banavo
-        val roomList = ArrayList<String>()
-
-        rooms.forEach { room ->
-
-            val status = if (
-                room.status.equals("VACANT", true)
-            ) {
-                "🟠 Vacant"
-            } else {
-                "🟢 Occupied"
-            }
-
-            roomList.add(
-                "Room ${room.room_no}   $status"
-            )
+        // Tapping the field opens our custom searchable popup — the field
+        // itself stays read-only/non-editable, its look never changes.
+        binding.actRoom.setOnClickListener {
+            showRoomSearchPopup(rooms)
         }
-
-        val adapter = ArrayAdapter(
-            this,
-            R.layout.item_dropdown_text,
-            R.id.tvDropdownText,
-            roomList
-        )
-
-        binding.actRoom.setAdapter(adapter)
 
         if (isEditMode && prefillFromTenant) {
 
@@ -652,44 +623,108 @@ class AddTenantActivity : AppCompatActivity() {
             }
 
         }
+    }
 
-        binding.actRoom.setOnItemClickListener { _, _, position, _ ->
+    /** Formats a room the same way it's always been shown: "Room 3   🟠 Vacant" */
+    private fun formatRoomLabel(room: com.xvantage.rental.network.response.PropertyRoom): String {
+        val status = if (room.status.equals("VACANT", true)) "🟠 Vacant" else "🟢 Occupied"
+        return "Room ${room.room_no}   $status"
+    }
 
-            selectedRoom = rooms[position]
+    /**
+     * Shows a small popup, anchored under the Room field, with a search bar
+     * (icon on the right) on top and the filtered room list below it. The
+     * Room field itself is never made editable — only this popup is searchable.
+     */
+    private fun showRoomSearchPopup(rooms: List<com.xvantage.rental.network.response.PropertyRoom>) {
 
-            if (
-                selectedRoom?.status.equals("OCCUPIED", true)
-                ||
-                selectedRoom?.status.equals("OCCUPED", true)
-            ) {
+        val popupView = layoutInflater.inflate(R.layout.popup_room_search, binding.roomLayout, false)
 
-                showOccupiedRoomDialog(
-                    selectedRoom?.room_no ?: ""
-                )
+        val etSearch = popupView.findViewById<android.widget.EditText>(R.id.etRoomSearch)
+        val listView = popupView.findViewById<android.widget.ListView>(R.id.lvRoomSearchResults)
+        val tvEmpty  = popupView.findViewById<android.widget.TextView>(R.id.tvRoomSearchEmpty)
 
-            } else {
+        val popupWindow = android.widget.PopupWindow(
+            popupView,
+            binding.roomLayout.width,
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            isOutsideTouchable = true
+            elevation = 8f
+        }
 
-                val roomRent =
-                    selectedRoom?.rent
-                        ?.toDoubleOrNull()
-                        ?.takeIf { it > 0 }
+        fun renderList(filtered: List<com.xvantage.rental.network.response.PropertyRoom>) {
 
-                binding.llRentFinanceDetail.etRentAmount.setText(
-                    roomRent?.let {
-                        if (it == it.toLong().toDouble())
-                            it.toLong().toString()
-                        else
-                            it.toString()
-                    } ?: ""
-                )
+            val labels = filtered.map { formatRoomLabel(it) }
 
-//                Toast.makeText(
-//                    this,
-//                    "Selected Room ${selectedRoom?.room_no}",
-//                    Toast.LENGTH_SHORT
-//                ).show()
+            listView.adapter = ArrayAdapter(
+                this,
+                R.layout.item_dropdown_text,
+                R.id.tvDropdownText,
+                labels
+            )
+
+            listView.visibility = if (filtered.isEmpty()) View.GONE else View.VISIBLE
+            tvEmpty.visibility  = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+
+            listView.setOnItemClickListener { _, _, position, _ ->
+
+                val room = filtered[position]
+
+                selectedRoom = room
+
+                binding.actRoom.setText(formatRoomLabel(room), false)
+
+                popupWindow.dismiss()
+
+                if (room.status.equals("OCCUPIED", true) || room.status.equals("OCCUPED", true)) {
+
+                    showOccupiedRoomDialog(room.room_no)
+
+                } else {
+
+                    val roomRent =
+                        room.rent
+                            ?.toDoubleOrNull()
+                            ?.takeIf { it > 0 }
+
+                    binding.llRentFinanceDetail.etRentAmount.setText(
+                        roomRent?.let {
+                            if (it == it.toLong().toDouble())
+                                it.toLong().toString()
+                            else
+                                it.toString()
+                        } ?: ""
+                    )
+                }
             }
         }
+
+        renderList(rooms)
+
+        etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+
+                val query = s?.toString()?.trim().orEmpty()
+
+                val filtered = if (query.isEmpty()) {
+                    rooms
+                } else {
+                    rooms.filter {
+                        "Room ${it.room_no}".contains(query, ignoreCase = true)
+                    }
+                }
+
+                renderList(filtered)
+            }
+        })
+
+        popupWindow.showAsDropDown(binding.roomLayout, 0, 8)
+
+        etSearch.requestFocus()
     }
 
     /**
@@ -1364,7 +1399,7 @@ class AddTenantActivity : AppCompatActivity() {
 
             dialog.dismiss()
 
-            binding.actRoom.showDropDown()
+            selectedProperty?.property_room_no?.let { showRoomSearchPopup(it) }
 
         }
 

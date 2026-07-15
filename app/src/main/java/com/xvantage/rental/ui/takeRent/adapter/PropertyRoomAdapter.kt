@@ -250,7 +250,27 @@ Occupied    = ${room.isOccupied}
                 binding.callIcon.visibility     = View.VISIBLE
 
                 binding.whatsappIcon.setOnClickListener {
-                    val url = "https://wa.me/91${room.phone}"
+
+                    val appName = context.getString(R.string.app_name)
+
+                    val dueAmountText =
+                        if (room.paymentDue > 0) "₹${room.paymentDue.toLong()}" else "₹0"
+
+                    val message = buildString {
+                        append("🏠 *Rent Reminder – ${room.propertyName}*\n\n")
+                        append("Hello *${room.tenantName}* 👋\n")
+                        append("Room No: *${room.roomNo}*\n\n")
+                        append("📋 *Payment Details*\n")
+                        append("Monthly Rent: ₹${room.monthlyRent.toLong()}\n")
+                        if (room.nextDueDate.isNotEmpty()) {
+                            append("Due Date: *${room.nextDueDate}*\n")
+                        }
+                        append("Amount Due: *$dueAmountText*\n\n")
+                        append("Kindly clear your payment at the earliest. Thank you! 🙏\n\n")
+                        append("_Sent via ${appName}_")
+                    }
+
+                    val url = "https://wa.me/91${room.phone}?text=${Uri.encode(message)}"
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     context.startActivity(intent)
                 }

@@ -15,8 +15,6 @@ import com.xvantage.rental.ui.addProperty.activity.PropertyDetailsActivity
 import android.util.Log
 import com.bumptech.glide.Glide
 
-
-
 class PropertiesAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<PropertiesAdapter.PropertyDetailsViewHolder>() {
@@ -30,7 +28,6 @@ class PropertiesAdapter(
         this.propertiesList = propertiesList
         notifyDataSetChanged()
     }
-
 
     inner class PropertyDetailsViewHolder(private val itemBinding: HomePropertiesItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
@@ -49,15 +46,12 @@ class PropertiesAdapter(
                 data.address
 
             if (data.property_images.isNotEmpty()) {
-
                 Glide.with(context)
                     .load(data.property_images[0].image)
                     .placeholder(R.drawable.add_property_no_image)
                     .error(R.drawable.add_property_no_image)
                     .into(itemBinding.itemImage)
-
             } else {
-
                 itemBinding.itemImage.setImageResource(
                     R.drawable.add_property_no_image
                 )
@@ -69,41 +63,28 @@ class PropertiesAdapter(
             itemBinding.tenantsValue.text =
                 data.total_tenants.toString()
 
-            itemBinding.tvStatus.text =
-                "Available"
+            itemBinding.tvStatus.text = "Available"
 
-            itemBinding.tvStatus.setBackgroundColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.green
-                )
-            )
+            itemBinding.tvStatus.setBackgroundResource(R.drawable.status_background)
 
             itemBinding.moreButton.setOnClickListener {
-
-//                android.widget.Toast.makeText(
-//                    context,
-//                    "Opening ${data.name}",
-//                    android.widget.Toast.LENGTH_SHORT
-//                ).show()
-
                 val intent = Intent(
                     context,
                     PropertyDetailsActivity::class.java
                 )
-
                 intent.putExtra(
                     "propertyId",
                     data.id
                 )
-
                 context.startActivity(intent)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyDetailsViewHolder {
-        val itemBinding = HomePropertiesItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val itemBinding = HomePropertiesItemBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return PropertyDetailsViewHolder(itemBinding)
     }
 

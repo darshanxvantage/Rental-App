@@ -11,141 +11,147 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
-            android:layout_margin="16dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_title"
-                style="@style/OnboardingTitlePermissionTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Room Details" />
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/OnboardingTitlePermissionTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Property Type"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    android:layout_marginBottom="8dp"
+                    android:text="Room Details" />
 
-                <TextView
-                    android:id="@+id/tv_property_type"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/grey_border_background"
-                    android:padding="@dimen/space8"
-                    android:textSize="16sp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Room Type"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Property Type"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <Spinner
-                    android:id="@+id/spinner_room_type"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/grey_border_background"
-                    android:padding="@dimen/space8" />
+                    <TextView
+                        android:id="@+id/tv_property_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/grey_border_background"
+                        android:padding="@dimen/space8"
+                        android:textSize="16sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Room Number/Name"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Room Type"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/et_room_number"
-                    style="@style/EditText"
-                    android:background="@drawable/grey_border_background"
-                    android:hint="Enter Room Number/Name"
-                    android:padding="@dimen/space8"
-                    android:textColorHint="@color/grey_hint" />
+                    <Spinner
+                        android:id="@+id/spinner_room_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/grey_border_background"
+                        android:padding="@dimen/space8" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Occupied Status"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Room Number/Name"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <Spinner
-                    android:id="@+id/spinner_occupied_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/grey_border_background"
-                    android:padding="@dimen/space8" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_room_number"
+                        style="@style/EditText"
+                        android:background="@drawable/grey_border_background"
+                        android:hint="Enter Room Number/Name"
+                        android:padding="@dimen/space8"
+                        android:textColorHint="@color/grey_hint" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Room Rent"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Occupied Status"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/et_room_rent"
-                    style="@style/EditText"
-                    android:background="@drawable/grey_border_background"
-                    android:hint="Enter Room Rent"
-                    android:inputType="numberDecimal"
-                    android:padding="@dimen/space8"
-                    android:textColorHint="@color/grey_hint" />
+                    <Spinner
+                        android:id="@+id/spinner_occupied_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/grey_border_background"
+                        android:padding="@dimen/space8" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Last Meter Reading"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Room Rent"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/et_last_meter_reading"
-                    style="@style/EditText"
-                    android:background="@drawable/grey_border_background"
-                    android:hint="Enter Last Meter Reading"
-                    android:inputType="numberDecimal"
-                    android:padding="@dimen/space8"
-                    android:textColorHint="@color/grey_hint" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_room_rent"
+                        style="@style/EditText"
+                        android:background="@drawable/grey_border_background"
+                        android:hint="Enter Room Rent"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/space8"
+                        android:textColorHint="@color/grey_hint" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="Last Meter Reading Date"
-                    android:textColor="@color/text_dark_blue"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Last Meter Reading"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/et_last_meter_reading_date"
-                    style="@style/EditText"
-                    android:background="@drawable/grey_border_background"
-                    android:hint="Select Date"
-                    android:focusable="false"
-                    android:padding="@dimen/space8"
-                    android:drawableEnd="@drawable/ic_calender"
-                    android:textColorHint="@color/grey_hint" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_last_meter_reading"
+                        style="@style/EditText"
+                        android:background="@drawable/grey_border_background"
+                        android:hint="Enter Last Meter Reading"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/space8"
+                        android:textColorHint="@color/grey_hint" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:text="Last Meter Reading Date"
+                        android:textColor="@color/text_dark_blue"
+                        android:textSize="16sp" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_last_meter_reading_date"
+                        style="@style/EditText"
+                        android:background="@drawable/grey_border_background"
+                        android:hint="Select Date"
+                        android:focusable="false"
+                        android:padding="@dimen/space8"
+                        android:drawableEnd="@drawable/ic_calender"
+                        android:textColorHint="@color/grey_hint" />
+
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </ScrollView>
     </RelativeLayout>
 </layout>

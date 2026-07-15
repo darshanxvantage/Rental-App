@@ -39,6 +39,9 @@ class TenantDetailsActivity : AppCompatActivity() {
             statusBarColor = ContextCompat.getColor(this@TenantDetailsActivity, R.color.primary_blue)
         }
 
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+            .isAppearanceLightStatusBars = false
+
         binding = ActivityTenantDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

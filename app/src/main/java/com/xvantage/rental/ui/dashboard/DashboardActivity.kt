@@ -73,6 +73,16 @@ class DashboardActivity : BaseActivity() {
         initializeDefaultFragment(savedInstanceState)
     }
 
+    override fun onResume() {
+        super.onResume()
+        syncSearchIconWithCurrentFragment()
+    }
+
+    private fun syncSearchIconWithCurrentFragment() {
+        toolbarBinding.search.visibility =
+            if (layoutBinding.bottomNavigation.selectedItemId == R.id.home) View.VISIBLE else View.GONE
+    }
+
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -476,6 +486,7 @@ $playStoreLink
             R.id.home -> {
 
                 updateBottomNavigationIcons(R.id.home)
+                toolbarBinding.search.visibility = View.VISIBLE
 
                 if (currentFragment !is HomeFragment) {
                     loadFragment(HomeFragment())
@@ -499,6 +510,7 @@ $playStoreLink
             R.id.settings -> {
 
                 updateBottomNavigationIcons(R.id.settings)
+                toolbarBinding.search.visibility = View.GONE
 
                 if (currentFragment !is DuesFragment) {
                     loadFragment(DuesFragment())
@@ -511,6 +523,7 @@ $playStoreLink
             R.id.profile -> {
 
                 updateBottomNavigationIcons(R.id.profile)
+                toolbarBinding.search.visibility = View.GONE
 
                 if (currentFragment !is ProfileFragment) {
                     loadFragment(ProfileFragment())

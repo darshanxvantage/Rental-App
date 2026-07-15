@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.core.widget.addTextChangedListener
 import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.ui.dashboard.PropertyListViewModel
-import com.xvantage.rental.ui.dashboard.fragment.adapter.PropertiesAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import android.view.View
@@ -22,7 +21,7 @@ class SearchPropertyActivity : AppCompatActivity() {
 
     private val viewModel: PropertyListViewModel by viewModels()
 
-    private lateinit var propertiesAdapter: PropertiesAdapter
+    private lateinit var propertiesAdapter: SearchPropertyResultAdapter
 
     private var originalList =
         mutableListOf<PropertyItem>()
@@ -39,11 +38,11 @@ class SearchPropertyActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.ivClear.setOnClickListener {
+        binding.ivClearCard.setOnClickListener {
             binding.etSearch.setText("")
         }
 
-        propertiesAdapter = PropertiesAdapter(this)
+        propertiesAdapter = SearchPropertyResultAdapter(this)
 
         binding.rvProperties.layoutManager =
             LinearLayoutManager(this)
@@ -59,7 +58,7 @@ class SearchPropertyActivity : AppCompatActivity() {
 
             val query = it.toString()
 
-            binding.ivClear.visibility =
+            binding.ivClearCard.visibility =
                 if (query.isEmpty())
                     View.GONE
                 else
