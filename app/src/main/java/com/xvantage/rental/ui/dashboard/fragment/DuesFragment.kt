@@ -68,31 +68,48 @@ class DuesFragment : Fragment() {
             viewModel
         ) { tenant ->
 
+            val amountToCollect =
+                (tenant.totalDue ?: 0.0).takeIf { it > 0 }
+                    ?: (tenant.rent?.toDoubleOrNull() ?: 0.0)
 
-            val sheet = ReceivePaymentBottomSheetFragment.newInstance(
-                tenantId = tenant.id,
-                tenantName = tenant.tenant_name ?: "",
-                roomId = tenant.room_fk ?: "",
-                propertyName = tenant.tenant_details?.property?.name ?: "",
-                totalPayable = tenant.totalDue ?: 0.0,
-                electricityMode = tenant.fixed_electricity ?: "",
-                waterMode = tenant.fixed_waterbill ?: "",
+            fun openReceivePaymentSheet() {
 
-                lastMeterReading = tenant.meter_reading
-                    ?.takeIf { it.isNotBlank() }
-                    ?: (tenant.last_meter_reading ?: ""),
-                lastWaterReading = tenant.meter_reading_water
-                    ?.takeIf { it.isNotBlank() }
-                    ?: (tenant.last_meter_reading_water ?: ""),
-                costPerUnit = tenant.cost_per_unit ?: "",
-                costUnitWater = tenant.cost_unit_water ?: ""
-            )
+                val sheet = ReceivePaymentBottomSheetFragment.newInstance(
+                    tenantId = tenant.id,
+                    tenantName = tenant.tenant_name ?: "",
+                    roomId = tenant.room_fk ?: "",
+                    propertyName = tenant.tenant_details?.property?.name ?: "",
+                    totalPayable = amountToCollect,
+                    electricityMode = tenant.fixed_electricity ?: "",
+                    waterMode = tenant.fixed_waterbill ?: "",
 
-            sheet.setOnPaymentReceivedListener {
-                viewModel.loadDues()
+                    lastMeterReading = tenant.meter_reading
+                        ?.takeIf { it.isNotBlank() }
+                        ?: (tenant.last_meter_reading ?: ""),
+                    lastWaterReading = tenant.meter_reading_water
+                        ?.takeIf { it.isNotBlank() }
+                        ?: (tenant.last_meter_reading_water ?: ""),
+                    costPerUnit = tenant.cost_per_unit ?: "",
+                    costUnitWater = tenant.cost_unit_water ?: ""
+                )
+
+                sheet.setOnPaymentReceivedListener {
+                    viewModel.loadDues()
+                }
+
+                sheet.show(childFragmentManager, "ReceivePayment")
             }
 
-            sheet.show(childFragmentManager, "ReceivePayment")
+            if ((tenant.totalDue ?: 0.0) <= 0) {
+                com.xvantage.rental.ui.common.AdvancePaymentDialog.show(
+                    context = requireContext(),
+                    tenantName = tenant.tenant_name ?: "",
+                    amount = amountToCollect,
+                    onConfirm = { openReceivePaymentSheet() }
+                )
+            } else {
+                openReceivePaymentSheet()
+            }
         }
         binding.rvDues.layoutManager = LinearLayoutManager(requireContext())
         binding.rvDues.adapter = adapter

@@ -81,7 +81,7 @@
 <!--        android:layout_height="wrap_content"-->
 <!--        android:layout_gravity="center_horizontal"-->
 <!--        android:layout_marginTop="16dp"-->
-<!--&lt;!&ndash;        android:background="@drawable/bg_chip_gold_soft"&ndash;&gt;-->
+<!--        android:background="@drawable/bg_chip_gold_soft"-->
 <!--        android:paddingStart="18dp"-->
 <!--        android:paddingEnd="18dp"-->
 <!--        android:paddingTop="9dp"-->

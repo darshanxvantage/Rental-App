@@ -235,6 +235,20 @@ class AddTenantActivity : AppCompatActivity() {
                         tenant.cost_per_unit ?: ""
                     )
 
+                    // Prefill with the last recorded reading so the owner can
+                    // see it and edit it, instead of a blank field.
+                    binding.llElectricityFinanceDetail.etElectricityMeter.setText(
+                        tenant.meter_reading
+                            ?.takeIf { it.isNotBlank() }
+                            ?: (tenant.last_meter_reading ?: "")
+                    )
+
+                    binding.llWaterFinanceDetail.etWaterMeterReading.setText(
+                        tenant.meter_reading_water
+                            ?.takeIf { it.isNotBlank() }
+                            ?: (tenant.last_meter_reading_water ?: "")
+                    )
+
                     binding.llElectricityFinanceDetail.spElectricity.setSelection(
                         when (tenant.fixed_electricity) {
                             "fix" -> 1
@@ -581,6 +595,7 @@ class AddTenantActivity : AppCompatActivity() {
 
             binding.actRoom.setText("")
             binding.actRoom.setOnClickListener(null)
+            binding.roomLayout.setEndIconOnClickListener(null)
 
 //            Toast.makeText(
 //                this,
@@ -594,6 +609,14 @@ class AddTenantActivity : AppCompatActivity() {
         // Tapping the field opens our custom searchable popup — the field
         // itself stays read-only/non-editable, its look never changes.
         binding.actRoom.setOnClickListener {
+            showRoomSearchPopup(rooms)
+        }
+
+        // The ExposedDropdownMenu style's dropdown-arrow icon has its own
+        // separate touch handling and does NOT forward taps to the field's
+        // setOnClickListener above — without this, tapping the arrow itself
+        // does nothing. Wire it to open the same popup.
+        binding.roomLayout.setEndIconOnClickListener {
             showRoomSearchPopup(rooms)
         }
 
