@@ -59,7 +59,17 @@ class DuesFragment : Fragment() {
     // Reload fresh data when user comes back to this fragment
     override fun onResume() {
         super.onResume()
+
         viewModel.loadDues()
+
+        val listToShow = when (currentTab) {
+            TAB_OVERDUE -> viewModel.getOverdueTenants()
+            TAB_NO_DUE  -> viewModel.getNoDueTenants()
+            else -> viewModel.getAllDueTenants()
+        }
+
+        showList(listToShow)
+        updateTabUI()
     }
 
     private fun setupRecyclerView() {
@@ -158,6 +168,7 @@ class DuesFragment : Fragment() {
                     TAB_NO_DUE  -> viewModel.getNoDueTenants()
                     else -> viewModel.getAllDueTenants()
                 }
+                updateTabUI()
                 showList(listToShow)
             }
         }

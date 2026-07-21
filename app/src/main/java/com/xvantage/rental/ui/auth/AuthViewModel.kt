@@ -112,6 +112,7 @@ AuthViewModel @Inject constructor(
                     )
                     appPreference.setCity(data?.city ?: "")
                     appPreference.setState(data?.state ?: "")
+                    appPreference.setGender(data?.gender ?: "")
                     appPreference.setIsProfileComplete(data?.is_profile_complete == true)
 
 
@@ -212,6 +213,24 @@ AuthViewModel @Inject constructor(
             ) {
 
                 is ResultWrapper.Success -> {
+
+                    val data = response.value.data
+
+                    if (!data?.profile_pic.isNullOrEmpty()) {
+                        appPreference.setRemoteProfileImageUrl(data?.profile_pic ?: "")
+                    }
+                    if (!data?.gender.isNullOrEmpty()) {
+                        appPreference.setGender(data?.gender ?: "")
+                    }
+                    if (!data?.city.isNullOrEmpty()) {
+                        appPreference.setCity(data?.city ?: "")
+                    }
+                    if (!data?.state.isNullOrEmpty()) {
+                        appPreference.setState(data?.state ?: "")
+                    }
+                    if (!data?.email.isNullOrEmpty()) {
+                        appPreference.setEmail(data?.email ?: "")
+                    }
 
                     authStateFlow.value =
                         AuthState.Success(

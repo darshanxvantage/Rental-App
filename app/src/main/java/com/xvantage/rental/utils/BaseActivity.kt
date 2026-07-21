@@ -14,6 +14,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 abstract class BaseActivity : AppCompatActivity() {
 
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var connectivityManager: ConnectivityManager
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +45,12 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun monitorNetworkChanges() {
-        val connectivityManager =
+        connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        val callback = object : ConnectivityManager.NetworkCallback() {
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                runOnUiThread { showToast("Network connected") }
+                // Toast removed intentionally — no "Network connected" message needed.
             }
 
             override fun onLost(network: Network) {
@@ -57,7 +59,18 @@ abstract class BaseActivity : AppCompatActivity() {
         }
 
         val request = NetworkRequest.Builder().build()
-        connectivityManager.registerNetworkCallback(request, callback)
+        connectivityManager.registerNetworkCallback(request, networkCallback!!)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        networkCallback?.let {
+            try {
+                connectivityManager.unregisterNetworkCallback(it)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun showToast(message: String) {

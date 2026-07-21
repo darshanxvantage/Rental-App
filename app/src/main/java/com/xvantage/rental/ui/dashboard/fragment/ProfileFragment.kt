@@ -61,6 +61,7 @@ class ProfileFragment : Fragment() {
         super.onResume()
         profileViewModel.loadDashboardData()
         bindAvatar()
+        bindProfileCompleteness()
     }
 
 
@@ -354,8 +355,10 @@ class ProfileFragment : Fragment() {
             appPreference.getGender() to "your gender"
         )
 
-        val photoFilled = !appPreference.getProfileImage().isNullOrEmpty() &&
-                File(appPreference.getProfileImage()!!).exists()
+        val localImagePath = appPreference.getProfileImage()
+        val hasLocalPhoto = !localImagePath.isNullOrEmpty() && File(localImagePath).exists()
+        val hasRemotePhoto = !appPreference.getRemoteProfileImageUrl().isNullOrEmpty()
+        val photoFilled = hasLocalPhoto || hasRemotePhoto
 
         val filledCount = fields.count { !it.first.isNullOrBlank() } + if (photoFilled) 1 else 0
         val totalCount = fields.size + 1
