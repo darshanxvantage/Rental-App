@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_discover"
+        android:icon="@drawable/ic_category_pg"
+        android:title="Explore" />
+
+    <item
+        android:id="@+id/nav_favorites"
+        android:icon="@drawable/ic_favorite_border"
+        android:title="Favorites" />
+
+    <item
+        android:id="@+id/nav_my_listings"
+        android:icon="@drawable/ic_verified_badge"
+        android:title="My Listings"
+        android:visible="false" />
+
+</menu>
