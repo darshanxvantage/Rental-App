@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Amenities"
+            android:textColor="#111111"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Wi-Fi" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchWifi" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="AC" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchAc" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Attached Washroom" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchAttachedWashroom" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Laundry" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchLaundry" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Housekeeping" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchHousekeeping" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="CCTV" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchCctv" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Biometric Entry" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchBiometric" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Power Backup" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchPowerBackup" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="RO Water" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchRoWater" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Parking" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchParking" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Gym" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchGym" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Lift" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchLift" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Study Table" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchStudyTable" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Wardrobe" android:textSize="13sp" android:textColor="#333333"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchWardrobe" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Food" android:textColor="#111111" android:textSize="16sp" android:textStyle="bold" />
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Food Included" android:textColor="#111111" android:textSize="14sp" />
+            <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchFoodIncluded" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <com.google.android.material.chip.ChipGroup android:id="@+id/foodTypeChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" app:singleSelection="true">
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodVeg" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Veg"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodNonVeg" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Non-Veg"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodBoth" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Both"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <com.google.android.material.chip.ChipGroup android:id="@+id/mealCountChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" app:singleSelection="true">
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealBreakfast" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Breakfast Only"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealTwo" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="2 Meals"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealThree" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="3 Meals"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="House Rules" android:textColor="#111111" android:textSize="16sp" android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:hint="Curfew Time (e.g. 10:00 PM)">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCurfewTime" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="Guest Policy">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etGuestPolicy" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Documents Required" android:textColor="#111111" android:textSize="16sp" android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup android:id="@+id/documentsChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocAadhaar" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Aadhaar Card"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocPan" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="PAN Card"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocCollegeId" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="College ID"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocCompanyId" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Company ID"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocPhoto" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Passport Photo"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/tvDynamicFieldsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Additional Details"
+            android:textColor="#111111"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDynamicFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_amenity_checkbox" />
+
+    </LinearLayout>
+</ScrollView>
