@@ -31,7 +31,7 @@ class SelectedImageAdapter(
                 .into(binding.imgSelectedThumbnail)
 
             binding.tvCoverBadge.visibility = if (position == 0) View.VISIBLE else View.GONE
-            binding.btnRemoveSelectedImage.setOnClickListener { onRemoveClick(bindingAdapterPosition) }
+            binding.btnRemoveSelectedImage.setOnClickListener { onRemoveClick(adapterPosition) }
         }
     }
 

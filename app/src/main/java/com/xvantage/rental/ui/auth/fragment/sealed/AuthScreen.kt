@@ -18,6 +18,9 @@ sealed class AuthScreen {
         val isFromLogin: Boolean
     ) : AuthScreen()
 
+    // Shown ONLY for brand-new users, right after OTP verify, BEFORE CreateProfile.
+    object RoleSelection : AuthScreen()
+
     object CreateProfile : AuthScreen()
     object Dashboard : AuthScreen()
 }

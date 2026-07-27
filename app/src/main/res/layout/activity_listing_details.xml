@@ -349,7 +349,7 @@
             android:text="WhatsApp"
             android:textAllCaps="false"
             app:cornerRadius="10dp"
-            app:icon="@drawable/ic_whatsapp"
+            app:icon="@drawable/ic_explore_whatsapp"
             app:strokeColor="#25D366"
             app:iconTint="@null" />
 
@@ -363,7 +363,7 @@
             android:textColor="@android:color/white"
             app:backgroundTint="#1A1A2E"
             app:cornerRadius="10dp"
-            app:icon="@drawable/ic_call"
+            app:icon="@drawable/ic_explore_call"
             app:iconTint="@android:color/white" />
 
     </LinearLayout>

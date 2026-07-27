@@ -18,6 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import android.content.Intent
 import com.xvantage.rental.ui.dashboard.DashboardActivity
+import com.xvantage.rental.ui.explore.ExploreActivity
+import com.xvantage.rental.ui.explore.common.ExploreRoleManager
 
 
 
@@ -100,6 +102,12 @@ class AuthActivity : BaseActivity() {
                             navController.navigate(R.id.verifyOtpFragment, bundle)
                         }
                     }
+                    is AuthScreen.RoleSelection -> {
+                        startActivity(
+                            Intent(this@AuthActivity, com.xvantage.rental.ui.explore.roleSelection.RoleSelectionActivity::class.java)
+                        )
+                    }
+
                     is AuthScreen.CreateProfile -> {
 
                         if (
@@ -114,8 +122,13 @@ class AuthActivity : BaseActivity() {
                     }
 
                     is AuthScreen.Dashboard -> {
+                        val target =
+                            if (ExploreRoleManager.getRole(this@AuthActivity) == ExploreRoleManager.ROLE_STUDENT)
+                                ExploreActivity::class.java
+                            else
+                                DashboardActivity::class.java
                         startActivity(
-                            Intent(this@AuthActivity, DashboardActivity::class.java)
+                            Intent(this@AuthActivity, target)
                         )
                         finish()
                     }
@@ -126,6 +139,16 @@ class AuthActivity : BaseActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (viewModel.currentScreen.value is AuthScreen.RoleSelection &&
+            ExploreRoleManager.getRole(this) != null
+        ) {
+            viewModel.setCurrentScreen(AuthScreen.CreateProfile)
+        }
     }
 
 }

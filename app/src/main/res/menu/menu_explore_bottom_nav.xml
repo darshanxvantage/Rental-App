@@ -17,4 +17,9 @@
         android:title="My Listings"
         android:visible="false" />
 
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile_nav"
+        android:title="Profile" />
+
 </menu>

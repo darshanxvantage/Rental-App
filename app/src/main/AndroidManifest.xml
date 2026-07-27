@@ -37,6 +37,13 @@
         android:theme="@style/Theme.RentalApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+
+        <activity android:name=".ui.explore.roleSelection.RoleSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.explore.ExploreActivity" android:exported="false" />
+        <activity android:name=".ui.explore.details.ListingDetailsActivity" android:exported="false" />
+        <activity android:name=".ui.explore.createListing.CreateListingActivity" android:exported="false" />
+        <activity android:name=".ui.explore.myListings.MyListingsActivity" android:exported="false" />
         <activity
             android:name=".ui.addProperty.activity.PropertyDetailsActivity"
             android:exported="false" />

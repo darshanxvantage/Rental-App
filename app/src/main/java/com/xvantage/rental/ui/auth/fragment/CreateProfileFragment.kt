@@ -30,7 +30,6 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.xvantage.rental.databinding.FragmentCreateProfileBinding
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
-import com.xvantage.rental.ui.dashboard.DashboardActivity
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.StateProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -322,7 +321,16 @@ class CreateProfileFragment : Fragment() {
 
                         Toast.makeText(context, "Profile Created Successfully", Toast.LENGTH_SHORT).show()
 
-                        startActivity(Intent(requireContext(), DashboardActivity::class.java))
+
+                        if (com.xvantage.rental.ui.explore.common.ExploreRoleManager.isOwner(requireContext())) {
+
+                            com.xvantage.rental.ui.explore.createListing.CreateListingActivity
+                                .startForOnboarding(requireContext())
+                        } else {
+                            startActivity(
+                                Intent(requireContext(), com.xvantage.rental.ui.explore.ExploreActivity::class.java)
+                            )
+                        }
                         requireActivity().finish()
                     }
                     is AuthState.Error -> {

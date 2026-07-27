@@ -10,6 +10,7 @@ import com.xvantage.rental.ui.explore.common.ExploreRoleManager
 import com.xvantage.rental.ui.explore.discover.DiscoverFragment
 import com.xvantage.rental.ui.explore.favorites.FavoritesFragment
 import com.xvantage.rental.ui.explore.myListings.MyListingsActivity
+import com.xvantage.rental.ui.explore.profile.ExploreProfileFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -57,6 +58,10 @@ class ExploreActivity : AppCompatActivity() {
                     // listing management), not an embedded tab fragment.
                     startActivity(Intent(this, MyListingsActivity::class.java))
                     false // don't keep this tab visually "selected" - it's a different screen
+                }
+                R.id.nav_profile -> {
+                    loadFragment(ExploreProfileFragment.newInstance())
+                    true
                 }
                 else -> false
             }

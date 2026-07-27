@@ -34,6 +34,11 @@ class CreateListingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateListingBinding
     private val viewModel: CreateListingViewModel by viewModels()
 
+    /** True only when opened right after CreateProfile for a brand-new Owner - the
+     * listing form is mandatory in that case: no skipping, submit success goes
+     * straight to the Dashboard (clearing the onboarding stack) instead of just finish(). */
+    private var isMandatoryOnboarding: Boolean = false
+
     private val stepTitles = listOf(
         "Select Category", "Basic Details", "Amenities", "Pricing", "Photos", "Review & Submit"
     )
@@ -42,6 +47,12 @@ class CreateListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateListingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isMandatoryOnboarding = intent.getBooleanExtra(EXTRA_MANDATORY_ONBOARDING, false)
+        if (isMandatoryOnboarding) {
+            // No skipping the very first listing - hide the back/close affordance.
+            binding.btnBackWizard.visibility = android.view.View.INVISIBLE
+        }
 
         val editListingId = intent.getStringExtra(EXTRA_EDIT_LISTING_ID)
         if (editListingId != null) {
@@ -85,7 +96,15 @@ class CreateListingActivity : AppCompatActivity() {
 
     private fun handleBackPress() {
         if (viewModel.currentStep.value == 0) {
-            finish()
+            if (isMandatoryOnboarding) {
+                Toast.makeText(
+                    this,
+                    "Please complete your property listing to continue",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                finish()
+            }
         } else {
             viewModel.previousStep()
         }
@@ -119,7 +138,17 @@ class CreateListingActivity : AppCompatActivity() {
                                 "Submitted! Your listing will be live after admin approval.",
                                 Toast.LENGTH_LONG
                             ).show()
-                            setResult(RESULT_OK)
+                            if (isMandatoryOnboarding) {
+                                val intent = Intent(
+                                    this@CreateListingActivity,
+                                    com.xvantage.rental.ui.dashboard.DashboardActivity::class.java
+                                ).apply {
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                }
+                                startActivity(intent)
+                            } else {
+                                setResult(RESULT_OK)
+                            }
                             finish()
                         }
                     }
@@ -154,9 +183,17 @@ class CreateListingActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_EDIT_LISTING_ID = "explore_edit_listing_id"
+        private const val EXTRA_MANDATORY_ONBOARDING = "explore_mandatory_onboarding"
 
         fun startForCreate(context: Context) {
             context.startActivity(Intent(context, CreateListingActivity::class.java))
+        }
+
+        /** New Property Owner, right after CreateProfile - listing is mandatory, no skipping. */
+        fun startForOnboarding(context: Context) {
+            val intent = Intent(context, CreateListingActivity::class.java)
+                .putExtra(EXTRA_MANDATORY_ONBOARDING, true)
+            context.startActivity(intent)
         }
 
         fun startForEdit(context: Context, listingId: String) {

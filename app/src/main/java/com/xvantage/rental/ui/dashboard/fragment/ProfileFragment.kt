@@ -29,6 +29,7 @@ import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentProfileBinding
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
+import com.xvantage.rental.ui.explore.myListings.MyListingsActivity
 import com.xvantage.rental.ui.manageProperty.ManagePropertyActivity
 //import com.xvantage.rental.ui.settings.SettingsActivity
 import com.xvantage.rental.ui.tenant.TenantListActivity
@@ -45,6 +46,7 @@ class ProfileFragment : Fragment() {
     private lateinit var appPreference: AppPreference
     private val viewModel: AuthViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val exploreSwitchViewModel: com.xvantage.rental.ui.explore.common.ExploreSwitchViewModel by viewModels()
 
     private val supportEmail = "support@xvantage.app"
     private val supportPhone = "+91 98798 99654"
@@ -136,6 +138,27 @@ class ProfileFragment : Fragment() {
 
         binding.cardTenants.setOnClickListener {
             startActivity(Intent(requireContext(), TenantListActivity::class.java))
+        }
+
+        binding.btnExploreListings.setOnClickListener {
+            startActivity(Intent(requireContext(), MyListingsActivity::class.java))
+        }
+
+        binding.btnSwitchToExplore.setOnClickListener {
+            startActivity(Intent(requireContext(), com.xvantage.rental.ui.explore.ExploreActivity::class.java))
+        }
+
+
+        binding.btnExploreListings.visibility = View.GONE
+        binding.btnSwitchToExplore.visibility = View.GONE
+        exploreSwitchViewModel.checkHasListing()
+        viewLifecycleOwner.lifecycleScope.launch {
+            exploreSwitchViewModel.hasListing.collect { hasListing ->
+                if (hasListing == true) {
+                    binding.btnExploreListings.visibility = View.VISIBLE
+                    binding.btnSwitchToExplore.visibility = View.VISIBLE
+                }
+            }
         }
 
         binding.cardRevenue.setOnClickListener {

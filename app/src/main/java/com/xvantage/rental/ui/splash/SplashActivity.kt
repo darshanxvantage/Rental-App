@@ -12,6 +12,9 @@ import androidx.core.view.WindowCompat
 import com.xvantage.rental.databinding.ActivitySplashBinding
 import com.xvantage.rental.ui.auth.AuthActivity
 import com.xvantage.rental.ui.dashboard.DashboardActivity
+import com.xvantage.rental.ui.explore.ExploreActivity
+import com.xvantage.rental.ui.explore.common.ExploreRoleManager
+import com.xvantage.rental.ui.explore.roleSelection.RoleSelectionActivity
 import com.xvantage.rental.ui.onboarding.BoardingScreenActivity
 import com.xvantage.rental.utils.AppPreference
 import com.xvantage.rental.utils.LocaleHelper
@@ -65,7 +68,12 @@ class SplashActivity : AppCompatActivity() {
 
                     Intent(
                         this,
-                        DashboardActivity::class.java
+                        when (ExploreRoleManager.getRole(this)) {
+                            ExploreRoleManager.ROLE_STUDENT -> ExploreActivity::class.java
+                            ExploreRoleManager.ROLE_OWNER -> DashboardActivity::class.java
+                            // role kadi select j nathi thayu (purana account) -> pehli baar puchho
+                            else -> RoleSelectionActivity::class.java
+                        }
                     )
 
                 }

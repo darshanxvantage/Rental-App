@@ -435,6 +435,31 @@
 
             </LinearLayout>
 
+            <!-- Explore (Student PG) module - My Listings shortcut for Owners -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExploreListings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="My Explore Listings"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_total_property"
+                app:cornerRadius="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <!-- Only visible if this user has created an Explore listing - has-listing based, not role based -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSwitchToExplore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Switch to Explore"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:icon="@drawable/ic_category_pg"
+                app:cornerRadius="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
 
             <!-- LANDLORD TIER CARD -->
             <com.google.android.material.card.MaterialCardView

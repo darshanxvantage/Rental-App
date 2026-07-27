@@ -101,7 +101,7 @@ class SharingPriceAdapter(
             binding.etRowAvailableBeds.addTextChangedListener(bedsWatcher)
 
             binding.btnRemoveSharingRow.setOnClickListener {
-                removeAt(bindingAdapterPosition)
+                removeAt(adapterPosition)
             }
         }
 

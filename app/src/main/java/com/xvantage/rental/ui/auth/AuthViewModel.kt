@@ -126,7 +126,8 @@ AuthViewModel @Inject constructor(
 
                     } else {
 
-                        currentScreenFlow.value = AuthScreen.CreateProfile
+                        // New user: pick Student/Owner FIRST, then fill profile.
+                        currentScreenFlow.value = AuthScreen.RoleSelection
 
                     }
                 }
