@@ -78,6 +78,7 @@ class AmenitiesFragment : Fragment(), WizardStepFragment {
 
         binding.etCurfewTime.setText(form.curfewTime)
         binding.etGuestPolicy.setText(form.guestPolicy)
+        binding.etHouseRules.setText(form.houseRules)
 
         form.documentsRequired.forEach { doc ->
             when (doc) {
@@ -141,6 +142,7 @@ class AmenitiesFragment : Fragment(), WizardStepFragment {
                 mealCount = mealCount,
                 curfewTime = binding.etCurfewTime.text?.toString()?.trim().orEmpty(),
                 guestPolicy = binding.etGuestPolicy.text?.toString()?.trim().orEmpty(),
+                houseRules = binding.etHouseRules.text?.toString()?.trim().orEmpty(),
                 documentsRequired = documents,
                 dynamicFieldValues = dynamicFieldValues
             )

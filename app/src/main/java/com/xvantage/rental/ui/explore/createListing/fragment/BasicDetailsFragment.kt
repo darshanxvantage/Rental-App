@@ -54,6 +54,8 @@ class BasicDetailsFragment : Fragment(), WizardStepFragment {
         binding.etLocality.setText(form.locality)
         binding.etAddress.setText(form.address)
         binding.etLandmark.setText(form.landmark)
+        binding.etLocationLink.setText(form.locationLink)
+        binding.etContactPersonName.setText(form.contactPersonName)
         binding.etContactNumber.setText(form.contactNumber)
         binding.etWhatsappNumber.setText(form.whatsappNumber)
         binding.etAlternateNumber.setText(form.alternateNumber)
@@ -140,6 +142,8 @@ class BasicDetailsFragment : Fragment(), WizardStepFragment {
                 locality = locality,
                 address = address,
                 landmark = binding.etLandmark.text?.toString()?.trim().orEmpty(),
+                locationLink = binding.etLocationLink.text?.toString()?.trim().orEmpty(),
+                contactPersonName = binding.etContactPersonName.text?.toString()?.trim().orEmpty(),
                 contactNumber = contactNumber,
                 whatsappNumber = binding.etWhatsappNumber.text?.toString()?.trim().orEmpty(),
                 alternateNumber = binding.etAlternateNumber.text?.toString()?.trim().orEmpty(),

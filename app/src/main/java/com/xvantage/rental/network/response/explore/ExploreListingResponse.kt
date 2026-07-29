@@ -89,6 +89,18 @@ data class ExploreListingResponse(
     @SerializedName("guest_policy")
     val guestPolicy: String? = null,
 
+    @SerializedName("house_rules")
+    val houseRules: String? = null,
+
+    @SerializedName("location_link")
+    val locationLink: String? = null,
+
+    @SerializedName("nearby_services")
+    val nearbyServices: List<String>? = null,
+
+    @SerializedName("owner_aadhar_image")
+    val ownerAadharImage: String? = null,
+
     // ---- fixed amenity flags (fast-filterable, mirrors backend columns) ----
     @SerializedName("is_ac") val isAc: Boolean = false,
     @SerializedName("is_attached_washroom") val isAttachedWashroom: Boolean = false,

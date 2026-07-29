@@ -1,6 +1,5 @@
 package com.xvantage.rental.ui.explore
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -9,7 +8,7 @@ import com.xvantage.rental.databinding.ActivityExploreBinding
 import com.xvantage.rental.ui.explore.common.ExploreRoleManager
 import com.xvantage.rental.ui.explore.discover.DiscoverFragment
 import com.xvantage.rental.ui.explore.favorites.FavoritesFragment
-import com.xvantage.rental.ui.explore.myListings.MyListingsActivity
+import com.xvantage.rental.ui.explore.tenant.TenantFragment
 import com.xvantage.rental.ui.explore.profile.ExploreProfileFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,8 +39,8 @@ class ExploreActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        // "My Listings" tab only makes sense for property owners
-        binding.bottomNavigation.menu.findItem(R.id.nav_my_listings).isVisible = isOwner
+        // "Tenant" tab only makes sense for property owners
+        binding.bottomNavigation.menu.findItem(R.id.nav_tenant).isVisible = isOwner
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -53,11 +52,9 @@ class ExploreActivity : AppCompatActivity() {
                     loadFragment(FavoritesFragment.newInstance())
                     true
                 }
-                R.id.nav_my_listings -> {
-                    // MyListingsActivity is a separate Activity (owner's own
-                    // listing management), not an embedded tab fragment.
-                    startActivity(Intent(this, MyListingsActivity::class.java))
-                    false // don't keep this tab visually "selected" - it's a different screen
+                R.id.nav_tenant -> {
+                    loadFragment(TenantFragment.newInstance())
+                    true
                 }
                 R.id.nav_profile -> {
                     loadFragment(ExploreProfileFragment.newInstance())

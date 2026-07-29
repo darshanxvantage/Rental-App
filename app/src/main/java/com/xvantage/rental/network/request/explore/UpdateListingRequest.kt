@@ -23,8 +23,10 @@ data class UpdateListingRequest(
     @SerializedName("locality") val locality: String? = null,
     @SerializedName("address") val address: String? = null,
     @SerializedName("landmark") val landmark: String? = null,
+    @SerializedName("location_link") val locationLink: String? = null,
     @SerializedName("latitude") val latitude: Double? = null,
     @SerializedName("longitude") val longitude: Double? = null,
+    @SerializedName("contact_person_name") val contactPersonName: String? = null,
     @SerializedName("contact_number") val contactNumber: String? = null,
     @SerializedName("whatsapp_number") val whatsappNumber: String? = null,
     @SerializedName("alternate_number") val alternateNumber: String? = null,
@@ -34,6 +36,7 @@ data class UpdateListingRequest(
     @SerializedName("booking_amount") val bookingAmount: Double? = null,
     @SerializedName("curfew_time") val curfewTime: String? = null,
     @SerializedName("guest_policy") val guestPolicy: String? = null,
+    @SerializedName("house_rules") val houseRules: String? = null,
 
     @SerializedName("is_ac") val isAc: Boolean? = null,
     @SerializedName("is_attached_washroom") val isAttachedWashroom: Boolean? = null,

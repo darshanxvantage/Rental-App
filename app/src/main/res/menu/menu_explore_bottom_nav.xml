@@ -9,12 +9,12 @@
     <item
         android:id="@+id/nav_favorites"
         android:icon="@drawable/ic_favorite_border"
-        android:title="Favorites" />
+        android:title="Wishlist" />
 
     <item
-        android:id="@+id/nav_my_listings"
-        android:icon="@drawable/ic_verified_badge"
-        android:title="My Listings"
+        android:id="@+id/nav_tenant"
+        android:icon="@drawable/ic_tenants"
+        android:title="Tenant"
         android:visible="false" />
 
     <item

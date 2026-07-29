@@ -44,6 +44,19 @@ class UploadImagesFragment : Fragment(), WizardStepFragment {
         }
     }
 
+    // owner's own KYC photo - separate from the gallery images above
+    private var ownerAadharUri: Uri? = null
+    private val pickOwnerAadharLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            ownerAadharUri = uri
+            binding.ivOwnerAadharPreview.visibility = View.VISIBLE
+            binding.ivOwnerAadharPreview.setImageURI(uri)
+            binding.btnAddOwnerAadhar.text = "Change Aadhaar Photo"
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,6 +91,22 @@ class UploadImagesFragment : Fragment(), WizardStepFragment {
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
         }
+
+        // owner Aadhaar - single photo, separate from the gallery above
+        ownerAadharUri = viewModel.formState.value.ownerAadharUri
+        if (ownerAadharUri != null) {
+            binding.ivOwnerAadharPreview.visibility = View.VISIBLE
+            binding.ivOwnerAadharPreview.setImageURI(ownerAadharUri)
+            binding.btnAddOwnerAadhar.text = "Change Aadhaar Photo"
+        } else if (viewModel.formState.value.existingOwnerAadharImage != null) {
+            // edit mode, already uploaded on a previous visit - just show the label, no local preview
+            binding.btnAddOwnerAadhar.text = "Change Aadhaar Photo (already uploaded)"
+        }
+        binding.btnAddOwnerAadhar.setOnClickListener {
+            pickOwnerAadharLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
     }
 
     private fun updateCountHint() {
@@ -96,7 +125,7 @@ class UploadImagesFragment : Fragment(), WizardStepFragment {
             Toast.makeText(requireContext(), "Please add at least one photo", Toast.LENGTH_SHORT).show()
             return false
         }
-        viewModel.updateForm { copy(newImageUris = selectedImages.toList()) }
+        viewModel.updateForm { copy(newImageUris = selectedImages.toList(), ownerAadharUri = ownerAadharUri) }
         return true
     }
 

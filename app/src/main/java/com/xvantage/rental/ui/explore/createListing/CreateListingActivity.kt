@@ -60,6 +60,7 @@ class CreateListingActivity : AppCompatActivity() {
             viewModel.loadListingForEdit(editListingId)
         }
         viewModel.loadCategories()
+//        viewModel.loadProperties()
 
         setupButtons()
         observeViewModel()

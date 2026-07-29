@@ -4,7 +4,7 @@ import com.xvantage.rental.R
 
 /**
  * Central place for every "magic string/number" the Explore feature needs -
- * mirrors explore-module/config/explore.config.js on the backend.
+ * mirroRoleselectionactivity rs explore-module/config/explore.config.js on the backend.
  */
 object ExploreConstants {
 

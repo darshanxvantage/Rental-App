@@ -47,11 +47,17 @@ data class CreateListingRequest(
     @SerializedName("landmark")
     val landmark: String? = null,
 
+    @SerializedName("location_link")
+    val locationLink: String? = null,
+
     @SerializedName("latitude")
     val latitude: Double? = null,
 
     @SerializedName("longitude")
     val longitude: Double? = null,
+
+    @SerializedName("contact_person_name")
+    val contactPersonName: String? = null,
 
     @SerializedName("contact_number")
     val contactNumber: String,
@@ -79,6 +85,9 @@ data class CreateListingRequest(
 
     @SerializedName("guest_policy")
     val guestPolicy: String? = null,
+
+    @SerializedName("house_rules")
+    val houseRules: String? = null,
 
     @SerializedName("is_ac") val isAc: Boolean = false,
     @SerializedName("is_attached_washroom") val isAttachedWashroom: Boolean = false,

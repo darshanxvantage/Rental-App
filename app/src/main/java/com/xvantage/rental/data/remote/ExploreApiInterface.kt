@@ -127,6 +127,14 @@ interface ExploreApiInterface {
         @Path("imageId") imageId: String
     ): Response<ExploreApiResponse<Any>>
 
+    // owner's own KYC photo - separate from documents_required (tenant checklist)
+    @Multipart
+    @POST("explore/landlord/listing/aadhar/{id}")
+    suspend fun uploadOwnerAadhar(
+        @Path("id") listingId: String,
+        @Part ownerAadhar: MultipartBody.Part
+    ): Response<ExploreApiResponse<Map<String, String>>>
+
     // =====================================================================
     // STUDENT (discover-side consumer actions)
     // =====================================================================

@@ -223,6 +223,21 @@ class ExploreRepository @Inject constructor(
         }
     }
 
+    // owner's own KYC photo - separate from documents_required (tenant checklist)
+    suspend fun uploadOwnerAadhar(
+        listingId: String,
+        aadharUri: Uri
+    ): ResultWrapper<ExploreApiResponse<Map<String, String>>> {
+        return try {
+            val part = uriToMultipartPart(aadharUri, "owner_aadhar")
+                ?: return ResultWrapper.Error("Could not read the selected Aadhaar photo")
+            val response = apiInterface.uploadOwnerAadhar(listingId, part)
+            NetworkHelper.handleApiResponse(response)
+        } catch (e: Exception) {
+            ResultWrapper.Error("Network error: ${e.localizedMessage}")
+        }
+    }
+
     // =====================================================================
     // STUDENT
     // =====================================================================
