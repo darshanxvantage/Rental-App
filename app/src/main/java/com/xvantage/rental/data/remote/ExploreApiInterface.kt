@@ -54,7 +54,8 @@ interface ExploreApiInterface {
         @Query("food_included") foodIncluded: Boolean? = null,
         @Query("sharing_type") sharingType: String? = null,
         @Query("occupancy_for") occupancyFor: String? = null,
-        @Query("sort_by") sortBy: String? = null
+        @Query("sort_by") sortBy: String? = null,
+        @Query("search") search: String? = null
     ): Response<ExploreApiResponse<ExplorePaginatedResponse<ExploreListingResponse>>>
 
     @GET("explore/discover/details/{id}")
@@ -129,10 +130,10 @@ interface ExploreApiInterface {
 
     // owner's own KYC photo - separate from documents_required (tenant checklist)
     @Multipart
-    @POST("explore/landlord/listing/aadhar/{id}")
-    suspend fun uploadOwnerAadhar(
+    @POST("explore/landlord/listing/id-proof/{id}")
+    suspend fun uploadOwnerIdProof(
         @Path("id") listingId: String,
-        @Part ownerAadhar: MultipartBody.Part
+        @Part ownerIdProof: MultipartBody.Part
     ): Response<ExploreApiResponse<Map<String, String>>>
 
     // =====================================================================

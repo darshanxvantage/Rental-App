@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.xvantage.rental.R
@@ -51,19 +48,7 @@ class ExploreListingAdapter(
             binding.tvTitle.text = listing.title
             binding.tvLocality.text = "${listing.locality}, ${listing.city}"
             binding.tvPriceRange.text = ExploreUiMapper.formatPriceRange(listing.priceRange)
-            binding.chipGender.text = ExploreUiMapper.genderLabel(listing.genderPreference)
-            binding.chipFood.text = ExploreUiMapper.foodLabel(listing)
-
-            binding.badgeVerified.visibility = if (listing.isVerified) android.view.View.VISIBLE else android.view.View.GONE
-            binding.badgeFeatured.visibility = if (listing.isFeatured) android.view.View.VISIBLE else android.view.View.GONE
-
-            val distanceText = ExploreUiMapper.formatDistance(listing.distanceKm)
-            if (distanceText != null) {
-                binding.tvDistance.visibility = android.view.View.VISIBLE
-                binding.tvDistance.text = distanceText
-            } else {
-                binding.tvDistance.visibility = android.view.View.GONE
-            }
+            binding.chipCategory.text = listing.category?.name ?: "Listing"
 
             binding.imgFavorite.setImageResource(
                 if (listing.isFavorited) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border
@@ -82,32 +67,8 @@ class ExploreListingAdapter(
                 )
             }
 
-            renderAmenityIcons(listing)
-
             binding.root.setOnClickListener { onItemClick(listing) }
             binding.imgFavorite.setOnClickListener { onFavoriteClick(listing, position) }
-        }
-
-        private fun renderAmenityIcons(listing: ExploreListingResponse) {
-            val container = binding.layoutAmenities
-            container.removeAllViews()
-
-            val amenities = ExploreUiMapper.activeAmenityIcons(listing).take(5)
-            val iconSizePx = (20 * context.resources.displayMetrics.density).toInt()
-            val marginPx = (12 * context.resources.displayMetrics.density).toInt()
-
-            amenities.forEach { (iconRes, _) ->
-                val imageView = ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(iconSizePx, iconSizePx).apply {
-                        marginEnd = marginPx
-                    }
-                    setImageResource(iconRes)
-                    ContextCompat.getColor(context, R.color.gray_sub).let { tintColor ->
-                        imageTintList = android.content.res.ColorStateList.valueOf(tintColor)
-                    }
-                }
-                container.addView(imageView)
-            }
         }
     }
 

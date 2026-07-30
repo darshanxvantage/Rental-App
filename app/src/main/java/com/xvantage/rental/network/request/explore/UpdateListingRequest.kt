@@ -37,6 +37,7 @@ data class UpdateListingRequest(
     @SerializedName("curfew_time") val curfewTime: String? = null,
     @SerializedName("guest_policy") val guestPolicy: String? = null,
     @SerializedName("house_rules") val houseRules: String? = null,
+    @SerializedName("nearby_services") val nearbyServices: List<String>? = null,
 
     @SerializedName("is_ac") val isAc: Boolean? = null,
     @SerializedName("is_attached_washroom") val isAttachedWashroom: Boolean? = null,

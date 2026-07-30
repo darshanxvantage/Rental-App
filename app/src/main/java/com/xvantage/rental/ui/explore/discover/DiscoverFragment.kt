@@ -1,6 +1,8 @@
 package com.xvantage.rental.ui.explore.discover
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +10,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.xvantage.rental.databinding.FragmentDiscoverBinding
@@ -72,17 +76,17 @@ class DiscoverFragment : Fragment() {
         )
 
         binding.rvListings.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = listingAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val layoutManager = recyclerView.layoutManager as GridLayoutManager
                     val visibleItemCount = layoutManager.childCount
                     val totalItemCount = layoutManager.itemCount
                     val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
-                    if (dy > 0 && (visibleItemCount + firstVisibleItem) >= totalItemCount - 3) {
+                    if (dy > 0 && (visibleItemCount + firstVisibleItem) >= totalItemCount - 4) {
                         viewModel.loadMore()
                     }
                 }
@@ -114,6 +118,19 @@ class DiscoverFragment : Fragment() {
         binding.citySelector.setOnClickListener {
             // Opens a city-picker dialog/bottom-sheet (reuses existing app city list if present)
         }
+
+        var searchDebounceJob: Job? = null
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchDebounceJob?.cancel()
+                searchDebounceJob = viewLifecycleOwner.lifecycleScope.launch {
+                    delay(400) // debounce so we don't hit the API on every keystroke
+                    viewModel.updateSearchQuery(s?.toString().orEmpty())
+                }
+            }
+        })
     }
 
     private fun loadCategories() {

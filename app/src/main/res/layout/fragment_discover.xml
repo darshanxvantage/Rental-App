@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#F7F7F7">
 
-    <!-- TOP BAR: city selector + filter button -->
+    <!-- TOP BAR: logo (left) + city selector (right), per spec -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -20,11 +20,21 @@
         android:paddingVertical="12dp"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@null" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
         <LinearLayout
             android:id="@+id/citySelector"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -54,30 +64,143 @@
 
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNearMe"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginEnd="8dp"
-            android:text="Near Me"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            app:cornerRadius="18dp"
-            app:icon="@drawable/ic_category_pg"
-            app:iconSize="14dp" />
+    </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+    <!-- SEARCH ROW: search input + filter icon button -->
+    <LinearLayout
+        android:id="@+id/searchRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E5E5E5"
+            app:cardBackgroundColor="#F5F5F5">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:alpha="0.6"
+                    android:src="@drawable/ic_back"
+                    android:visibility="gone"
+                    android:contentDescription="@null" />
+
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Search PG, Flat, area..."
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="4dp"
+                    android:textColor="#111111"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnNearMe"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="10dp"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E5E5E5"
+            app:cardBackgroundColor="@android:color/white">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="📍"
+                android:textSize="18sp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnFilter"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:text="Filters"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            app:cornerRadius="18dp" />
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="10dp"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#111111">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_verified_badge"
+                app:tint="@android:color/white"
+                android:contentDescription="Filters" />
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
+
+    <!-- PROMO BANNER -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardBanner"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#111111"
+        app:layout_constraintTop_toBottomOf="@id/searchRow">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Find your next home 🏡"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Verified PGs, flats &amp; flatmates near you"
+                android:textColor="#CCCCCC"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CATEGORY CHIPS ROW -->
     <com.google.android.material.chip.ChipGroup
@@ -90,7 +213,7 @@
         app:chipSpacingHorizontal="8dp"
         app:singleLine="true"
         app:singleSelection="true"
-        app:layout_constraintTop_toBottomOf="@id/topBar" />
+        app:layout_constraintTop_toBottomOf="@id/cardBanner" />
 
     <!-- CONTENT -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -107,6 +230,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="8dp"
             android:paddingBottom="16dp"
             tools:listitem="@layout/item_explore_listing_card" />
 

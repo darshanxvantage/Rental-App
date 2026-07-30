@@ -98,8 +98,11 @@ data class ExploreListingResponse(
     @SerializedName("nearby_services")
     val nearbyServices: List<String>? = null,
 
-    @SerializedName("owner_aadhar_image")
-    val ownerAadharImage: String? = null,
+    @SerializedName("owner_id_proof")
+    val ownerIdProof: String? = null,
+
+    @SerializedName("contact_person_name")
+    val contactPersonName: String? = null,
 
     // ---- fixed amenity flags (fast-filterable, mirrors backend columns) ----
     @SerializedName("is_ac") val isAc: Boolean = false,

@@ -89,6 +89,9 @@ data class CreateListingRequest(
     @SerializedName("house_rules")
     val houseRules: String? = null,
 
+    @SerializedName("nearby_services")
+    val nearbyServices: List<String>? = null,
+
     @SerializedName("is_ac") val isAc: Boolean = false,
     @SerializedName("is_attached_washroom") val isAttachedWashroom: Boolean = false,
     @SerializedName("has_wifi") val hasWifi: Boolean = false,

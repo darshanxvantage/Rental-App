@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xvantage.rental.data.source.ExploreRepository
+import com.xvantage.rental.data.source.PropertyRepository
+import com.xvantage.rental.network.response.PropertyItem
 import com.xvantage.rental.network.request.explore.CreateListingRequest
 import com.xvantage.rental.network.request.explore.FieldValueItem
 import com.xvantage.rental.network.request.explore.SharingPriceItem
@@ -28,6 +30,9 @@ data class CreateListingFormState(
     val categoryFk: String? = null,
     val categoryFields: List<ExploreCategoryFieldResponse> = emptyList(),
 
+    // optional link back to an existing old-flow Property (Priority 5 - old<->new connect)
+    val propertyFk: String? = null,
+
     // step 2 - basic details
     val title: String = "",
     val description: String = "",
@@ -37,7 +42,6 @@ data class CreateListingFormState(
     val locality: String = "",
     val address: String = "",
     val landmark: String = "",
-    val locationLink: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null,
     val contactPersonName: String = "",
@@ -48,6 +52,7 @@ data class CreateListingFormState(
     val availableBeds: Int = 0,
     val minStayMonths: Int? = null,
     val bookingAmount: Double? = null,
+    val locationLink: String = "", // Google Maps share link, in addition to lat/lng
 
     // step 3 - amenities (fixed flags + dynamic field values + rules + food)
     val foodIncluded: Boolean = false,
@@ -55,7 +60,8 @@ data class CreateListingFormState(
     val mealCount: String = "none",
     val curfewTime: String = "",
     val guestPolicy: String = "",
-    val houseRules: String = "",
+    val houseRules: String = "", // free-text, broader than curfew/guest policy
+    val nearbyServices: List<String> = emptyList(), // e.g. Zomato, Swiggy, Grocery Delivery, ATM
     val isAc: Boolean = false,
     val isAttachedWashroom: Boolean = false,
     val hasWifi: Boolean = false,
@@ -78,19 +84,39 @@ data class CreateListingFormState(
 
     // step 5 - images
     val newImageUris: List<Uri> = emptyList(),
-    val existingImageCount: Int = 0 // when editing, how many images already exist on the server
+    val existingImageCount: Int = 0, // when editing, how many images already exist on the server
+
+    // owner's own KYC photo - separate from documents_required (tenant checklist)
+    val ownerAadharUri: Uri? = null, // picked, not yet uploaded
+    val existingOwnerAadharImage: String? = null // already-uploaded filename, when editing
 )
 
 @HiltViewModel
 class CreateListingViewModel @Inject constructor(
-    private val repository: ExploreRepository
+    private val repository: ExploreRepository,
+    private val propertyRepository: PropertyRepository
 ) : ViewModel() {
 
     val formState = MutableStateFlow(CreateListingFormState())
     val currentStep = MutableStateFlow(0) // 0..5
 
     val categories = MutableStateFlow<List<ExploreCategoryResponse>>(emptyList())
+    // owner's existing old-flow Properties, for the optional "link to property" picker
+    val properties = MutableStateFlow<List<PropertyItem>>(emptyList())
     val isLoading = MutableStateFlow(false)
+
+    /** Old <-> New flow connect: lets the owner optionally link this Explore
+     * listing to a Property they already manage in the old Rental Master flow. */
+    fun loadProperties() {
+        viewModelScope.launch {
+            when (val result = propertyRepository.getPropertyList()) {
+                is ResultWrapper.Success -> {
+                    properties.value = result.value.data?.rows ?: emptyList()
+                }
+                else -> Unit // non-fatal - the picker just stays empty, listing works standalone
+            }
+        }
+    }
     val errorMessage = MutableStateFlow<String?>(null)
     val submitSuccess = MutableStateFlow(false)
 
@@ -144,6 +170,7 @@ class CreateListingViewModel @Inject constructor(
                             copy(
                                 editingListingId = listing.id,
                                 categoryFk = listing.categoryFk,
+                                propertyFk = listing.propertyFk,
                                 title = listing.title,
                                 description = listing.description ?: "",
                                 occupancyFor = listing.occupancyFor,
@@ -154,6 +181,8 @@ class CreateListingViewModel @Inject constructor(
                                 landmark = listing.landmark ?: "",
                                 latitude = listing.latitude,
                                 longitude = listing.longitude,
+                                locationLink = listing.locationLink ?: "",
+                                contactPersonName = listing.contactPersonName ?: "",
                                 contactNumber = listing.contactNumber,
                                 whatsappNumber = listing.whatsappNumber ?: "",
                                 alternateNumber = listing.alternateNumber ?: "",
@@ -166,6 +195,9 @@ class CreateListingViewModel @Inject constructor(
                                 mealCount = listing.mealCount,
                                 curfewTime = listing.curfewTime ?: "",
                                 guestPolicy = listing.guestPolicy ?: "",
+                                houseRules = listing.houseRules ?: "",
+                                nearbyServices = listing.nearbyServices ?: emptyList(),
+                                existingOwnerAadharImage = listing.ownerIdProof,
                                 isAc = listing.isAc,
                                 isAttachedWashroom = listing.isAttachedWashroom,
                                 hasWifi = listing.hasWifi,
@@ -228,6 +260,9 @@ class CreateListingViewModel @Inject constructor(
             if (listingId != null && form.newImageUris.isNotEmpty()) {
                 repository.uploadListingImages(listingId, form.newImageUris)
             }
+            if (listingId != null && form.ownerAadharUri != null) {
+                repository.uploadOwnerIdProof(listingId, form.ownerAadharUri)
+            }
 
             isLoading.value = false
         }
@@ -236,6 +271,7 @@ class CreateListingViewModel @Inject constructor(
     private suspend fun createNewListing(form: CreateListingFormState, fieldValues: List<FieldValueItem>): String? {
         val request = CreateListingRequest(
             categoryFk = form.categoryFk!!,
+            propertyFk = form.propertyFk,
             title = form.title,
             description = form.description,
             occupancyFor = form.occupancyFor,
@@ -247,7 +283,6 @@ class CreateListingViewModel @Inject constructor(
             locality = form.locality,
             address = form.address,
             landmark = form.landmark.ifBlank { null },
-            locationLink = form.locationLink.ifBlank { null },
             latitude = form.latitude,
             longitude = form.longitude,
             contactPersonName = form.contactPersonName.ifBlank { null },
@@ -261,6 +296,8 @@ class CreateListingViewModel @Inject constructor(
             curfewTime = form.curfewTime.ifBlank { null },
             guestPolicy = form.guestPolicy.ifBlank { null },
             houseRules = form.houseRules.ifBlank { null },
+            locationLink = form.locationLink.ifBlank { null },
+            nearbyServices = form.nearbyServices.ifEmpty { null },
             isAc = form.isAc,
             isAttachedWashroom = form.isAttachedWashroom,
             hasWifi = form.hasWifi,
@@ -297,6 +334,7 @@ class CreateListingViewModel @Inject constructor(
         val listingId = form.editingListingId ?: return null
         val request = UpdateListingRequest(
             categoryFk = form.categoryFk,
+            propertyFk = form.propertyFk,
             title = form.title,
             description = form.description,
             occupancyFor = form.occupancyFor,
@@ -308,7 +346,6 @@ class CreateListingViewModel @Inject constructor(
             locality = form.locality,
             address = form.address,
             landmark = form.landmark.ifBlank { null },
-            locationLink = form.locationLink.ifBlank { null },
             latitude = form.latitude,
             longitude = form.longitude,
             contactPersonName = form.contactPersonName.ifBlank { null },
@@ -322,6 +359,8 @@ class CreateListingViewModel @Inject constructor(
             curfewTime = form.curfewTime.ifBlank { null },
             guestPolicy = form.guestPolicy.ifBlank { null },
             houseRules = form.houseRules.ifBlank { null },
+            locationLink = form.locationLink.ifBlank { null },
+            nearbyServices = form.nearbyServices.ifEmpty { null },
             isAc = form.isAc,
             isAttachedWashroom = form.isAttachedWashroom,
             hasWifi = form.hasWifi,

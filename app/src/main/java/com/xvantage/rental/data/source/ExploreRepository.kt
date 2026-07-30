@@ -73,12 +73,13 @@ class ExploreRepository @Inject constructor(
         foodIncluded: Boolean? = null,
         sharingType: String? = null,
         occupancyFor: String? = null,
-        sortBy: String? = null
+        sortBy: String? = null,
+        search: String? = null
     ): ResultWrapper<ExploreApiResponse<ExplorePaginatedResponse<ExploreListingResponse>>> {
         return try {
             val response = apiInterface.discoverList(
                 currentPage, pageSize, city, categoryFk, minPrice, maxPrice,
-                genderPreference, foodIncluded, sharingType, occupancyFor, sortBy
+                genderPreference, foodIncluded, sharingType, occupancyFor, sortBy, search
             )
             NetworkHelper.handleApiResponse(response)
         } catch (e: Exception) {
@@ -224,14 +225,14 @@ class ExploreRepository @Inject constructor(
     }
 
     // owner's own KYC photo - separate from documents_required (tenant checklist)
-    suspend fun uploadOwnerAadhar(
+    suspend fun uploadOwnerIdProof(
         listingId: String,
-        aadharUri: Uri
+        idProofUri: Uri
     ): ResultWrapper<ExploreApiResponse<Map<String, String>>> {
         return try {
-            val part = uriToMultipartPart(aadharUri, "owner_aadhar")
-                ?: return ResultWrapper.Error("Could not read the selected Aadhaar photo")
-            val response = apiInterface.uploadOwnerAadhar(listingId, part)
+            val part = uriToMultipartPart(idProofUri, "owner_id_proof")
+                ?: return ResultWrapper.Error("Could not read the selected ID proof photo")
+            val response = apiInterface.uploadOwnerIdProof(listingId, part)
             NetworkHelper.handleApiResponse(response)
         } catch (e: Exception) {
             ResultWrapper.Error("Network error: ${e.localizedMessage}")

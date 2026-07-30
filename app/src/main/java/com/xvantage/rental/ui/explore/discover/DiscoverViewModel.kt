@@ -20,7 +20,8 @@ data class DiscoverFilters(
     val foodIncluded: Boolean? = null,
     val sharingType: String? = null,
     val occupancyFor: String? = null,
-    val sortBy: String? = null
+    val sortBy: String? = null,
+    val search: String? = null
 )
 
 @HiltViewModel
@@ -43,6 +44,12 @@ class DiscoverViewModel @Inject constructor(
 
     fun updateFilters(newFilters: DiscoverFilters) {
         filters.value = newFilters
+        loadDiscoverList(reset = true)
+    }
+
+    /** Search bar text (debounced by the fragment) - keeps other filters untouched. */
+    fun updateSearchQuery(query: String) {
+        filters.value = filters.value.copy(search = query.ifBlank { null })
         loadDiscoverList(reset = true)
     }
 
@@ -69,7 +76,8 @@ class DiscoverViewModel @Inject constructor(
                 foodIncluded = f.foodIncluded,
                 sharingType = f.sharingType,
                 occupancyFor = f.occupancyFor,
-                sortBy = f.sortBy
+                sortBy = f.sortBy,
+                search = f.search
             )) {
                 is ResultWrapper.Success -> {
                     val paginated = result.value.data
