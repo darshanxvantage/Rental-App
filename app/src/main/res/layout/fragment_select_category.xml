@@ -9,39 +9,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="24dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="What kind of place are you listing?"
             android:textColor="#111111"
-            android:textSize="16sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="This decides which fields/amenities we'll ask for next"
+            android:layout_marginTop="6dp"
+            android:text="This decides which fields and amenities we'll ask for next"
             android:textColor="#757575"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
 
         <ProgressBar
             android:id="@+id/progressCategories"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:layout_gravity="center_horizontal" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/categoryChipGroupWizard"
+        <LinearLayout
+            android:id="@+id/categoryCardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:chipSpacingHorizontal="8dp"
-            app:chipSpacingVertical="8dp"
-            app:singleSelection="true" />
+            android:layout_marginTop="20dp"
+            android:orientation="vertical" />
 
     </LinearLayout>
 </ScrollView>

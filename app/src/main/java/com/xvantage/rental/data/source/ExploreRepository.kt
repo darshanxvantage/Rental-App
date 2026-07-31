@@ -310,6 +310,14 @@ class ExploreRepository @Inject constructor(
         val requestBody = file.asRequestBody(contentType.toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(partName, file.name, requestBody)
     }
+    suspend fun myTenants(): ResultWrapper<ExploreApiResponse<List<com.xvantage.rental.network.response.explore.TenantResponse>>> {
+        return try {
+            val response = apiInterface.myTenants()
+            NetworkHelper.handleApiResponse(response)
+        } catch (e: Exception) {
+            ResultWrapper.Error("Network error: ${e.localizedMessage}")
+        }
+    }
 }
 
 private fun File.asRequestBody(contentType: okhttp3.MediaType?): RequestBody {

@@ -100,6 +100,9 @@ class CreateListingViewModel @Inject constructor(
     val formState = MutableStateFlow(CreateListingFormState())
     val currentStep = MutableStateFlow(0) // 0..5
 
+    // Hero Welcome Screen State
+    val heroDismissed = MutableStateFlow(false)
+
     val categories = MutableStateFlow<List<ExploreCategoryResponse>>(emptyList())
     // owner's existing old-flow Properties, for the optional "link to property" picker
     val properties = MutableStateFlow<List<PropertyItem>>(emptyList())
@@ -134,6 +137,10 @@ class CreateListingViewModel @Inject constructor(
 
     fun previousStep() {
         if (currentStep.value > 0) currentStep.value -= 1
+    }
+
+    fun dismissHero() {
+        heroDismissed.value = true
     }
 
     fun loadCategories() {

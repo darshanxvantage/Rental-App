@@ -160,4 +160,7 @@ interface ExploreApiInterface {
     suspend fun createReport(
         @Body request: ReportCreateRequest
     ): Response<ExploreApiResponse<Any>>
+
+    @GET("explore/landlord/tenant/my-tenants")
+    suspend fun myTenants(): Response<ExploreApiResponse<List<com.xvantage.rental.network.response.explore.TenantResponse>>>
 }

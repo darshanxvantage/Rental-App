@@ -71,5 +71,13 @@
     <color name="feedback_navy">#0B2140</color>
     <color name="feedback_hint_gray">#9E9E9E</color>
     <color name="feedback_counter_gray">#767676</color>
+    <color name="explore_navy">#1A1A2E</color>
+    <color name="explore_bg">#F7F7F9</color>
+    <color name="explore_card_bg">#FFFFFF</color>
+    <color name="explore_card_border">#ECECEC</color>
+    <color name="explore_text_primary">#111111</color>
+    <color name="explore_text_secondary">#757575</color>
+    <color name="chip_wizard_bg">#F5F5F5</color>
+    <color name="chip_wizard_text">#111111</color>
 
 </resources>

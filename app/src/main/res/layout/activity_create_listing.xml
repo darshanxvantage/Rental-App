@@ -12,13 +12,16 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btnBackWizard"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:background="@drawable/bg_wizard_round_pill"
             android:src="@drawable/ic_back"
             android:contentDescription="Back" />
 
@@ -37,27 +40,39 @@
             android:id="@+id/tvStepCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_wizard_round_pill"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
             android:text="1/6"
-            android:textColor="#9E9E9E"
-            android:textSize="13sp" />
+            android:textColor="#111111"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressWizard"
-        style="?android:attr/progressBarStyleHorizontal"
+    <LinearLayout
+        android:id="@+id/wizardStepDots"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:max="100"
-        android:progress="16"
-        android:progressTint="#1A1A2E"
-        app:layout_constraintTop_toBottomOf="@id/topBarWizard" />
+        android:layout_height="6dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/topBarWizard">
+
+        <View android:id="@+id/stepDot0" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_wizard_step_dot_active" />
+        <View android:id="@+id/stepDot1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_wizard_step_dot_inactive" />
+        <View android:id="@+id/stepDot2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_wizard_step_dot_inactive" />
+        <View android:id="@+id/stepDot3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_wizard_step_dot_inactive" />
+        <View android:id="@+id/stepDot4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_wizard_step_dot_inactive" />
+        <View android:id="@+id/stepDot5" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_wizard_step_dot_inactive" />
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/wizardContentFrame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/progressWizard"
+        app:layout_constraintTop_toBottomOf="@id/wizardStepDots"
         app:layout_constraintBottom_toTopOf="@id/bottomButtonBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -69,32 +84,37 @@
         android:background="@android:color/white"
         android:elevation="8dp"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWizardPrevious"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="52dp"
+            android:layout_height="54dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:text="Back"
             android:textAllCaps="false"
+            android:textColor="#111111"
             android:visibility="invisible"
-            app:cornerRadius="10dp" />
+            app:strokeColor="#E0E0E0"
+            app:cornerRadius="27dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWizardNext"
             android:layout_width="0dp"
-            android:layout_height="52dp"
+            android:layout_height="54dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:text="Next"
             android:textAllCaps="false"
+            android:textSize="15sp"
             android:textColor="@android:color/white"
             app:backgroundTint="#1A1A2E"
-            app:cornerRadius="10dp" />
+            app:cornerRadius="27dp"
+            app:elevation="0dp" />
 
     </LinearLayout>
 

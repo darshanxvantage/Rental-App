@@ -3,6 +3,7 @@ package com.xvantage.rental.di
 import com.xvantage.rental.data.remote.APIInterface
 import com.xvantage.rental.data.remote.AuthInterceptor
 import com.xvantage.rental.utils.AppPreference
+import com.xvantage.rental.utils.constants.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,7 +53,7 @@ object NetworkModule {
     @Provides @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://localhost:3006/api/v1/")
+            .baseUrl("${Constant.SERVER_ROOT_URL}/api/v1/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

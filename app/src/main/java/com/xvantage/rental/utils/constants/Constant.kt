@@ -44,9 +44,12 @@ object Constant {
     const val ACTION_PUSH_NOTIFICATION = "PUSH_NOTIFICATION"
     const val ACTION_PUSH_NOTIFICATION_ORDER_STATUS = "PUSH_NOTIFICATION_ORDER_STATUS"
 
+
+    const val DEV_SERVER_HOST = "192.168.1.5" // <-- REPLACE with your PC's actual LAN IP
+
     // Server root (no /api/v1 suffix) — used to build full URLs for
     // files served statically, like generated invoice PDFs which
     // come back from the backend as relative paths (e.g. "/public/TenantInvoice-123.pdf").
-    const val SERVER_ROOT_URL = "http://localhost:3006"
+    const val SERVER_ROOT_URL = "http://$DEV_SERVER_HOST:3006"
 
 }

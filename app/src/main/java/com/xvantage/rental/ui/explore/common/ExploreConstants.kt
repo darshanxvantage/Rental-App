@@ -4,11 +4,15 @@ import com.xvantage.rental.R
 
 /**
  * Central place for every "magic string/number" the Explore feature needs -
- * mirroRoleselectionactivity rs explore-module/config/explore.config.js on the backend.
+ * mirrors explore-module/config/explore.config.js on the backend.
  */
 object ExploreConstants {
 
-    private const val PUBLIC_BASE_URL = "https://api.rental.xvantageinfotech.com/public/"
+    // During local dev testing, images uploaded via your local backend live on YOUR
+    // PC (http://<DEV_SERVER_HOST>:3006/public/...), not on the production domain -
+    // so this now shares the same DEV_SERVER_HOST as Constant.kt/NetworkModule.kt.
+    // Switch back to the production domain when you deploy for real.
+    private const val PUBLIC_BASE_URL = "http://${com.xvantage.rental.utils.constants.Constant.DEV_SERVER_HOST}:3006/public/"
     private const val LISTING_IMAGE_FOLDER = "explore-listing"
     private const val CATEGORY_ICON_FOLDER = "explore-category"
 
