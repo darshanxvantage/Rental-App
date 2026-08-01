@@ -94,6 +94,9 @@ class MyListingsActivity : AppCompatActivity() {
         binding.fabAddListing.setOnClickListener {
             CreateListingActivity.startForCreate(this)
         }
+        binding.btnStartListingEmptyState.setOnClickListener {
+            CreateListingActivity.startForCreate(this)
+        }
     }
 
     private fun showItemMenu(listing: ExploreListingResponse, anchorView: View) {
@@ -133,6 +136,7 @@ class MyListingsActivity : AppCompatActivity() {
                         myListingAdapter.setItems(listings)
                         binding.emptyMyListingsLayout.visibility = if (listings.isEmpty()) View.VISIBLE else View.GONE
                         binding.rvMyListings.visibility = if (listings.isEmpty()) View.GONE else View.VISIBLE
+                        binding.fabAddListing.visibility = if (listings.isEmpty()) View.GONE else View.VISIBLE
                     }
                 }
                 launch {
@@ -154,4 +158,4 @@ class MyListingsActivity : AppCompatActivity() {
             }
         }
     }
-}
+} 

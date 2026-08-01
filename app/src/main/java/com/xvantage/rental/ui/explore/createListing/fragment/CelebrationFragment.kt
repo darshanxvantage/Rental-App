@@ -26,9 +26,6 @@ class CelebrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // "Go to Dashboard" text only makes sense during onboarding; for a
-        // normal add/edit from MyListingsActivity, relabel to something neutral.
         val hostActivity = activity as? CreateListingActivity
         if (hostActivity?.isOnboardingFlow() == false) {
             binding.btnCelebrationDone.text = "Done"
