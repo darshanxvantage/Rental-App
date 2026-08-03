@@ -272,14 +272,17 @@
     </style>
 
     <style name="Wizard.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
-        <item name="boxStrokeColor">#1A1A2E</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="boxStrokeColor">@color/wizard_box_stroke_color</item>
         <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="boxBackgroundColor">#FAFAFA</item>
         <item name="hintTextColor">#1A1A2E</item>
-        <item name="android:textColorHint">#757575</item>
+        <item name="android:textColorHint">#9E9E9E</item>
+        <item name="android:paddingTop">2dp</item>
     </style>
 
     <style name="Wizard.SectionCard">
