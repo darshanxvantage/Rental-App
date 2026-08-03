@@ -12,7 +12,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.tabs.TabLayout
 import com.xvantage.rental.databinding.ActivityMyListingsBinding
 import com.xvantage.rental.network.response.explore.ExploreListingResponse
 import com.xvantage.rental.ui.explore.createListing.CreateListingActivity
@@ -28,15 +27,12 @@ class MyListingsActivity : AppCompatActivity() {
     private val viewModel: MyListingsViewModel by viewModels()
     private lateinit var myListingAdapter: MyListingAdapter
 
-    private val statusByTabIndex = listOf(null, "draft", "pending_approval", "approved", "rejected")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyListingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupToolbar()
-        setupTabs()
         setupRecyclerView()
         setupSwipeRefresh()
         setupFab()
@@ -53,17 +49,6 @@ class MyListingsActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         binding.btnBackMyListings.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-    }
-
-    private fun setupTabs() {
-        binding.tabLayoutStatus.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                val status = statusByTabIndex.getOrNull(tab.position)
-                viewModel.loadMyListings(statusFilter = status, reset = true)
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
     }
 
     private fun setupRecyclerView() {
@@ -158,4 +143,4 @@ class MyListingsActivity : AppCompatActivity() {
             }
         }
     }
-} 
+}
