@@ -14,6 +14,16 @@
     <style name="Wizard.AutoCompleteTextView" parent="Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox">
     </style>
 
+    <!-- Fixes checked chips rendering invisible - theme's colorPrimary is near-white,
+         which the default Chip.Choice checked-state derives its colors from. -->
+    <style name="Wizard.ChoiceChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/wizard_chip_bg_state</item>
+        <item name="android:textColor">@color/wizard_chip_text_state</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="rippleColor">#301A1A2E</item>
+    </style>
+
     <style name="OnboardingCardStyle">
         <item name="cardElevation">20dp</item>
         <item name="cardBackgroundColor">@android:color/white</item>

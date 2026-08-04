@@ -127,7 +127,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipSuggestion"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Wizard.ChoiceChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -137,7 +137,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipBug"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Wizard.ChoiceChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🐞 Bug Report"
@@ -146,7 +146,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipComplaint"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Wizard.ChoiceChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="⚠️ Complaint"
@@ -155,7 +155,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCompliment"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Wizard.ChoiceChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="❤️ Compliment"

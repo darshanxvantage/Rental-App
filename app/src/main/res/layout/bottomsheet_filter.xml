@@ -43,26 +43,26 @@
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout style="@style/Wizard.TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 android:hint="Min">
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText android:textColor="#111111" android:textColorHint="#9E9E9E"
                     android:id="@+id/etMinPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout style="@style/Wizard.TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:hint="Max">
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText android:textColor="#111111" android:textColorHint="#9E9E9E"
                     android:id="@+id/etMaxPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipGenderAny"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -98,7 +98,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipGenderMale"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -106,7 +106,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipGenderFemale"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -114,7 +114,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipGenderUnisex"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -141,7 +141,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSharingAny"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -149,7 +149,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSharingSingle"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -157,7 +157,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSharingDouble"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -165,7 +165,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSharingTriple"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -216,7 +216,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSortNewest"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -225,7 +225,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSortPriceLow"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -233,7 +233,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSortPriceHigh"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -241,7 +241,7 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSortPopular"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Wizard.ChoiceChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkable="true"

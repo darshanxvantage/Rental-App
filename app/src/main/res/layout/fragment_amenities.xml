@@ -105,39 +105,39 @@
         </LinearLayout>
 
         <com.google.android.material.chip.ChipGroup android:id="@+id/foodTypeChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" app:singleSelection="true">
-            <com.google.android.material.chip.Chip android:id="@+id/chipFoodVeg" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Veg"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipFoodNonVeg" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Non-Veg"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipFoodBoth" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Both"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodVeg" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Veg"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodNonVeg" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Non-Veg"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipFoodBoth" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Both"/>
         </com.google.android.material.chip.ChipGroup>
 
         <com.google.android.material.chip.ChipGroup android:id="@+id/mealCountChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" app:singleSelection="true">
-            <com.google.android.material.chip.Chip android:id="@+id/chipMealBreakfast" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Breakfast Only"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipMealTwo" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="2 Meals"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipMealThree" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="3 Meals"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealBreakfast" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Breakfast Only"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealTwo" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="2 Meals"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipMealThree" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="3 Meals"/>
         </com.google.android.material.chip.ChipGroup>
 
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="House Rules" android:textColor="#111111" android:textSize="16sp" android:textStyle="bold" />
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:hint="Curfew Time (e.g. 10:00 PM)">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCurfewTime" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.textfield.TextInputLayout style="@style/Wizard.TextInputLayout" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:hint="Curfew Time (e.g. 10:00 PM)">
+            <com.google.android.material.textfield.TextInputEditText android:textColor="#111111" android:textColorHint="#9E9E9E" android:id="@+id/etCurfewTime" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="Guest Policy">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etGuestPolicy" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <com.google.android.material.textfield.TextInputLayout style="@style/Wizard.TextInputLayout" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="Guest Policy">
+            <com.google.android.material.textfield.TextInputEditText android:textColor="#111111" android:textColorHint="#9E9E9E" android:id="@+id/etGuestPolicy" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="House Rules (free text)">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHouseRules" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine" android:minLines="3" />
+        <com.google.android.material.textfield.TextInputLayout style="@style/Wizard.TextInputLayout" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:hint="House Rules (free text)">
+            <com.google.android.material.textfield.TextInputEditText android:textColor="#111111" android:textColorHint="#9E9E9E" android:id="@+id/etHouseRules" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine" android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Documents Required" android:textColor="#111111" android:textSize="16sp" android:textStyle="bold" />
 
         <com.google.android.material.chip.ChipGroup android:id="@+id/documentsChipGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-            <com.google.android.material.chip.Chip android:id="@+id/chipDocAadhaar" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Aadhaar Card"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipDocPan" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="PAN Card"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipDocCollegeId" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="College ID"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipDocCompanyId" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Company ID"/>
-            <com.google.android.material.chip.Chip android:id="@+id/chipDocPhoto" style="@style/Widget.MaterialComponents.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Passport Photo"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocAadhaar" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Aadhaar Card"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocPan" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="PAN Card"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocCollegeId" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="College ID"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocCompanyId" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Company ID"/>
+            <com.google.android.material.chip.Chip android:id="@+id/chipDocPhoto" style="@style/Wizard.ChoiceChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checkable="true" android:text="Passport Photo"/>
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
