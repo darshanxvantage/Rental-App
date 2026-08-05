@@ -143,10 +143,9 @@ AuthViewModel @Inject constructor(
     fun createProfile(
         firstName: String,
         lastName: String,
-        email: String,
-        state: String,
-        city: String,
-        gender: String
+        gender: String,
+        dob: String,
+        email: String
     )
     {
 
@@ -161,10 +160,9 @@ AuthViewModel @Inject constructor(
                     repository.createProfile(
                         firstName,
                         lastName,
-                        email,
-                        state,
-                        city,
-                        gender
+                        gender,
+                        dob,
+                        email
                     )
 
             ) {

@@ -17,8 +17,17 @@ import android.widget.ArrayAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
+import android.app.DatePickerDialog
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import android.Manifest
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -54,7 +63,11 @@ class ProfileFragment : Fragment() {
     )
 
     companion object {
+
         const val IMAGE_PICK_CODE = 1001
+
+        const val CAMERA_REQUEST = 1002
+
     }
 
     override fun onResume() {
@@ -149,34 +162,112 @@ class ProfileFragment : Fragment() {
         binding.tvPhone.text = appPreference.getPhone()
         binding.tvEmail.text = appPreference.getEmail()
 
-        bindAccountInfo()
         bindVerificationBadges()
         bindProfileCompleteness()
         bindAvatar()
 
         // Camera button - pick photo from gallery
         binding.btnCamera.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            try {
-                startActivityForResult(intent, IMAGE_PICK_CODE)
-            } catch (e: Exception) {
-//                Toast.makeText(context, "Unable to Open Gallery", Toast.LENGTH_SHORT).show()
-            }
+            checkMediaPermissions()
         }
 
-        // Quick Actions
-        // Settings button is now Edit Profile
+        // Edit icon (now placed next to the user's name)
         binding.btnQuickSettings.setOnClickListener {
             showEditProfileBottomSheet()
         }
+    }
 
-        binding.btnQuickHelp.setOnClickListener {
-            showHelpDialog()
+    private fun checkMediaPermissions() {
+
+        val permissions = mutableListOf<String>()
+
+        if (
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.CAMERA)
         }
 
-        binding.btnQuickShare.setOnClickListener {
-            shareApp()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+
+        } else {
+
+            if (
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+
         }
+
+        if (permissions.isEmpty()) {
+
+            showImagePickerDialog()
+
+        } else {
+
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                permissions.toTypedArray(),
+                500
+            )
+
+        }
+    }
+
+    private fun showImagePickerDialog() {
+
+        val options = arrayOf(
+            "Open Camera",
+            "Choose from Gallery"
+        )
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Add Photo")
+            .setItems(options) { _, which ->
+
+                when (which) {
+
+                    0 -> openCamera()
+
+                    1 -> openGallery()
+
+                }
+
+            }
+            .show()
+    }
+
+    private fun openGallery() {
+
+        val intent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    private fun openCamera() {
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        startActivityForResult(intent, CAMERA_REQUEST)
+
     }
 
     private fun showRevenueDialog() {
@@ -348,11 +439,15 @@ class ProfileFragment : Fragment() {
     private fun bindProfileCompleteness() {
 
         val fields = listOf(
+
             appPreference.getUserName() to "your name",
+
             appPreference.getEmail() to "your email",
-            appPreference.getCity() to "your city",
-            appPreference.getState() to "your state",
-            appPreference.getGender() to "your gender"
+
+            appPreference.getGender() to "your gender",
+
+            appPreference.getDob() to "your date of birth"
+
         )
 
         val localImagePath = appPreference.getProfileImage()
@@ -386,12 +481,6 @@ class ProfileFragment : Fragment() {
 
     // ───────────────────────── ACCOUNT INFO ─────────────────────────
 
-
-    private fun bindAccountInfo() {
-        binding.tvCity.text = appPreference.getCity()
-        binding.tvState.text = appPreference.getState()
-        binding.tvGender.text = appPreference.getGender()
-    }
 
     // ───────────────────────── QUICK ACTIONS ─────────────────────────
 
@@ -475,20 +564,63 @@ $playStoreLink
 
     private fun showEditProfileBottomSheet() {
 
-        val bottomSheet = BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.bottomsheet_edit_profile, null)
+        val bottomSheet = BottomSheetDialog(
+            requireContext(),
+            R.style.BottomSheetDialogTheme
+        )
+
+        val view = layoutInflater.inflate(
+            R.layout.bottomsheet_edit_profile,
+            null
+        )
+
         bottomSheet.setContentView(view)
-        bottomSheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        bottomSheet.setOnShowListener {
+
+            val bottomSheetInternal =
+                bottomSheet.findViewById<View>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                )
+
+            bottomSheetInternal?.let {
+
+                val behavior = BottomSheetBehavior.from(it)
+
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+                behavior.skipCollapsed = true
+
+                behavior.isFitToContents = true
+
+                it.layoutParams.height =
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+
+            }
+
+        }
 
         val etFirstName = view.findViewById<EditText>(R.id.etFirstName)
         val etLastName  = view.findViewById<EditText>(R.id.etLastName)
         val etEmail     = view.findViewById<EditText>(R.id.etEmail)
-        val etState     = view.findViewById<EditText>(R.id.etState)
-        val etCity      = view.findViewById<EditText>(R.id.etCity)
+        val etDob =
+            view.findViewById<EditText>(R.id.etDob)
+        val displayFormat =
+            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        val apiFormat =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        var selectedDob = appPreference.getDob()
         val tilGender = view.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilGender)
         val etGender = view.findViewById<android.widget.AutoCompleteTextView>(R.id.etGender)
         val genders = listOf("Male", "Female", "Other")
-        val genderAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, genders)
+        val genderAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_dropdown_text,
+            R.id.tvDropdownText,
+            genders
+        )
         etGender.setAdapter(genderAdapter)
         etGender.setOnClickListener { etGender.showDropDown() }
         tilGender.setEndIconOnClickListener { etGender.showDropDown() }
@@ -501,9 +633,57 @@ $playStoreLink
         if (nameParts.size > 1) etLastName.setText(nameParts.drop(1).joinToString(" "))
 
         etEmail.setText(appPreference.getEmail())
-        etCity.setText(appPreference.getCity())
-        etState.setText(appPreference.getState())
+
         etGender.setText(appPreference.getGender(), false)
+
+        selectedDob?.let {
+
+            try {
+
+                val date = apiFormat.parse(it)
+
+                if (date != null) {
+
+                    etDob.setText(
+                        displayFormat.format(date)
+                    )
+
+                }
+
+            } catch (_: Exception) {
+            }
+
+        }
+
+        etDob.setOnClickListener {
+
+            val calendar = Calendar.getInstance()
+
+            val picker = DatePickerDialog(
+                requireContext(),
+                { _, year, month, day ->
+
+                    val selected = Calendar.getInstance()
+
+                    selected.set(year, month, day)
+
+                    etDob.setText(
+                        displayFormat.format(selected.time)
+                    )
+
+                    selectedDob =
+                        apiFormat.format(selected.time)
+
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+
+            picker.datePicker.maxDate = System.currentTimeMillis()
+
+            picker.show()
+        }
 
 
         btnSave.setOnClickListener {
@@ -511,9 +691,8 @@ $playStoreLink
             val firstName = etFirstName.text.toString().trim()
             val lastName  = etLastName.text.toString().trim()
             val email     = etEmail.text.toString().trim()
-            val state     = etState.text.toString().trim()
-            val city      = etCity.text.toString().trim()
             val gender    = etGender.text.toString().trim()
+            val dob = selectedDob
 
             when {
                 firstName.isEmpty() -> {
@@ -532,25 +711,30 @@ $playStoreLink
                     etEmail.error = "⚠ Enter Valid Email"
                     etEmail.requestFocus()
                 }
-                state.isEmpty() -> {
-                    etState.error = "⚠ Enter State"
-                    etState.requestFocus()
-                }
-                city.isEmpty() -> {
-                    etCity.error = "⚠ Enter City"
-                    etCity.requestFocus()
+                dob.isNullOrEmpty() -> {
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select Date of Birth",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
                 gender.isEmpty() -> {
                     etGender.error = "⚠ Select Gender"
                     etGender.requestFocus()
                 }
+
                 else -> {
 
                     appPreference.setUserName("$firstName $lastName")
                     appPreference.setEmail(email)
-                    appPreference.setState(state)
-                    appPreference.setCity(city)
                     appPreference.setGender(gender)
+                    dob?.let {
+
+                        appPreference.setDob(it)
+
+                    }
 
                     binding.tvUserName.text = "$firstName $lastName"
                     binding.tvEmail.text = email
@@ -572,7 +756,6 @@ $playStoreLink
                 when (state) {
                     is com.xvantage.rental.ui.auth.fragment.sealed.AuthState.Success -> {
 
-                        bindAccountInfo()
                         bindVerificationBadges()
                         bindProfileCompleteness()
                         bindAvatar()
@@ -599,6 +782,39 @@ $playStoreLink
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+
+        super.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
+
+        if (requestCode == 500) {
+
+            if (
+                grantResults.isNotEmpty() &&
+                grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            ) {
+
+                showImagePickerDialog()
+
+            } else {
+
+                Toast.makeText(
+                    requireContext(),
+                    "Permission denied",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            }
+
+        }
+    }
 
 
     // ───────────────────── IMAGE PICK RESULT ─────────────────────
@@ -644,5 +860,32 @@ $playStoreLink
 //                Toast.makeText(context, e.message ?: "Unknown Error", Toast.LENGTH_LONG).show()
             }
         }
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+
+            val bitmap = data.extras?.get("data") as? Bitmap ?: return
+
+            val file = File(requireContext().filesDir, "profile_image.jpg")
+
+            val outputStream = FileOutputStream(file)
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream)
+
+            outputStream.flush()
+            outputStream.close()
+
+            binding.imgProfile.setImageBitmap(bitmap)
+            binding.imgProfile.visibility = View.VISIBLE
+            binding.tvInitials.visibility = View.GONE
+
+            appPreference.setProfileImage(file.absolutePath)
+
+            bindProfileCompleteness()
+
+            viewModel.updateProfileImage(
+                imageFile = file
+            )
+        }
     }
+
+
 }

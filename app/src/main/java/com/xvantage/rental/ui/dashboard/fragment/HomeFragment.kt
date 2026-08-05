@@ -65,6 +65,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews()
+        binding.layoutPropertySection.visibility = View.GONE
+        binding.layoutTenantSection.visibility = View.GONE
         setupClickListeners()
         setupRecyclerViews()
         observeHomeStats()
@@ -147,10 +149,16 @@ class HomeFragment : Fragment() {
             adapter = propertiesAdapter
             layoutManager = createHorizontalLayoutManager()
         }
-        propertyViewModel.loadProperties()
         lifecycleScope.launch {
-            propertyViewModel.propertyList.collect {
-                propertiesAdapter.addItems(it)
+            propertyViewModel.propertyList.collect { propertyList ->
+
+                propertiesAdapter.addItems(propertyList)
+
+                if (propertyList.isEmpty()) {
+                    binding.layoutPropertySection.visibility = View.GONE
+                } else {
+                    binding.layoutPropertySection.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -162,11 +170,16 @@ class HomeFragment : Fragment() {
             adapter = tenantsAdapter
             layoutManager = createHorizontalLayoutManager()
         }
-        tenantViewModel.loadTenants()
         lifecycleScope.launch {
-            tenantViewModel.tenantList.collect {
-                tenantsAdapter.addItems(it)
-                // Active tenants only count
+            tenantViewModel.tenantList.collect { tenantList ->
+
+                tenantsAdapter.addItems(tenantList)
+
+                if (tenantList.isEmpty()) {
+                    binding.layoutTenantSection.visibility = View.GONE
+                } else {
+                    binding.layoutTenantSection.visibility = View.VISIBLE
+                }
             }
         }
     }

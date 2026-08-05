@@ -64,15 +64,25 @@ class AddPropertyActivity : AppCompatActivity() {
 
     private var propertyId = ""
 
-    // Property type id + image URL fetched from the details API for edit
-    // mode. propertyTypeIds isn't populated yet when this arrives (it loads
-    // async), so we stash it here and apply it once the spinner is ready.
     private var pendingEditPropertyTypeId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_property)
         appPreference = AppPreference(this)
+
+
+        if (!isEditMode) {
+
+            binding.etOwnerName.setText(
+                appPreference.getUserName()
+            )
+
+            binding.etWhatsappNumber.setText(
+                appPreference.getPhone() ?: ""
+            )
+
+        }
 
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -91,6 +101,18 @@ class AddPropertyActivity : AppCompatActivity() {
             intent.getStringExtra(
                 "propertyId"
             ) ?: ""
+
+        if (!isEditMode) {
+
+            binding.etOwnerName.setText(
+                appPreference.getUserName() ?: ""
+            )
+
+            binding.etWhatsappNumber.setText(
+                appPreference.getPhone() ?: ""
+            )
+
+        }
 
         if (isEditMode) {
 

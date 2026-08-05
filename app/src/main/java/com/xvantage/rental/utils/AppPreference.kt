@@ -43,6 +43,9 @@ class AppPreference @Inject constructor(
         private const val KEY_AGE =
             "age"
 
+        private const val KEY_DOB =
+            "dob"
+
 
         private const val KEY_RENTED_COUNT =
             "rented_count"
@@ -409,6 +412,16 @@ class AppPreference @Inject constructor(
 
     fun getGender(): String {
         return appSharedPrefs.getString("gender", "") ?: ""
+    }
+
+    // DATE OF BIRTH
+    fun setDob(dob: String) {
+        editor.putString(KEY_DOB, dob)
+        editor.apply()
+    }
+
+    fun getDob(): String {
+        return appSharedPrefs.getString(KEY_DOB, "") ?: ""
     }
 
     // PROFILE IMAGE

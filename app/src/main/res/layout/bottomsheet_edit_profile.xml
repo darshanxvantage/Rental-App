@@ -4,13 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:fillViewport="false"
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="40dp">
 
         <!-- TITLE -->
 
@@ -20,8 +24,8 @@
             android:layout_gravity="center"
             android:text="Edit Profile"
             android:textColor="#111827"
-            android:textSize="32sp"
-            android:textStyle="bold"/>
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <!-- SUBTITLE -->
 
@@ -29,221 +33,299 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="6dp"
-            android:text="Manage your account information"
+            android:layout_marginTop="8dp"
+            android:text="Update your personal information"
             android:textColor="#6B7280"
-            android:textSize="14sp"/>
+            android:textSize="15sp" />
 
-        <!-- FIRST NAME -->
+        <!-- ROW 1 : FIRST NAME + LAST NAME -->
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxCornerRadiusTopStart="16dp">
+            android:layout_marginTop="28dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFirstName"
-                android:layout_width="match_parent"
+            <!-- FIRST NAME -->
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="First Name"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                android:textCursorDrawable="@drawable/black_cursor"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
 
-        <!-- LAST NAME -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="First Name"
+                    android:textColor="#111111"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
 
-        <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="#F5F7FB"
+                    app:boxStrokeColor="@color/edit_text_border"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:minHeight="56dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/grey_hint"
+                        android:textCursorDrawable="@drawable/black_cursor"
+                        android:inputType="textPersonName|textCapWords"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- LAST NAME -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Last Name"
+                    android:textColor="#111111"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="#F5F7FB"
+                    app:boxStrokeColor="@color/edit_text_border"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLastName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:minHeight="56dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/grey_hint"
+                        android:textCursorDrawable="@drawable/black_cursor"
+                        android:inputType="textPersonName|textCapWords"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ROW 2 : GENDER + DATE OF BIRTH -->
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp">
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etLastName"
-                android:layout_width="match_parent"
+            <!-- GENDER -->
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Last Name"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:textCursorDrawable="@drawable/black_cursor"/>
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Gender"
+                    android:textColor="#111111"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="#F5F7FB"
+                    app:boxStrokeColor="@color/edit_text_border"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_drop_down_arrow"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/etGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/grey_hint"
+                        android:focusable="false"
+                        android:cursorVisible="false"
+                        android:inputType="none"
+                        android:popupBackground="@drawable/spinner_popup"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- DATE OF BIRTH -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Date of Birth"
+                    android:textColor="#111111"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilDob"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxBackgroundColor="#F5F7FB"
+                    app:boxStrokeColor="@color/edit_text_border"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    app:endIconMinSize="20dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/grey_hint"
+                        android:focusable="false"
+                        android:cursorVisible="false"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="16sp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="42dp"
+                        android:gravity="center_vertical"
+                        android:inputType="none"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <!-- EMAIL -->
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp">
+            android:layout_marginTop="18dp"
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmail"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="Email (Optional)"
+                android:textColor="#111111"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:textCursorDrawable="@drawable/black_cursor"/>
+                app:boxBackgroundMode="outline"
+                app:boxBackgroundColor="#F5F7FB"
+                app:boxStrokeColor="@color/edit_text_border"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/grey_hint"
+                    android:textCursorDrawable="@drawable/black_cursor"/>
 
-        <!-- STATE -->
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etState"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="State"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:textCursorDrawable="@drawable/black_cursor"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- CITY -->
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="City"
-                android:cursorVisible="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:textCursorDrawable="@drawable/black_cursor"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- AGE -->
-
-        <!-- GENDER (DROPDOWN) -->
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="outline"
-            app:boxBackgroundColor="#F5F7FB"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxStrokeColor="@color/edit_text_border"
-            app:hintTextColor="@color/edit_text_border"
-            app:hintAnimationEnabled="false"
-            app:boxStrokeWidthFocused="1dp"
-            app:boxStrokeWidth="1dp"
-            app:boxCornerRadiusTopStart="16dp"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_drop_down_arrow">
-
-            <AutoCompleteTextView
-                android:id="@+id/etGender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Gender"
-                android:inputType="none"
-                android:focusable="false"
-                android:cursorVisible="false"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey_hint"
-                android:padding="16dp"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
         <!-- UPDATE BUTTON -->
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="32dp"
             android:text="Update Profile"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="#2962FF"
-            app:cornerRadius="30dp"/>
+            app:cornerRadius="18dp"/>
 
     </LinearLayout>
 

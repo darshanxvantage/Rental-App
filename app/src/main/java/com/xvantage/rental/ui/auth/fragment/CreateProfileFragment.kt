@@ -1,40 +1,30 @@
 package com.xvantage.rental.ui.auth.fragment
 
-import com.xvantage.rental.R
-import android.Manifest
-import android.app.Activity
-import android.content.Intent
-import android.content.IntentSender
-import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.Location
-import android.os.Build
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.CurrentLocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.xvantage.rental.R
 import com.xvantage.rental.databinding.FragmentCreateProfileBinding
 import com.xvantage.rental.ui.auth.AuthViewModel
 import com.xvantage.rental.ui.auth.fragment.sealed.AuthState
 import com.xvantage.rental.ui.dashboard.DashboardActivity
 import com.xvantage.rental.utils.AppPreference
-import com.xvantage.rental.utils.StateProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import android.content.Intent
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -44,28 +34,12 @@ class CreateProfileFragment : Fragment() {
     private lateinit var appPreference: AppPreference
     private val viewModel: AuthViewModel by activityViewModels()
 
-    // ── Location resolution popup (system "Turn on Location" dialog) launcher ──
-    private val locationSettingsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // User ne GPS ON kari didhu → have location fetch kar
-            requestFreshLocation()
-        } else {
-//            Toast.makeText(requireContext(), "Please turn on location to auto-fill address", Toast.LENGTH_SHORT).show()
-        }
-    }
+    // Date of birth chosen by the user, kept in yyyy-MM-dd (ISO) for the API.
+    // etDob itself only ever shows the pretty "dd MMM, yyyy" version.
+    private var selectedDobIso: String? = null
 
-    // ── Runtime permission launcher (Fine Location) ──
-    private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) {
-            checkLocationSettingsAndFetch()
-        } else {
-//            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+    private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,57 +56,42 @@ class CreateProfileFragment : Fragment() {
         viewModel.resetAuthState()
         appPreference = AppPreference(requireContext())
 
-        setupStateDropdown()
         setupGenderDropdown()
-
-        // GPS ICON CLICK
-        binding.ivGpsIcon.setOnClickListener {
-            fetchCurrentLocation()
-        }
+        setupDobPicker()
+        setupNameCapitalization()
+        setupInlineErrorClearing()
 
         // CREATE PROFILE BUTTON
         binding.btnCreateProfile.setOnClickListener {
             val firstName = binding.etFirstName.text.toString().trim()
             val lastName = binding.etLastName.text.toString().trim()
-            val email = binding.etEmail.text.toString().trim()
             val gender = binding.etGender.text.toString().trim()
-            val state = binding.etState.text.toString().trim()
-            val city = binding.etCity.text.toString().trim()
+            val dob = selectedDobIso
+            val email = binding.etEmail.text.toString().trim()
 
-            binding.etFirstName.error = null
-            binding.etLastName.error = null
-            binding.etEmail.error = null
-            binding.etCity.error = null
+            clearAllErrors()
 
             when {
                 firstName.isEmpty() -> {
-                    binding.etFirstName.error = "⚠ First name is required"
+                    binding.tilFirstName.error = "First name is required"
                     binding.etFirstName.requestFocus()
                 }
                 lastName.isEmpty() -> {
-                    binding.etLastName.error = "⚠ Last name is required"
+                    binding.tilLastName.error = "Last name is required"
                     binding.etLastName.requestFocus()
                 }
-                email.isEmpty() -> {
-                    binding.etEmail.error = "⚠ Email is required"
-                    binding.etEmail.requestFocus()
-                }
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    binding.etEmail.error = "⚠ Enter a valid email"
-                    binding.etEmail.requestFocus()
-                }
                 gender.isEmpty() -> {
-                    Toast.makeText(context, "⚠ Please select your gender", Toast.LENGTH_SHORT).show()
+                    binding.tilGender.error = "Please select your gender"
                 }
-                state.isEmpty() -> {
-                    Toast.makeText(context, "⚠ Please select your state", Toast.LENGTH_SHORT).show()
+                dob.isNullOrEmpty() -> {
+                    binding.tilDob.error = "Please select your date of birth"
                 }
-                city.isEmpty() -> {
-                    binding.etCity.error = "⚠ City is required"
-                    binding.etCity.requestFocus()
+                email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                    binding.tilEmail.error = "Enter a valid email"
+                    binding.etEmail.requestFocus()
                 }
                 else -> {
-                    viewModel.createProfile(firstName, lastName, email, state, city, gender)
+                    viewModel.createProfile(firstName, lastName, gender, dob, email)
                 }
             }
         }
@@ -140,28 +99,12 @@ class CreateProfileFragment : Fragment() {
         observeState()
     }
 
-    private fun setupStateDropdown() {
-        val stateList = StateProvider.getStates(requireContext())
-        if (stateList.isEmpty()) {
-            Toast.makeText(requireContext(), "State list not loaded", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
-            stateList
-        )
-        binding.etState.setAdapter(adapter)
-        binding.etState.threshold = 1
-        binding.etState.keyListener = null
-        binding.etState.setOnClickListener { binding.etState.showDropDown() }
-        binding.etState.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) binding.etState.showDropDown()
-        }
-        binding.etState.setOnTouchListener { _, _ ->
-            binding.etState.showDropDown()
-            false
-        }
+    private fun clearAllErrors() {
+        binding.tilFirstName.error = null
+        binding.tilLastName.error = null
+        binding.tilGender.error = null
+        binding.tilDob.error = null
+        binding.tilEmail.error = null
     }
 
     private fun setupGenderDropdown() {
@@ -176,137 +119,98 @@ class CreateProfileFragment : Fragment() {
         binding.etGender.keyListener = null
         binding.etGender.setOnClickListener { binding.etGender.showDropDown() }
         binding.tilGender.setEndIconOnClickListener { binding.etGender.showDropDown() }
-    }
-
-
-    private fun fetchCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            return
-        }
-        checkLocationSettingsAndFetch()
-    }
-
-    private fun checkLocationSettingsAndFetch() {
-        val locationRequest = com.google.android.gms.location.LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY, 10000
-        ).build()
-
-        val settingsRequest = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
-            .setAlwaysShow(true)
-            .build()
-
-        val settingsClient = LocationServices.getSettingsClient(requireActivity())
-
-        settingsClient.checkLocationSettings(settingsRequest)
-            .addOnSuccessListener {
-                // GPS already ON → fetch location
-                requestFreshLocation()
-            }
-            .addOnFailureListener { exception ->
-                if (exception is ResolvableApiException) {
-                    // GPS OFF → show system "Allow" popup to turn it on
-                    try {
-                        val intentSenderRequest =
-                            IntentSenderRequest.Builder(exception.resolution).build()
-                        locationSettingsLauncher.launch(intentSenderRequest)
-                    } catch (sendEx: IntentSender.SendIntentException) {
-//                        Toast.makeText(requireContext(), "Unable to open location settings", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-//                    Toast.makeText(requireContext(), "Location services unavailable on this device", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun requestFreshLocation() {
-        val fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) return
-
-//        Toast.makeText(requireContext(), "Fetching location...", Toast.LENGTH_SHORT).show()
-
-        fusedClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                getAddressFromLocation(location.latitude, location.longitude)
-            } else {
-                // lastLocation cache empty (fresh device/emulator) → actively request one
-                fetchCurrentLocationActively(fusedClient)
-            }
-        }.addOnFailureListener {
-            fetchCurrentLocationActively(fusedClient)
+        binding.etGender.setOnItemClickListener { _, _, _, _ ->
+            binding.tilGender.error = null
         }
     }
 
-    private fun fetchCurrentLocationActively(
-        fusedClient: com.google.android.gms.location.FusedLocationProviderClient
-    ) {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) return
-
-        val cancellationTokenSource = CancellationTokenSource()
-        val currentLocationRequest = CurrentLocationRequest.Builder()
-            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-            .setMaxUpdateAgeMillis(0)
-            .build()
-
-        fusedClient.getCurrentLocation(currentLocationRequest, cancellationTokenSource.token)
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    getAddressFromLocation(location.latitude, location.longitude)
-                } else {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        "Location not found. Please move to an open area and try again",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-                }
-            }
-            .addOnFailureListener {
-//                Toast.makeText(requireContext(), "Location not found, try again", Toast.LENGTH_SHORT).show()
-            }
+    private fun setupDobPicker() {
+        binding.etDob.setOnClickListener { showDobPicker() }
+        binding.tilDob.setEndIconOnClickListener { showDobPicker() }
     }
 
-    private fun getAddressFromLocation(lat: Double, lng: Double) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+    private fun showDobPicker() {
+        val today = Calendar.getInstance()
+        val initial = Calendar.getInstance().apply {
+            add(Calendar.YEAR, -18) // just a sensible starting point, not an age restriction
+        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(lat, lng, 1) { addresses ->
-                requireActivity().runOnUiThread {
-                    if (addresses.isNotEmpty()) {
-                        val address = addresses[0]
-                        binding.etState.setText(address.adminArea ?: "")
-                        binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
-//                        Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
-                    } else {
-//                        Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
-                    }
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                val picked = Calendar.getInstance()
+                picked.set(year, month, dayOfMonth, 0, 0, 0)
+
+                binding.etDob.setText(displayDateFormat.format(picked.time))
+                selectedDobIso = isoDateFormat.format(picked.time)
+                binding.tilDob.error = null
+            },
+            initial.get(Calendar.YEAR),
+            initial.get(Calendar.MONTH),
+            initial.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // Some device/app theme combos render the dialog's OK/Cancel buttons in white-on-white
+        // (invisible). Force a visible color explicitly so they always show up.
+        datePickerDialog.setOnShowListener {
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE)
+                ?.setTextColor(android.graphics.Color.parseColor("#2962FF"))
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(android.graphics.Color.parseColor("#2962FF"))
+        }
+
+        // Future date of birth doesn't make sense.
+        datePickerDialog.datePicker.maxDate = today.timeInMillis
+        datePickerDialog.show()
+    }
+
+    // First letter of First Name / Last Name should always be capital, rest stays as typed.
+    private fun setupNameCapitalization() {
+        capitalizeFirstLetter(binding.etFirstName)
+        capitalizeFirstLetter(binding.etLastName)
+    }
+
+    private fun capitalizeFirstLetter(editText: TextInputEditText) {
+        editText.addTextChangedListener(object : TextWatcher {
+            private var isFormatting = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting || s.isNullOrEmpty()) return
+
+                val original = s.toString()
+                val capitalized = original.replaceFirstChar { ch ->
+                    if (ch.isLowerCase()) ch.titlecase(Locale.US) else ch.toString()
+                }
+
+                if (capitalized != original) {
+                    isFormatting = true
+                    val cursor = editText.selectionStart
+                    editText.setText(capitalized)
+                    editText.setSelection(cursor.coerceIn(0, capitalized.length))
+                    isFormatting = false
                 }
             }
-        } else {
-            @Suppress("DEPRECATION")
-            val addresses = geocoder.getFromLocation(lat, lng, 1)
-            if (!addresses.isNullOrEmpty()) {
-                val address = addresses[0]
-                binding.etState.setText(address.adminArea ?: "")
-                binding.etCity.setText(address.locality ?: address.subAdminArea ?: "")
-//                Toast.makeText(requireContext(), "Location filled ✅", Toast.LENGTH_SHORT).show()
-            } else {
-//                Toast.makeText(requireContext(), "Unable to detect address, please enter manually", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    // Clears the inline validation line the moment the user starts fixing the field.
+    private fun setupInlineErrorClearing() {
+        clearErrorOnType(binding.tilFirstName, binding.etFirstName)
+        clearErrorOnType(binding.tilLastName, binding.etLastName)
+        clearErrorOnType(binding.tilEmail, binding.etEmail)
+    }
+
+    private fun clearErrorOnType(til: TextInputLayout, editText: TextInputEditText) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                til.error = null
             }
-        }
+        })
     }
 
     private fun observeState() {
@@ -316,9 +220,8 @@ class CreateProfileFragment : Fragment() {
                     is AuthState.Success -> {
                         appPreference.setUserName("${binding.etFirstName.text} ${binding.etLastName.text}")
                         appPreference.setEmail(binding.etEmail.text.toString())
-                        appPreference.setCity(binding.etCity.text.toString())
-                        appPreference.setState(binding.etState.text.toString())
                         appPreference.setGender(binding.etGender.text.toString())
+                        selectedDobIso?.let { dob -> appPreference.setDob(dob) }
 
                         Toast.makeText(context, "Profile Created Successfully", Toast.LENGTH_SHORT).show()
 

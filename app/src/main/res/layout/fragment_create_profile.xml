@@ -80,8 +80,10 @@
                         android:text="First Name" />
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilFirstName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:errorEnabled="true"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/edit_text_border"
                         app:boxStrokeWidth="1dp"
@@ -101,7 +103,7 @@
                             android:textColorHint="@color/grey_hint"
                             android:textCursorDrawable="@drawable/black_cursor"
                             android:padding="14dp"
-                            android:inputType="textPersonName"
+                            android:inputType="textPersonName|textCapWords"
                             android:focusable="true"
                             android:focusableInTouchMode="true"
                             android:cursorVisible="true"
@@ -129,8 +131,10 @@
                         android:text="Last Name" />
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilLastName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:errorEnabled="true"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/edit_text_border"
                         app:boxStrokeWidth="1dp"
@@ -149,7 +153,7 @@
                             android:textColor="@color/black"
                             android:textColorHint="@color/grey_hint"
                             android:padding="14dp"
-                            android:inputType="textPersonName"
+                            android:inputType="textPersonName|textCapWords"
                             android:focusable="true"
                             android:focusableInTouchMode="true"
                             android:textCursorDrawable="@drawable/black_cursor"
@@ -162,7 +166,7 @@
 
             </LinearLayout>
 
-            <!-- ROW 2: GENDER + EMAIL -->
+            <!-- ROW 2: GENDER + DATE OF BIRTH -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -191,6 +195,7 @@
                         android:id="@+id/tilGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:errorEnabled="true"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/edit_text_border"
                         app:boxStrokeWidth="1dp"
@@ -213,12 +218,13 @@
                             android:padding="14dp"
                             android:inputType="none"
                             android:focusable="false"
-                            android:cursorVisible="false"/>
+                            android:cursorVisible="false"
+                            android:popupBackground="@drawable/spinner_popup"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
-                <!-- EMAIL -->
+                <!-- DATE OF BIRTH -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -233,101 +239,28 @@
                         android:textSize="13sp"
                         android:textColor="#111111"
                         android:textStyle="bold"
-                        android:text="Email" />
+                        android:text="Date of Birth" />
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilDob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="@color/edit_text_border"
-                        app:boxStrokeWidth="1dp"
-                        app:boxStrokeWidthFocused="1dp"
-                        app:hintAnimationEnabled="false"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusTopStart="12dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEmail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="you@gmail.com"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/grey_hint"
-                            android:inputType="textEmailAddress"
-                            android:textCursorDrawable="@drawable/black_cursor"
-                            android:padding="14dp"
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
-                            android:cursorVisible="true"
-                            android:longClickable="true"
-                            android:textIsSelectable="false"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- ROW 3: STATE + CITY -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <!-- STATE -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="6dp">
-
-                    <!-- STATE LABEL + GPS BUTTON -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="6dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textSize="13sp"
-                            android:textColor="#111111"
-                            android:textStyle="bold"
-                            android:text="State" />
-
-                        <ImageView
-                            android:id="@+id/ivGpsIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_my_location"
-                            app:tint="#2962FF"/>
-
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilState"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        app:errorEnabled="true"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/edit_text_border"
                         app:boxStrokeWidth="1dp"
                         app:boxStrokeWidthFocused="1dp"
                         app:hintAnimationEnabled="false"
                         app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_drop_down_arrow"
+                        app:endIconDrawable="@drawable/ic_calendar"
+                        app:endIconTint="#2962FF"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp">
 
-                        <AutoCompleteTextView
-                            android:id="@+id/etState"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDob"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Select"
@@ -336,58 +269,62 @@
                             android:padding="14dp"
                             android:inputType="none"
                             android:focusable="false"
-                            android:cursorVisible="false"/>
+                            android:cursorVisible="false"
+                            android:maxLines="1"
+                            android:ellipsize="end"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
-                <!-- CITY -->
-                <LinearLayout
-                    android:layout_width="0dp"
+            </LinearLayout>
+
+            <!-- ROW 3: EMAIL (OPTIONAL, LAST FIELD) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="6dp">
+                    android:layout_marginBottom="6dp"
+                    android:textSize="13sp"
+                    android:textColor="#111111"
+                    android:textStyle="bold"
+                    android:text="Email (Optional)" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"
-                        android:textSize="13sp"
-                        android:textColor="#111111"
-                        android:textStyle="bold"
-                        android:text="City" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/edit_text_border"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:hintAnimationEnabled="false"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="outline"
-                        app:boxStrokeColor="@color/edit_text_border"
-                        app:boxStrokeWidth="1dp"
-                        app:boxStrokeWidthFocused="1dp"
-                        app:hintAnimationEnabled="false"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusTopStart="12dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etCity"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Your city"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/grey_hint"
-                            android:textCursorDrawable="@drawable/black_cursor"
-                            android:padding="14dp"
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
-                            android:cursorVisible="true"
-                            android:longClickable="true"
-                            android:textIsSelectable="false"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
+                        android:hint="you@gmail.com"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/grey_hint"
+                        android:inputType="textEmailAddress"
+                        android:textCursorDrawable="@drawable/black_cursor"
+                        android:padding="14dp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:cursorVisible="true"
+                        android:longClickable="true"
+                        android:textIsSelectable="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 

@@ -149,10 +149,9 @@ class AuthRepository @Inject constructor(
     suspend fun createProfile(
         firstName: String,
         lastName: String,
-        email: String,
-        state: String,
-        city: String,
-        gender: String
+        gender: String,
+        dob: String,
+        email: String
     ): ResultWrapper<CreateProfileResponse> {
 
         return try {
@@ -160,10 +159,9 @@ class AuthRepository @Inject constructor(
             val request = CreateProfileRequest(
                 firstName = firstName,
                 lastName = lastName,
-                email = email,
-                state = state,
-                city = city,
-                gender = gender
+                gender = gender,
+                dob = dob,
+                email = email
             )
 
             val response =

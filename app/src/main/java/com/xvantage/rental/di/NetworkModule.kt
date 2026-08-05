@@ -52,7 +52,7 @@ object NetworkModule {
     @Provides @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.rental.xvantageinfotech.com/api/v1/")
+            .baseUrl("http://localhost:3006/api/v1/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

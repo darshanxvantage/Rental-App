@@ -16,6 +16,7 @@ data class CreateProfileResponse(
         val state: String? = null,
         val city: String? = null,
         val gender: String? = null,
+        val dob: String? = null,
         val is_profile_complete: Boolean? = null
     )
 }

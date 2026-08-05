@@ -86,6 +86,7 @@
                 android:layout_weight="1" />
 
             <LinearLayout
+                android:id="@+id/layoutPropertySection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -126,6 +127,7 @@
 
             <!-- Horizontal Section 2 -->
             <LinearLayout
+                android:id="@+id/layoutTenantSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

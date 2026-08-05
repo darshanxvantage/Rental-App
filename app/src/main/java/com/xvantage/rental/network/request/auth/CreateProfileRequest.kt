@@ -3,17 +3,14 @@ package com.xvantage.rental.network.request.auth
 
 data class CreateProfileRequest(
 
-    val firstName:String,
+    val firstName: String,
 
-    val lastName:String,
+    val lastName: String,
 
-    val email:String,
+    val gender: String,
 
-    val state:String,
+    val dob: String,
 
-    val city:String,
-
-    val gender:String
+    val email: String
 
 )
-
