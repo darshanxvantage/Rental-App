@@ -35,6 +35,16 @@ class DuesViewModel @Inject constructor(
         }
     }
 
+
+    private fun formatAmount(amount: Double): String {
+        val rounded = Math.round(amount * 100.0) / 100.0
+        return if (rounded == Math.floor(rounded)) {
+            "₹${rounded.toLong()}"
+        } else {
+            "₹${String.format(java.util.Locale.US, "%.2f", rounded)}"
+        }
+    }
+
     fun getElectricityInfo(tenant: TenantItem): Pair<String, String> {
         val mode = tenant.fixed_electricity?.trim()?.lowercase()
         val currentCycle = tenant.dueCycles?.firstOrNull()
@@ -45,7 +55,7 @@ class DuesViewModel @Inject constructor(
                 val amt = currentCycle?.electricityAmount
                     ?: tenant.fixed_electricity_amount?.toDoubleOrNull()
                     ?: 0.0
-                Pair("Fixed", "₹${amt.toLong()}")
+                Pair("Fixed", formatAmount(amt))
             }
             "meter", "metered" -> Pair("Metered", "Per usage")
             else -> Pair("No Cost", "₹0")
@@ -62,7 +72,7 @@ class DuesViewModel @Inject constructor(
                 val amt = currentCycle?.waterAmount
                     ?: tenant.fixed_waterbill_amount?.toDoubleOrNull()
                     ?: 0.0
-                Pair("Fixed", "₹${amt.toLong()}")
+                Pair("Fixed", formatAmount(amt))
             }
             "meter", "metered" -> Pair("Metered", "Per usage")
             else -> Pair("No Cost", "₹0")

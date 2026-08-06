@@ -13,8 +13,6 @@ data class CreateProfileResponse(
         val phone_number: String? = null,
         val email: String? = null,
         val profile_pic: String? = null,
-        val state: String? = null,
-        val city: String? = null,
         val gender: String? = null,
         val dob: String? = null,
         val is_profile_complete: Boolean? = null

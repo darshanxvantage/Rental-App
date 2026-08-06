@@ -15,8 +15,16 @@ class AuthInterceptor @Inject constructor(
         val original = chain.request()
 
         val builder = original.newBuilder()
-            .header(ApiConstant.HEADER_CONTENT_TYPE, ApiConstant.CONTENT_TYPE_JSON)
-            .header("roletype", "landlord")
+
+
+        if (original.header("Content-Type") == null) {
+            builder.header(
+                ApiConstant.HEADER_CONTENT_TYPE,
+                ApiConstant.CONTENT_TYPE_JSON
+            )
+        }
+
+        builder.header("roletype", "landlord")
             .header(
                 "requesttoken",
                 "610904831af1a01c5251e5437c53421338a01032a0c01bcc7db9da73368e339b"

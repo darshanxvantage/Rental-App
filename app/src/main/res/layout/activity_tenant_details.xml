@@ -539,12 +539,9 @@
                                         android:id="@+id/tvElectricityPlanBadge"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="3dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="3dp"
+                                        android:background="@android:color/transparent"
                                         android:text="FIXED"
-                                        android:textColor="#2563EB"
+                                        android:textColor="@android:color/black"
                                         android:textSize="10sp"
                                         android:textStyle="bold" />
 
@@ -610,12 +607,9 @@
                                         android:id="@+id/tvWaterPlanBadge"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="3dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="3dp"
+                                        android:background="@android:color/transparent"
                                         android:text="FIXED"
-                                        android:textColor="#2563EB"
+                                        android:textColor="@android:color/black"
                                         android:textSize="10sp"
                                         android:textStyle="bold" />
 

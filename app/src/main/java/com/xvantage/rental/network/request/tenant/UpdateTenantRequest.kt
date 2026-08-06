@@ -1,6 +1,6 @@
 package com.xvantage.rental.network.request.tenant
 
-import android.net.Uri
+import okhttp3.MultipartBody
 
 data class UpdateTenantRequest(
 
@@ -42,7 +42,7 @@ data class UpdateTenantRequest(
 
     val leaseEndDate: String,
 
-    val profilePic: Uri?,
+    val profilePic: MultipartBody.Part?,
 
-    val documents: List<Uri>?
+    val documents: List<MultipartBody.Part>?
 )

@@ -9,4 +9,7 @@
     android:paddingBottom="14dp"
     android:background="@android:color/transparent"
     android:textColor="@color/text_dark_blue"
-    android:textSize="16sp" />
+    android:singleLine="true"
+    android:maxLines="1"
+    android:ellipsize="end"
+    android:textSize="15sp" />

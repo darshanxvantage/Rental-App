@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- Full size preview of the tapped photo -->
+    <ImageView
+        android:id="@+id/iv_full_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="Photo preview" />
+
+    <ImageView
+        android:id="@+id/btn_close_full_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_close"
+        android:background="#66000000"
+        android:contentDescription="Close preview"
+        android:clickable="true"
+        android:focusable="true" />
+
+</RelativeLayout>

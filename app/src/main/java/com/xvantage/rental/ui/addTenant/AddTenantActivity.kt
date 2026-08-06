@@ -73,13 +73,14 @@ class AddTenantActivity : AppCompatActivity() {
 
     // Image URIs for various photos
     private var tenantImageUri: Uri? = null
-    private var frontAdharImageUri: Uri? = null
-    private var backAdharImageUri: Uri? = null
+    private var adharImageUri: Uri? = null
+
+    private var tenantImagePreviewSource: Any? = null
+    private var adharImagePreviewSource: Any? = null
 
     // Views for displaying selected images
     private lateinit var llTenantPhoto: View
-    private lateinit var llFrontAdharPhoto: View
-    private lateinit var llBackAdharPhoto: View
+    private lateinit var llAdharPhoto: View
 
     private val PERMISSION_REQUEST_CODE = 101
     private var selectedPicker = 1
@@ -145,8 +146,7 @@ class AddTenantActivity : AppCompatActivity() {
 
         // Initialize views for selected images
         llTenantPhoto = findViewById(R.id.ll_selected_tenant_photo)
-        llFrontAdharPhoto = findViewById(R.id.ll_selected_front_adhar_photo)
-        llBackAdharPhoto = findViewById(R.id.ll_selected_back_adhar_photo)
+        llAdharPhoto = findViewById(R.id.ll_selected_adhar_photo)
 
         // Setup click events and UI interactions
         setupClickEvents()
@@ -235,8 +235,7 @@ class AddTenantActivity : AppCompatActivity() {
                         tenant.cost_per_unit ?: ""
                     )
 
-                    // Prefill with the last recorded reading so the owner can
-                    // see it and edit it, instead of a blank field.
+
                     binding.llElectricityFinanceDetail.etElectricityMeter.setText(
                         tenant.meter_reading
                             ?.takeIf { it.isNotBlank() }
@@ -279,46 +278,32 @@ class AddTenantActivity : AppCompatActivity() {
 
                         binding.llSelectedTenantPhoto.tvFileSize.text = ""
 
+                        tenantImagePreviewSource = tenant.profile_pic
+
                         llTenantPhoto.visibility = View.VISIBLE
                         binding.llAddTenantPhoto.visibility = View.GONE
                     }
 
 
-                    val frontDoc = tenant.documents.getOrNull(0)
-                    val backDoc = tenant.documents.getOrNull(1)
+                    val adharDoc = tenant.documents.getOrNull(0)
 
-                    if (!frontDoc?.image.isNullOrBlank()) {
-
-                        Glide.with(this@AddTenantActivity)
-                            .load(frontDoc?.image)
-                            .placeholder(R.drawable.ic_cloud_upload)
-                            .error(R.drawable.ic_cloud_upload)
-                            .into(binding.llSelectedFrontAdharPhoto.ivThumbnail)
-
-                        binding.llSelectedFrontAdharPhoto.tvFileName.text =
-                            "Front Aadhar photo"
-
-                        binding.llSelectedFrontAdharPhoto.tvFileSize.text = ""
-
-                        llFrontAdharPhoto.visibility = View.VISIBLE
-                        binding.llAddFrontAdhar.visibility = View.GONE
-                    }
-
-                    if (!backDoc?.image.isNullOrBlank()) {
+                    if (!adharDoc?.image.isNullOrBlank()) {
 
                         Glide.with(this@AddTenantActivity)
-                            .load(backDoc?.image)
+                            .load(adharDoc?.image)
                             .placeholder(R.drawable.ic_cloud_upload)
                             .error(R.drawable.ic_cloud_upload)
-                            .into(binding.llSelectedBackAdharPhoto.ivThumbnail)
+                            .into(binding.llSelectedAdharPhoto.ivThumbnail)
 
-                        binding.llSelectedBackAdharPhoto.tvFileName.text =
-                            "Back Aadhar photo"
+                        binding.llSelectedAdharPhoto.tvFileName.text =
+                            "Aadhar Card photo"
 
-                        binding.llSelectedBackAdharPhoto.tvFileSize.text = ""
+                        binding.llSelectedAdharPhoto.tvFileSize.text = ""
 
-                        llBackAdharPhoto.visibility = View.VISIBLE
-                        binding.llAddBackAdhar.visibility = View.GONE
+                        adharImagePreviewSource = adharDoc?.image
+
+                        llAdharPhoto.visibility = View.VISIBLE
+                        binding.llAddAdharPhoto.visibility = View.GONE
                     }
                 }
             }
@@ -472,12 +457,8 @@ class AddTenantActivity : AppCompatActivity() {
             selectedPicker = 1
             checkPermissionsAndOpenOptions()
         }
-        binding.llAddFrontAdhar.setOnClickListener {
+        binding.llAddAdharPhoto.setOnClickListener {
             selectedPicker = 2
-            checkPermissionsAndOpenOptions()
-        }
-        binding.llAddBackAdhar.setOnClickListener {
-            selectedPicker = 3
             checkPermissionsAndOpenOptions()
         }
 
@@ -487,18 +468,23 @@ class AddTenantActivity : AppCompatActivity() {
         // Photo removal listeners
         binding.llSelectedTenantPhoto.btnClose.setOnClickListener {
             tenantImageUri = null
+            tenantImagePreviewSource = null
             llTenantPhoto.visibility = View.GONE
             binding.llAddTenantPhoto.visibility = View.VISIBLE
         }
-        binding.llSelectedFrontAdharPhoto.btnClose.setOnClickListener {
-            frontAdharImageUri = null
-            llFrontAdharPhoto.visibility = View.GONE
-            binding.llAddFrontAdhar.visibility = View.VISIBLE
+        binding.llSelectedAdharPhoto.btnClose.setOnClickListener {
+            adharImageUri = null
+            adharImagePreviewSource = null
+            llAdharPhoto.visibility = View.GONE
+            binding.llAddAdharPhoto.visibility = View.VISIBLE
         }
-        binding.llSelectedBackAdharPhoto.btnClose.setOnClickListener {
-            backAdharImageUri = null
-            llBackAdharPhoto.visibility = View.GONE
-            binding.llAddBackAdhar.visibility = View.VISIBLE
+
+        // Tap the thumbnail to open the photo in full view
+        binding.llSelectedTenantPhoto.ivThumbnail.setOnClickListener {
+            showFullImagePreview(tenantImagePreviewSource)
+        }
+        binding.llSelectedAdharPhoto.ivThumbnail.setOnClickListener {
+            showFullImagePreview(adharImagePreviewSource)
         }
 
         // Date picker click listeners for rent finance details
@@ -606,16 +592,12 @@ class AddTenantActivity : AppCompatActivity() {
             return
         }
 
-        // Tapping the field opens our custom searchable popup — the field
-        // itself stays read-only/non-editable, its look never changes.
+
         binding.actRoom.setOnClickListener {
             showRoomSearchPopup(rooms)
         }
 
-        // The ExposedDropdownMenu style's dropdown-arrow icon has its own
-        // separate touch handling and does NOT forward taps to the field's
-        // setOnClickListener above — without this, tapping the arrow itself
-        // does nothing. Wire it to open the same popup.
+
         binding.roomLayout.setEndIconOnClickListener {
             showRoomSearchPopup(rooms)
         }
@@ -648,17 +630,13 @@ class AddTenantActivity : AppCompatActivity() {
         }
     }
 
-    /** Formats a room the same way it's always been shown: "Room 3   🟠 Vacant" */
+    /** Formats a room the same way it's always been shown: "Room 3   🟠" (dot only — the color already tells vacant/occupied) */
     private fun formatRoomLabel(room: com.xvantage.rental.network.response.PropertyRoom): String {
-        val status = if (room.status.equals("VACANT", true)) "🟠 Vacant" else "🟢 Occupied"
-        return "Room ${room.room_no}   $status"
+        val statusDot = if (room.status.equals("VACANT", true)) "🟠" else "🟢"
+        return "Room ${room.room_no}   $statusDot"
     }
 
-    /**
-     * Shows a small popup, anchored under the Room field, with a search bar
-     * (icon on the right) on top and the filtered room list below it. The
-     * Room field itself is never made editable — only this popup is searchable.
-     */
+
     private fun showRoomSearchPopup(rooms: List<com.xvantage.rental.network.response.PropertyRoom>) {
 
         val popupView = layoutInflater.inflate(R.layout.popup_room_search, binding.roomLayout, false)
@@ -846,15 +824,9 @@ class AddTenantActivity : AppCompatActivity() {
                 }
             }
             2 -> {
-                frontAdharImageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", photoFile)
+                adharImageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", photoFile)
                 intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    putExtra(MediaStore.EXTRA_OUTPUT, frontAdharImageUri)
-                }
-            }
-            3 -> {
-                backAdharImageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", photoFile)
-                intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    putExtra(MediaStore.EXTRA_OUTPUT, backAdharImageUri)
+                    putExtra(MediaStore.EXTRA_OUTPUT, adharImageUri)
                 }
             }
         }
@@ -906,30 +878,46 @@ class AddTenantActivity : AppCompatActivity() {
                 val fileSize = CommonFunction().getFileSize(this, photoUri)
                 binding.llSelectedTenantPhoto.tvFileSize.text = fileSize
                 tenantImageUri = photoUri
+                tenantImagePreviewSource = photoUri
                 llTenantPhoto.visibility = View.VISIBLE
                 binding.llAddTenantPhoto.visibility = View.GONE
             }
-            2 -> {  // Front Aadhar photo
-                binding.llSelectedFrontAdharPhoto.ivThumbnail.setImageURI(photoUri)
+            2 -> {  // Aadhar photo
+                binding.llSelectedAdharPhoto.ivThumbnail.setImageURI(photoUri)
                 val fileName = CommonFunction().getFileName(this, photoUri)
-                binding.llSelectedFrontAdharPhoto.tvFileName.text = fileName
+                binding.llSelectedAdharPhoto.tvFileName.text = fileName
                 val fileSize = CommonFunction().getFileSize(this, photoUri)
-                binding.llSelectedFrontAdharPhoto.tvFileSize.text = fileSize
-                frontAdharImageUri = photoUri
-                llFrontAdharPhoto.visibility = View.VISIBLE
-                binding.llAddFrontAdhar.visibility = View.GONE
-            }
-            3 -> {  // Back Aadhar photo
-                binding.llSelectedBackAdharPhoto.ivThumbnail.setImageURI(photoUri)
-                val fileName = CommonFunction().getFileName(this, photoUri)
-                binding.llSelectedBackAdharPhoto.tvFileName.text = fileName
-                val fileSize = CommonFunction().getFileSize(this, photoUri)
-                binding.llSelectedBackAdharPhoto.tvFileSize.text = fileSize
-                backAdharImageUri = photoUri
-                llBackAdharPhoto.visibility = View.VISIBLE
-                binding.llAddBackAdhar.visibility = View.GONE
+                binding.llSelectedAdharPhoto.tvFileSize.text = fileSize
+                adharImageUri = photoUri
+                adharImagePreviewSource = photoUri
+                llAdharPhoto.visibility = View.VISIBLE
+                binding.llAddAdharPhoto.visibility = View.GONE
             }
         }
+    }
+
+
+    private fun showFullImagePreview(source: Any?) {
+        if (source == null) return
+
+        val dialog = android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.setContentView(R.layout.dialog_image_preview)
+        dialog.window?.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(android.graphics.Color.BLACK)
+        )
+
+        val ivFullImage = dialog.findViewById<android.widget.ImageView>(R.id.iv_full_image)
+        val btnCloseFullImage = dialog.findViewById<android.widget.ImageView>(R.id.btn_close_full_image)
+
+        Glide.with(this)
+            .load(source)
+            .placeholder(R.drawable.ic_cloud_upload)
+            .error(R.drawable.ic_cloud_upload)
+            .into(ivFullImage)
+
+        btnCloseFullImage.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 
 
@@ -937,8 +925,7 @@ class AddTenantActivity : AppCompatActivity() {
         uri?.let {
             when (selectedPicker) {
                 1 -> tenantImageUri = it
-                2 -> frontAdharImageUri = it
-                3 -> backAdharImageUri = it
+                2 -> adharImageUri = it
             }
             updateUi(it)
         }
@@ -950,8 +937,7 @@ class AddTenantActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             when (selectedPicker) {
                 1 -> tenantImageUri?.let { updateUi(it) } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
-                2 -> frontAdharImageUri?.let { updateUi(it) } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
-                3 -> backAdharImageUri?.let { updateUi(it) } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
+                2 -> adharImageUri?.let { updateUi(it) } ?: Toast.makeText(this, "Failed to capture photo!", Toast.LENGTH_SHORT).show()
             }
         } else {
 //            Toast.makeText(this, "Photo capture cancelled!", Toast.LENGTH_SHORT).show()
@@ -1127,11 +1113,8 @@ class AddTenantActivity : AppCompatActivity() {
         val compressedTenantImage =
             compressImage(tenantImageUri)
 
-        val compressedFrontAadhar =
-            compressImage(frontAdharImageUri)
-
-        val compressedBackAadhar =
-            compressImage(backAdharImageUri)
+        val compressedAadhar =
+            compressImage(adharImageUri)
 
 
         viewModel.createTenant(
@@ -1281,8 +1264,7 @@ class AddTenantActivity : AppCompatActivity() {
                 CommonFunction().getMultipartListFromUris(
                     this,
                     listOfNotNull(
-                        compressedFrontAadhar,
-                        compressedBackAadhar
+                        compressedAadhar
                     ),
                     "document"
                 )
@@ -1290,6 +1272,12 @@ class AddTenantActivity : AppCompatActivity() {
     }
 
     private fun updateTenant() {
+
+        val compressedTenantImage =
+            compressImage(tenantImageUri)
+
+        val compressedAadhar =
+            compressImage(adharImageUri)
 
         val request = UpdateTenantRequest(
 
@@ -1370,12 +1358,21 @@ class AddTenantActivity : AppCompatActivity() {
                     ""
                 },
 
-            profilePic = tenantImageUri,
+            profilePic =
+                CommonFunction().getMultipartFromUri(
+                    this,
+                    compressedTenantImage,
+                    "profilePic"
+                ),
 
-            documents = listOfNotNull(
-                frontAdharImageUri,
-                backAdharImageUri
-            )
+            documents =
+                CommonFunction().getMultipartListFromUris(
+                    this,
+                    listOfNotNull(
+                        compressedAadhar
+                    ),
+                    "document"
+                )
 
         )
 

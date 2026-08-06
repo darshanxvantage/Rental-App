@@ -737,47 +737,13 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val costUnitWaterPart =
                 request.costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull())
 
-            var profilePicPart: MultipartBody.Part? = null
-
-            if (request.profilePic != null) {
-
-                val file = File(request.profilePic.path ?: "")
-
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
-
-                profilePicPart = MultipartBody.Part.createFormData(
-                    "profilePic",
-                    file.name,
-                    requestFile
-                )
-            }
-
-
-            val documentParts = mutableListOf<MultipartBody.Part>()
-
-            request.documents?.forEach { uri ->
-
-                val file = File(uri.path ?: "")
-
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
-
-                documentParts.add(
-
-                    MultipartBody.Part.createFormData(
-                        "document",
-                        file.name,
-                        requestFile
-                    )
-
-                )
-            }
-
+            // profilePic / documents arrive already built as MultipartBody.Part
+            // (see AddTenantActivity.updateTenant(), which compresses the picked
+            // image via CommonFunction().getMultipartFromUri(), same as createTenant()).
+            // Do NOT rebuild them from Uri.path here — content:// Uris returned by
+            // the system photo picker have no real filesystem path, so
+            // File(uri.path) silently points at a non-existent file and the
+            // multipart upload never completes.
 
             val response = apiInterface.updateTenant(
 
@@ -813,9 +779,9 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                 leaseEndDatePart,
 
-                profilePicPart,
+                request.profilePic,
 
-                if (documentParts.isEmpty()) null else documentParts
+                request.documents
 
             )
 

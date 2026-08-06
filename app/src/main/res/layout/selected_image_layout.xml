@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
+    android:id="@+id/ll_selected_image_root"
     android:layout_width="match_parent"
     android:layout_height="68dp"
     android:orientation="horizontal"
@@ -10,13 +11,17 @@
     android:gravity="center_vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Image Thumbnail -->
+    <!-- Image Thumbnail: tap to view the full photo -->
     <ImageView
         android:id="@+id/iv_thumbnail"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_cloud_upload" />
+        android:src="@drawable/ic_cloud_upload"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="View photo" />
 
     <!-- File Details -->
     <LinearLayout

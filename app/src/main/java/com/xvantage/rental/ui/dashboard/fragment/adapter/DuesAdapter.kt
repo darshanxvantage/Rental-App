@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
 import com.xvantage.rental.databinding.ItemDueCardBinding
+import com.xvantage.rental.network.response.DueCycle
 import com.xvantage.rental.network.response.TenantItem
 import com.xvantage.rental.ui.dashboard.fragment.DuesViewModel
 
@@ -56,7 +57,7 @@ class DuesAdapter(
 
             // ── Due amount ──
             val due = viewModel.getTotalDue(tenant)
-            binding.tvDueAmount.text = "₹${due.toLong()}"
+            binding.tvDueAmount.text = formatAmount(due)
             binding.tvDueAmount.setTextColor(
                 if (due > 0) Color.parseColor("#C62828")
                 else Color.parseColor("#2E7D32")
@@ -64,11 +65,11 @@ class DuesAdapter(
 
             // ── Monthly rent ──
             val rent = tenant.rent?.toDoubleOrNull() ?: 0.0
-            binding.tvMonthlyRent.text = "₹${rent.toLong()}"
+            binding.tvMonthlyRent.text = formatAmount(rent)
 
             // ── Advance ──
             val advance = tenant.advance?.toDoubleOrNull() ?: 0.0
-            binding.tvAdvance.text = "₹${advance.toLong()}"
+            binding.tvAdvance.text = formatAmount(advance)
 
             // ── Due Status ──
             val isOverdue = viewModel.isOverdue(tenant)
@@ -92,11 +93,28 @@ class DuesAdapter(
             val cycles = viewModel.getDueCyclesSorted(tenant)
             val firstCycle = cycles.firstOrNull()
 
+
+            if (cycles.isNotEmpty()) {
+                binding.tvBillingPeriod.visibility = View.VISIBLE
+                val periodStart = getCycleStartDate(tenant, cycles.first())
+                val periodEnd = getCycleEndDate(cycles.last())
+                binding.tvBillingPeriod.text = if (cycles.size == 1) {
+                    "Billing period: ${formatFullDate(periodStart)} – ${formatFullDate(periodEnd)}"
+                } else {
+                    "Billing period: ${formatFullDate(periodStart)} – ${formatFullDate(periodEnd)} (${cycles.size} months)"
+                }
+            } else {
+                binding.tvBillingPeriod.visibility = View.GONE
+            }
+
             if (firstCycle != null && firstCycle.isProrated == true) {
                 binding.llProratedInfo.visibility = View.VISIBLE
                 val days = firstCycle.proratedDays ?: 0
-                binding.tvProratedLabel.text = "First month: $days days billing (prorated)"
-                binding.tvProratedAmount.text = "₹${firstCycle.totalAmount.toLong()}"
+                val proratedStart = getCycleStartDate(tenant, firstCycle)
+                val proratedEnd = getCycleEndDate(firstCycle)
+                binding.tvProratedLabel.text =
+                    "First month (${formatFullDate(proratedStart)} – ${formatFullDate(proratedEnd)}): $days days billing (prorated)"
+                binding.tvProratedAmount.text = formatAmount(firstCycle.totalAmount)
             } else {
                 binding.llProratedInfo.visibility = View.GONE
             }
@@ -144,7 +162,7 @@ class DuesAdapter(
                 if (waterType == "No Cost") "Owner pays" else waterAmt
 
             // ── Total Payable ──
-            binding.tvTotalPayable.text = "₹${due.toLong()}"
+            binding.tvTotalPayable.text = formatAmount(due)
 
             // ── Collect Rent ──
             binding.btnCollect.setOnClickListener {
@@ -164,7 +182,7 @@ class DuesAdapter(
             view.findViewById<TextView>(R.id.tvHistoryRoomProperty)?.text =
                 "Room ${tenant.tenant_details?.room_no ?: "—"} • ${tenant.tenant_details?.property?.name ?: "—"}"
             view.findViewById<TextView>(R.id.tvHistoryTotalDue)?.text =
-                "₹${viewModel.getTotalDue(tenant).toLong()}"
+                formatAmount(viewModel.getTotalDue(tenant))
 
             val llMonthList = view.findViewById<LinearLayout>(R.id.llHistoryMonthList)
             llMonthList?.removeAllViews()
@@ -176,8 +194,10 @@ class DuesAdapter(
 
                 var monthLabel = cycle.monthLabel
                 rowView.findViewById<TextView>(R.id.tvMonthLabel)?.text = monthLabel
+                rowView.findViewById<TextView>(R.id.tvMonthDateRange)?.text =
+                    "${formatFullDate(getCycleStartDate(tenant, cycle))} – ${formatFullDate(getCycleEndDate(cycle))}"
                 rowView.findViewById<TextView>(R.id.tvMonthAmount)?.text =
-                    "₹${cycle.amountDue.toLong()}"
+                    formatAmount(cycle.amountDue)
 
                 val overdueTag = rowView.findViewById<TextView>(R.id.tvMonthOverdueTag)
 
@@ -231,6 +251,49 @@ class DuesAdapter(
                 ?.setOnClickListener { dialog.dismiss() }
 
             dialog.show()
+        }
+    }
+
+    private fun getCycleStartDate(tenant: TenantItem, cycle: DueCycle): String {
+        return if (cycle.isProrated && !tenant.rent_start_date.isNullOrBlank()) {
+            tenant.rent_start_date!!
+        } else {
+            cycle.cycleMonth
+        }
+    }
+
+    /** The last calendar day of a billing cycle's month. */
+    private fun getCycleEndDate(cycle: DueCycle): String {
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val cal = java.util.Calendar.getInstance()
+            cal.time = sdf.parse(cycle.cycleMonth) ?: return cycle.cycleMonth
+            cal.set(java.util.Calendar.DAY_OF_MONTH, cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH))
+            sdf.format(cal.time)
+        } catch (e: Exception) {
+            cycle.cycleMonth
+        }
+    }
+
+    /** Formats "yyyy-MM-dd" into a readable "6 Aug 2026" style date. */
+    private fun formatFullDate(dateStr: String): String {
+        return try {
+            val input = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val output = java.text.SimpleDateFormat("d MMM yyyy", java.util.Locale.getDefault())
+            val date = input.parse(dateStr)
+            if (date != null) output.format(date) else dateStr
+        } catch (e: Exception) {
+            dateStr
+        }
+    }
+
+
+    private fun formatAmount(amount: Double): String {
+        val rounded = Math.round(amount * 100.0) / 100.0
+        return if (rounded == Math.floor(rounded)) {
+            "₹${rounded.toLong()}"
+        } else {
+            "₹${String.format(java.util.Locale.US, "%.2f", rounded)}"
         }
     }
 

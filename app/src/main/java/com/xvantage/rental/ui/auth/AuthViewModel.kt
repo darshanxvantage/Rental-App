@@ -110,8 +110,6 @@ AuthViewModel @Inject constructor(
                     appPreference.setUserName(
                         "${data?.first_name ?: ""} ${data?.last_name ?: ""}".trim()
                     )
-                    appPreference.setCity(data?.city ?: "")
-                    appPreference.setState(data?.state ?: "")
                     appPreference.setGender(data?.gender ?: "")
                     appPreference.setIsProfileComplete(data?.is_profile_complete == true)
 
@@ -219,12 +217,6 @@ AuthViewModel @Inject constructor(
                     }
                     if (!data?.gender.isNullOrEmpty()) {
                         appPreference.setGender(data?.gender ?: "")
-                    }
-                    if (!data?.city.isNullOrEmpty()) {
-                        appPreference.setCity(data?.city ?: "")
-                    }
-                    if (!data?.state.isNullOrEmpty()) {
-                        appPreference.setState(data?.state ?: "")
                     }
                     if (!data?.email.isNullOrEmpty()) {
                         appPreference.setEmail(data?.email ?: "")

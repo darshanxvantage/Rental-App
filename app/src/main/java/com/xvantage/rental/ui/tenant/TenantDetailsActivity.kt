@@ -160,21 +160,30 @@ class TenantDetailsActivity : AppCompatActivity() {
                     binding.tvRentStartDate.text = data.rent_start_date ?: "N/A"
 
 
+                    // Plan badges (FIXED / METERED / NO COST) are shown as
+                    // plain black text only — no background pill, no colored
+                    // text for any state.
+                    val plainBlack = android.graphics.Color.BLACK
+                    val noBackground = android.graphics.Color.TRANSPARENT
+
+                    binding.tvElectricityPlanBadge.setTextColor(plainBlack)
+                    binding.tvElectricityPlanBadge.setBackgroundColor(noBackground)
+
+                    binding.tvWaterPlanBadge.setTextColor(plainBlack)
+                    binding.tvWaterPlanBadge.setBackgroundColor(noBackground)
+
                     when ((data.fixed_electricity ?: "").lowercase().trim()) {
                         "fix", "fixed" -> {
                             binding.tvElectricityPlanBadge.text = "FIXED"
-                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#1565C0"))
                             binding.tvElectricity.text = "₹${data.fixed_electricity_amount ?: "0"} / month"
                         }
                         "metered" -> {
                             binding.tvElectricityPlanBadge.text = "METERED"
-                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#E65100"))
                             binding.tvElectricity.text =
                                 "Current reading: ${data.meter_reading ?: "0"} units"
                         }
                         else -> {
                             binding.tvElectricityPlanBadge.text = "NO COST"
-                            binding.tvElectricityPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#9E9E9E"))
                             binding.tvElectricity.text = "Owner pays"
                         }
                     }
@@ -183,18 +192,15 @@ class TenantDetailsActivity : AppCompatActivity() {
                     when ((data.fixed_waterbill ?: "").lowercase().trim()) {
                         "fix", "fixed" -> {
                             binding.tvWaterPlanBadge.text = "FIXED"
-                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#1565C0"))
                             binding.tvWater.text = "₹${data.fixed_waterbill_amount ?: "0"} / month"
                         }
                         "metered" -> {
                             binding.tvWaterPlanBadge.text = "METERED"
-                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#E65100"))
                             binding.tvWater.text =
                                 "Current reading: ${data.meter_reading_water ?: "0"} units"
                         }
                         else -> {
                             binding.tvWaterPlanBadge.text = "NO COST"
-                            binding.tvWaterPlanBadge.setBackgroundColor(android.graphics.Color.parseColor("#9E9E9E"))
                             binding.tvWater.text = "Owner pays"
                         }
                     }
