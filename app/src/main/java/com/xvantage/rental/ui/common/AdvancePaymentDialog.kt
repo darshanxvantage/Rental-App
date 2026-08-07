@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import com.xvantage.rental.R
+import com.xvantage.rental.utils.AmountFormatter
 
 object AdvancePaymentDialog {
 
@@ -18,7 +19,7 @@ object AdvancePaymentDialog {
         amount: Double,
         onConfirm: () -> Unit
     ) {
-        val amountText = "₹${amount.toLong()}"
+        val amountText = AmountFormatter.format(amount)
 
         val dialog = android.app.Dialog(context, android.R.style.Theme_Translucent_NoTitleBar)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

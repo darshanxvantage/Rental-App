@@ -176,7 +176,7 @@ class DuesFragment : Fragment() {
 
     private fun updateSummaryCard(tenants: List<TenantItem>) {
         val totalDues = tenants.sumOf { it.totalDue ?: 0.0 }
-        binding.tvTotalDues.text = "₹${totalDues.toLong()}"
+        binding.tvTotalDues.text = com.xvantage.rental.utils.AmountFormatter.format(totalDues)
 
         val overdueCount = tenants.count { it.hasOverdue == true }
         binding.tvOverdueCount.text = overdueCount.toString()

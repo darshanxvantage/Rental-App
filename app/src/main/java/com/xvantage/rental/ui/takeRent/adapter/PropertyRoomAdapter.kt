@@ -95,6 +95,10 @@ class PropertyRoomAdapter(
             maximumFractionDigits = 0
             minimumFractionDigits = 0
         }
+
+    /** Formats an amount with paisa preserved when present — see AmountFormatter. */
+    private fun formatAmt(amount: Double): String =
+        com.xvantage.rental.utils.AmountFormatter.format(amount)
     inner class RoomViewHolder(
         private val binding: ItemPropertyCardBinding,
         private val context: Context
@@ -160,13 +164,13 @@ Occupied    = ${room.isOccupied}
                 // ── Monthly Rent — sirf base rent dikhao (electricity/water alag) ──
                 binding.monthlyRent.text =
                     if (room.monthlyRent > 0)
-                        "₹${room.monthlyRent.toLong()}"
+                        formatAmt(room.monthlyRent)
                     else
                         "--"
 
                 binding.tvDepositAmount.text =
                     if (room.securityAmount > 0)
-                        currencyFormatter.format(room.securityAmount)
+                        formatAmt(room.securityAmount)
                     else
                         "--"
 
@@ -180,18 +184,18 @@ Occupied    = ${room.isOccupied}
                     room.nextDueDate.ifEmpty { "--" }
 
                 binding.tvAdvance.text =
-                    currencyFormatter.format(room.advance)
+                    formatAmt(room.advance)
 
                 // ── Payment Due from billing_cycles (accurate) ──
                 binding.paymentDue.text =
                     if (room.paymentDue > 0)
-                        "₹${room.paymentDue.toLong()}"
+                        formatAmt(room.paymentDue)
                     else
                         "₹0"
 
                 // ── Electricity info ──
                 val elecText = when (room.electricityMode.lowercase().trim()) {
-                    "fix", "fixed" -> "Fixed  ₹${room.fixedElectricity.toLong()}"
+                    "fix", "fixed" -> "Fixed  ${formatAmt(room.fixedElectricity)}"
                     "meter", "metered" -> "Metered (per use)"
                     else -> "No Cost"
                 }
@@ -199,7 +203,7 @@ Occupied    = ${room.isOccupied}
 
                 // ── Water info ──
                 val waterText = when (room.waterMode.lowercase().trim()) {
-                    "fix", "fixed" -> "Fixed  ₹${room.fixedWater.toLong()}"
+                    "fix", "fixed" -> "Fixed  ${formatAmt(room.fixedWater)}"
                     "meter", "metered" -> "Metered (per use)"
                     else -> "No Cost"
                 }
@@ -227,7 +231,7 @@ Occupied    = ${room.isOccupied}
                 }
 
                 binding.tvTotalPayableCard.text =
-                    currencyFormatter.format(total)
+                    formatAmt(total)
 
 
                 totalPayableForRoom = total
@@ -254,14 +258,14 @@ Occupied    = ${room.isOccupied}
                     val appName = context.getString(R.string.app_name)
 
                     val dueAmountText =
-                        if (room.paymentDue > 0) "₹${room.paymentDue.toLong()}" else "₹0"
+                        if (room.paymentDue > 0) formatAmt(room.paymentDue) else "₹0"
 
                     val message = buildString {
                         append("🏠 *Rent Reminder – ${room.propertyName}*\n\n")
                         append("Hello *${room.tenantName}* 👋\n")
                         append("Room No: *${room.roomNo}*\n\n")
                         append("📋 *Payment Details*\n")
-                        append("Monthly Rent: ₹${room.monthlyRent.toLong()}\n")
+                        append("Monthly Rent: ${formatAmt(room.monthlyRent)}\n")
                         if (room.nextDueDate.isNotEmpty()) {
                             append("Due Date: *${room.nextDueDate}*\n")
                         }

@@ -35,14 +35,13 @@ class DuesViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Formats a rupee amount for display. Whole-rupee amounts show without
+     * decimals (₹500); amounts with paisa show the exact figure (₹500.56)
+     * instead of silently dropping it.
+     */
     private fun formatAmount(amount: Double): String {
-        val rounded = Math.round(amount * 100.0) / 100.0
-        return if (rounded == Math.floor(rounded)) {
-            "₹${rounded.toLong()}"
-        } else {
-            "₹${String.format(java.util.Locale.US, "%.2f", rounded)}"
-        }
+        return com.xvantage.rental.utils.AmountFormatter.format(amount)
     }
 
     fun getElectricityInfo(tenant: TenantItem): Pair<String, String> {

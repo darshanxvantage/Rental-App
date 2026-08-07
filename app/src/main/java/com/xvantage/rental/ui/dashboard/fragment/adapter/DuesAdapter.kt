@@ -93,7 +93,8 @@ class DuesAdapter(
             val cycles = viewModel.getDueCyclesSorted(tenant)
             val firstCycle = cycles.firstOrNull()
 
-
+            // ── Billing period: the exact date range this due amount is
+            //    for, so the owner always knows precisely what it covers ──
             if (cycles.isNotEmpty()) {
                 binding.tvBillingPeriod.visibility = View.VISIBLE
                 val periodStart = getCycleStartDate(tenant, cycles.first())
@@ -254,6 +255,12 @@ class DuesAdapter(
         }
     }
 
+    /**
+     * The real start date of a billing cycle. For a normal (full-month)
+     * cycle that's just the 1st of cycleMonth. For the tenant's very first
+     * (prorated) cycle it's their actual move-in date, since that's when
+     * billing genuinely starts - not the 1st of that month.
+     */
     private fun getCycleStartDate(tenant: TenantItem, cycle: DueCycle): String {
         return if (cycle.isProrated && !tenant.rent_start_date.isNullOrBlank()) {
             tenant.rent_start_date!!
@@ -287,14 +294,13 @@ class DuesAdapter(
         }
     }
 
-
+    /**
+     * Formats a rupee amount for display. Whole-rupee amounts show without
+     * decimals (₹5032); anything with paisa shows the exact amount instead
+     * of being silently rounded away (₹5032.56).
+     */
     private fun formatAmount(amount: Double): String {
-        val rounded = Math.round(amount * 100.0) / 100.0
-        return if (rounded == Math.floor(rounded)) {
-            "₹${rounded.toLong()}"
-        } else {
-            "₹${String.format(java.util.Locale.US, "%.2f", rounded)}"
-        }
+        return com.xvantage.rental.utils.AmountFormatter.format(amount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DueViewHolder {

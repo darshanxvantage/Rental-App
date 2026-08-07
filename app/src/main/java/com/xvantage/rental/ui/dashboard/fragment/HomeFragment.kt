@@ -104,11 +104,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun formatRupees(amount: Double): String {
-        return when {
-            amount >= 100_000 -> "₹${"%.1f".format(amount / 100_000)}L"
-            amount >= 1_000   -> "₹${"%,.0f".format(amount)}"
-            else              -> "₹${amount.toInt()}"
-        }
+        return com.xvantage.rental.utils.AmountFormatter.formatCompact(amount)
     }
 
     // ─────────── CLICK LISTENERS ───────────

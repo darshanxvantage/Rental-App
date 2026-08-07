@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.xvantage.rental.databinding.PaymentHistoryCardBinding
 import com.xvantage.rental.network.response.InvoiceHistoryEntry
+import com.xvantage.rental.utils.AmountFormatter
 import com.xvantage.rental.utils.constants.Constant
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,7 +36,7 @@ class InvoiceHistoryAdapter(
         holder.binding.tvAddress.text =
             invoice.propertyName ?: invoice.propertyAddress ?: "—"
 
-        holder.binding.tvPayment.text = "₹${invoice.amount.toLong()}"
+        holder.binding.tvPayment.text = AmountFormatter.format(invoice.amount)
         holder.binding.tvPaymentDate.text = formatDate(invoice.createdAt)
 
 

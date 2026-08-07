@@ -553,13 +553,7 @@ $playStoreLink
     }
 
     private fun formatRupees(amount: Double): String {
-        return if (amount >= 100000) {
-            "₹" + "%.1f".format(amount / 100000) + "L"
-        } else if (amount >= 1000) {
-            "₹" + "%,.0f".format(amount)
-        } else {
-            "₹" + amount.toInt().toString()
-        }
+        return com.xvantage.rental.utils.AmountFormatter.formatCompact(amount)
     }
 
     private fun showEditProfileBottomSheet() {

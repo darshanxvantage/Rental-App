@@ -22,6 +22,7 @@ import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.response.PaymentSummary
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.ui.takeRent.activity.ReceivePaymentViewModel
+import com.xvantage.rental.utils.AmountFormatter
 import com.xvantage.rental.utils.CommonFunction
 import com.xvantage.rental.utils.RentalNotificationHelper
 import dagger.hilt.android.AndroidEntryPoint
@@ -148,7 +149,7 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
         propertyName = arguments?.getString(ARG_PROPERTY_NAME) ?: ""
 
         val totalPayable = arguments?.getDouble(ARG_TOTAL_PAYABLE) ?: 0.0
-        binding.etRentAmount.setText(totalPayable.toInt().toString())
+        binding.etRentAmount.setText(AmountFormatter.formatPlain(totalPayable))
 
         electricityMode = arguments?.getString(ARG_ELECTRICITY_MODE) ?: ""
         waterMode = arguments?.getString(ARG_WATER_MODE) ?: ""
@@ -223,7 +224,11 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
         val charge = units * electricityCostPerUnit
         currentElectricityCharge = charge
         binding.tvElectricityCalculatedCharge.text =
-            getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+            getString(
+                R.string.charge_units_format,
+                AmountFormatter.formatPlain(charge),
+                AmountFormatter.formatPlain(units)
+            )
         updateTotalPayable()
     }
 
@@ -234,7 +239,11 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
         val charge = units * waterCostPerUnit
         currentWaterCharge = charge
         binding.tvWaterCalculatedCharge.text =
-            getString(R.string.charge_units_format, charge.toLong(), units.toLong())
+            getString(
+                R.string.charge_units_format,
+                AmountFormatter.formatPlain(charge),
+                AmountFormatter.formatPlain(units)
+            )
         updateTotalPayable()
     }
 
@@ -260,15 +269,15 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     private fun updateTotalPayable() {
         val rent = binding.etRentAmount.text.toString().toDoubleOrNull() ?: 0.0
 
-        binding.tvSummaryRent.text = "₹${rent.toLong()}"
-        binding.tvSummaryElectricity.text = "₹${currentElectricityCharge.toLong()}"
-        binding.tvSummaryWater.text = "₹${currentWaterCharge.toLong()}"
+        binding.tvSummaryRent.text = AmountFormatter.format(rent)
+        binding.tvSummaryElectricity.text = AmountFormatter.format(currentElectricityCharge)
+        binding.tvSummaryWater.text = AmountFormatter.format(currentWaterCharge)
 
         val total = rent + currentElectricityCharge + currentWaterCharge
-        binding.tvTotalPayable.text = "₹${total.toLong()}"
+        binding.tvTotalPayable.text = AmountFormatter.format(total)
 
 
-        binding.etAmountReceived.setText(total.toLong().toString())
+        binding.etAmountReceived.setText(AmountFormatter.formatPlain(total))
     }
 
     private fun setupListeners() {
@@ -495,7 +504,7 @@ class ReceivePaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun formatAmount(amount: Double): String {
-        return "₹%,.0f".format(amount)
+        return AmountFormatter.format(amount)
     }
 
     private fun getSelectedPaymentMode(): String {

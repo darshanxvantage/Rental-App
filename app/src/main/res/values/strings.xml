@@ -152,7 +152,7 @@
     <string name="water_units_charge">Water Charge</string>
     <string name="total_payable">Total Payable</string>
     <string name="last_reading_format">Last reading: %1$s</string>
-    <string name="charge_units_format">₹%1$d (%2$d units)</string>
+    <string name="charge_units_format">₹%1$s (%2$s units)</string>
     <string name="cost_per_unit">Cost/Unit</string>
     <string name="fixed_amount">Fixed Amount</string>
     <string name="lease_type">Lease Type</string>
