@@ -37,7 +37,12 @@ class RoomViewModel @Inject constructor(
         rent: String,
         meterReading: String,
         meterReadingLastDate: String,
-        roomImage: MultipartBody.Part?
+        roomImage: MultipartBody.Part?,
+        // PG: sharing type + bed count. Row House: which floor this unit is.
+        // Left null/blank for property types that don't use them.
+        sharingType: String? = null,
+        bedCount: String? = null,
+        floorLabel: String? = null
     ) {
 
         viewModelScope.launch {
@@ -57,7 +62,10 @@ class RoomViewModel @Inject constructor(
                     rent,
                     meterReading,
                     meterReadingLastDate,
-                    roomImage
+                    roomImage,
+                    sharingType,
+                    bedCount,
+                    floorLabel
                 )
             ) {
 

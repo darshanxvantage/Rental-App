@@ -16,6 +16,7 @@ import com.xvantage.rental.network.response.PropertyDetailsData
 import com.xvantage.rental.ui.addProperty.PropertyDetailsViewModel
 import com.xvantage.rental.ui.addProperty.adapter.RoomAdapter
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
+import com.xvantage.rental.utils.UnitLabelProvider
 import kotlinx.coroutines.launch
 
 class RoomsFragment : Fragment() {
@@ -108,11 +109,16 @@ class RoomsFragment : Fragment() {
         binding.rvRooms.adapter = roomAdapter
     }
 
+    /** The current property's type name, e.g. "PG", "Apartment", "Row House" —
+     * used to show the correct unit word (Room/Flat/Shop/Office/Floor). */
+    private fun unitLabel(): String =
+        UnitLabelProvider.forPropertyType(currentPropertyData?.propertyType).singular
+
     private fun observeRoomActions() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.roomDeleted.collect { deleted ->
                 if (deleted) {
-                    Toast.makeText(requireContext(), "Room deleted successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), UnitLabelProvider.unitDeletedMessage(currentPropertyData?.propertyType), Toast.LENGTH_SHORT).show()
                     viewModel.loadPropertyDetails(propertyId)
                     viewModel.resetRoomStates()
                 }
@@ -122,7 +128,7 @@ class RoomsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.roomEdited.collect { edited ->
                 if (edited) {
-                    Toast.makeText(requireContext(), "Room updated successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), UnitLabelProvider.unitUpdatedMessage(currentPropertyData?.propertyType), Toast.LENGTH_SHORT).show()
                     viewModel.loadPropertyDetails(propertyId)
                     viewModel.resetRoomStates()
                 }
@@ -134,6 +140,8 @@ class RoomsFragment : Fragment() {
         val dialogView = LayoutInflater.from(requireContext())
             .inflate(android.R.layout.activity_list_item, null)
 
+        val label = unitLabel()
+
         // Build custom dialog with EditTexts
         val layout = android.widget.LinearLayout(requireContext()).apply {
             orientation = android.widget.LinearLayout.VERTICAL
@@ -141,7 +149,7 @@ class RoomsFragment : Fragment() {
         }
 
         val etRoomNo = EditText(requireContext()).apply {
-            hint = "Room Number"
+            hint = "$label Number"
             setText(room.number)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
         }
@@ -153,7 +161,7 @@ class RoomsFragment : Fragment() {
         }
 
         layout.addView(android.widget.TextView(requireContext()).apply {
-            text = "Room Number"
+            text = "$label Number"
             setTextColor(android.graphics.Color.parseColor("#1565C0"))
             textSize = 13f
         })
@@ -168,14 +176,14 @@ class RoomsFragment : Fragment() {
         layout.addView(etRent)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Edit Room ${room.number}")
+            .setTitle(UnitLabelProvider.editUnitTitle(currentPropertyData?.propertyType, room.number))
             .setView(layout)
             .setPositiveButton("Save") { _, _ ->
                 val newRoomNo = etRoomNo.text.toString().trim()
                 val newRent = etRent.text.toString().trim()
 
                 if (newRoomNo.isEmpty()) {
-                    Toast.makeText(requireContext(), "Room number required", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), UnitLabelProvider.unitNumberRequiredMessage(currentPropertyData?.propertyType), Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
                 if (newRent.isEmpty()) {
@@ -193,15 +201,15 @@ class RoomsFragment : Fragment() {
         if (room.isOccupied) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Cannot Delete")
-                .setMessage("Room ${room.number} is currently occupied. Please remove the tenant before deleting this room.")
+                .setMessage(UnitLabelProvider.unitOccupiedMessage(currentPropertyData?.propertyType, room.number))
                 .setPositiveButton("OK", null)
                 .show()
             return
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Delete Room ${room.number}?")
-            .setMessage("This will permanently delete Room ${room.number}. This cannot be undone.")
+            .setTitle(UnitLabelProvider.deleteUnitTitle(currentPropertyData?.propertyType, room.number))
+            .setMessage(UnitLabelProvider.deleteUnitMessage(currentPropertyData?.propertyType, room.number))
             .setPositiveButton("Delete") { _, _ ->
                 viewModel.deleteRoom(room.id)
             }

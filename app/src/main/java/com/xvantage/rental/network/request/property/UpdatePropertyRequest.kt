@@ -16,5 +16,19 @@ data class UpdatePropertyRequest(
 
     val name: String,
 
-    val imageUri: Uri?
+    val imageUri: Uri?,
+
+    // City / State / Pincode — structured address alongside the free-text address line
+    val city: String? = null,
+    val state: String? = null,
+    val pincode: String? = null,
+
+    // Bhada House / Row House: rent the whole property as one unit, or unit-wise
+    val rentMode: String? = null,
+
+    // Row House: floor structure, e.g. "G+2"
+    val floorConfig: String? = null,
+
+    // Commercial (Shops): maintenance charge applied across all shops
+    val maintenanceCharge: String? = null
 )

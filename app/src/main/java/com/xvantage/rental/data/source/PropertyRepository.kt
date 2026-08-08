@@ -57,6 +57,19 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val waNumberPart = RequestBody.create("text/plain".toMediaTypeOrNull(), request.wa_number)
             val namePart = RequestBody.create("text/plain".toMediaTypeOrNull(), request.name)
 
+            // Optional type-specific fields — only sent when the caller
+            // actually set them (e.g. city/state/pincode, or rentMode /
+            // floorConfig / maintenanceCharge depending on property type)
+            fun optionalPart(value: String?): RequestBody? =
+                value?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+
+            val cityPart = optionalPart(request.city)
+            val statePart = optionalPart(request.state)
+            val pincodePart = optionalPart(request.pincode)
+            val rentModePart = optionalPart(request.rentMode)
+            val floorConfigPart = optionalPart(request.floorConfig)
+            val maintenanceChargePart = optionalPart(request.maintenanceCharge)
+
             // Handle image part
             var imagePart: MultipartBody.Part? = null
 
@@ -101,7 +114,13 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 propertyTypeIdPart,
                 waNumberPart,
                 namePart,
-                imagePart
+                imagePart,
+                cityPart,
+                statePart,
+                pincodePart,
+                rentModePart,
+                floorConfigPart,
+                maintenanceChargePart
             )
 
             // Log response
@@ -182,6 +201,9 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                     )
             }
 
+            fun optionalPart(value: String?): RequestBody? =
+                value?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+
             val response =
                 apiInterface.updateProperty(
 
@@ -197,7 +219,19 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                     namePart,
 
-                    imagePart
+                    imagePart,
+
+                    optionalPart(request.city),
+
+                    optionalPart(request.state),
+
+                    optionalPart(request.pincode),
+
+                    optionalPart(request.rentMode),
+
+                    optionalPart(request.floorConfig),
+
+                    optionalPart(request.maintenanceCharge)
                 )
 
             NetworkHelper.handleApiResponse(
@@ -737,13 +771,47 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val costUnitWaterPart =
                 request.costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull())
 
-            // profilePic / documents arrive already built as MultipartBody.Part
-            // (see AddTenantActivity.updateTenant(), which compresses the picked
-            // image via CommonFunction().getMultipartFromUri(), same as createTenant()).
-            // Do NOT rebuild them from Uri.path here — content:// Uris returned by
-            // the system photo picker have no real filesystem path, so
-            // File(uri.path) silently points at a non-existent file and the
-            // multipart upload never completes.
+            var profilePicPart: MultipartBody.Part? = null
+
+            if (request.profilePic != null) {
+
+                val file = File(request.profilePic.path ?: "")
+
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
+
+                profilePicPart = MultipartBody.Part.createFormData(
+                    "profilePic",
+                    file.name,
+                    requestFile
+                )
+            }
+
+
+            val documentParts = mutableListOf<MultipartBody.Part>()
+
+            request.documents?.forEach { uri ->
+
+                val file = File(uri.path ?: "")
+
+                val requestFile = RequestBody.create(
+                    "image/*".toMediaTypeOrNull(),
+                    file
+                )
+
+                documentParts.add(
+
+                    MultipartBody.Part.createFormData(
+                        "document",
+                        file.name,
+                        requestFile
+                    )
+
+                )
+            }
+
 
             val response = apiInterface.updateTenant(
 
@@ -779,9 +847,9 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                 leaseEndDatePart,
 
-                request.profilePic,
+                profilePicPart,
 
-                request.documents
+                if (documentParts.isEmpty()) null else documentParts
 
             )
 
@@ -816,7 +884,15 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
         meterReadingLastDate: String,
 
-        roomImage: MultipartBody.Part?
+        roomImage: MultipartBody.Part?,
+
+        // PG: sharing type + bed count. Row House: which floor this unit is.
+        // Left null for property types that don't use them.
+        sharingType: String? = null,
+
+        bedCount: String? = null,
+
+        floorLabel: String? = null
 
     ): ResultWrapper<JsonObject> {
 
@@ -842,7 +918,13 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                 meterReadingLastDate.toRequestBody("text/plain".toMediaTypeOrNull()),
 
-                roomImage
+                roomImage,
+
+                sharingType?.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                bedCount?.toRequestBody("text/plain".toMediaTypeOrNull()),
+
+                floorLabel?.toRequestBody("text/plain".toMediaTypeOrNull())
 
             )
 

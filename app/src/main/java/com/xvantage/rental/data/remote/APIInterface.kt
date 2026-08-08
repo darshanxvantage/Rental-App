@@ -143,7 +143,25 @@ interface   APIInterface {
         name: RequestBody,
 
         @Part
-        propertyImage: MultipartBody.Part?
+        propertyImage: MultipartBody.Part?,
+
+        @Part("city")
+        city: RequestBody? = null,
+
+        @Part("state")
+        state: RequestBody? = null,
+
+        @Part("pincode")
+        pincode: RequestBody? = null,
+
+        @Part("rentMode")
+        rentMode: RequestBody? = null,
+
+        @Part("floorConfig")
+        floorConfig: RequestBody? = null,
+
+        @Part("maintenanceCharge")
+        maintenanceCharge: RequestBody? = null
 
     ): Response<CreatePropertyResponse>
 
@@ -171,7 +189,25 @@ interface   APIInterface {
         name: RequestBody,
 
         @Part
-        propertyImage: MultipartBody.Part?
+        propertyImage: MultipartBody.Part?,
+
+        @Part("city")
+        city: RequestBody? = null,
+
+        @Part("state")
+        state: RequestBody? = null,
+
+        @Part("pincode")
+        pincode: RequestBody? = null,
+
+        @Part("rentMode")
+        rentMode: RequestBody? = null,
+
+        @Part("floorConfig")
+        floorConfig: RequestBody? = null,
+
+        @Part("maintenanceCharge")
+        maintenanceCharge: RequestBody? = null
 
     ): Response<CreatePropertyResponse>
 
@@ -254,7 +290,18 @@ interface   APIInterface {
         meterReadingLastDate: RequestBody,
 
         @Part
-        roomImage: MultipartBody.Part?
+        roomImage: MultipartBody.Part?,
+
+        // PG: sharing type (Single / 2-Sharing / 3-Sharing / 4-Sharing) + derived bed count
+        @Part("sharingType")
+        sharingType: RequestBody? = null,
+
+        @Part("bedCount")
+        bedCount: RequestBody? = null,
+
+        // Row House unit-wise renting: which floor this unit represents
+        @Part("floorLabel")
+        floorLabel: RequestBody? = null
 
     ): Response<JsonObject>
 
