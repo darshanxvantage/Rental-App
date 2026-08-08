@@ -15,6 +15,7 @@ import com.xvantage.rental.ui.addProperty.RoomViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
+import com.xvantage.rental.utils.UnitLabelProvider
 
 @AndroidEntryPoint
 class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
@@ -23,6 +24,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
     private var propertyId = ""
     private var propertyTypeId = ""
+    private var propertyTypeName = ""
     private var existingRoomNumbers: List<String> = emptyList()
 
     private val viewModel: RoomViewModel by viewModels()
@@ -49,24 +51,45 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
         propertyId = arguments?.getString("propertyId") ?: ""
         propertyTypeId = arguments?.getString("propertyTypeId") ?: ""  // ✅ get UUID
+        propertyTypeName = arguments?.getString("propertyTypeName") ?: ""
         existingRoomNumbers = arguments?.getStringArrayList("existingRoomNumbers") ?: emptyList()
 
         android.util.Log.e("ROOM_PROPERTY_ID", propertyId)
         android.util.Log.e("ROOM_PROPERTY_TYPE_ID", propertyTypeId)
 
         setupRoomTypeSpinner()
+        updateLabelsForPropertyType()
         setupActionButtons()
         observeState()
     }
 
     private fun setupRoomTypeSpinner() {
-        val roomTypes = arrayOf("1BHK", "2BHK", "3BHK", "Single Room", "Studio", "Other")
+        val roomTypes = when {
+            propertyTypeName.contains("pg", true) -> arrayOf("Single", "2-Sharing", "3-Sharing", "4-Sharing")
+            propertyTypeName.contains("apartment", true) || propertyTypeName.contains("flat", true) -> arrayOf("1BHK", "2BHK", "3BHK", "Single Room", "Studio")
+            propertyTypeName.contains("commercial", true) || propertyTypeName.contains("shop", true) -> arrayOf("Shop")
+            propertyTypeName.contains("office", true) -> arrayOf("Office")
+            propertyTypeName.contains("row house", true) -> arrayOf("Floor")
+            else -> arrayOf("Room")
+        }
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.simple_spinner_dropdown_item,
             roomTypes
         )
         binding.spinnerRoomType.adapter = adapter
+    }
+
+    private fun unitLabel() = UnitLabelProvider.forPropertyType(propertyTypeName).singular
+
+    private fun updateLabelsForPropertyType() {
+        val label = unitLabel()
+        binding.tvSheetTitle.text = "Add $label"
+        binding.tvUnitNumberLabel.text = "$label Number/Name"
+        binding.etRoomNumber.hint = "Enter $label Number/Name"
+        binding.tvUnitTypeLabel.text = "$label Type"
+        binding.tvUnitRentLabel.text = "$label Rent"
+        binding.btnSave.text = "Save $label"
     }
 
     private fun setupActionButtons() {
@@ -95,11 +118,11 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
 
         if (enteredRoomNumber.isBlank()) {
-            binding.etRoomNumber.error = "Room number is required"
+            binding.etRoomNumber.error = "${unitLabel()} number is required"
             isValid = false
         } else if (existingRoomNumbers.any { it.trim().equals(enteredRoomNumber, ignoreCase = true) }) {
 
-            binding.etRoomNumber.error = "Room \"$enteredRoomNumber\" already exists in this property"
+            binding.etRoomNumber.error = "This number already exists in this property"
             isValid = false
         }
 
@@ -135,7 +158,10 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
             meterReadingLastDate = "",
 
-            roomImage = null
+            roomImage = null,
+            sharingType = if (propertyTypeName.contains("pg", true)) binding.spinnerRoomType.selectedItem.toString() else null,
+            bedCount = if (propertyTypeName.contains("pg", true)) (binding.spinnerRoomType.selectedItem.toString().substringBefore("-").toIntOrNull() ?: 1).toString() else null,
+            floorLabel = if (propertyTypeName.contains("row house", true)) binding.etRoomNumber.text.toString() else null
         )
     }
 
@@ -159,7 +185,7 @@ class AddRoomBottomSheetFragment : BottomSheetDialogFragment() {
 
                             android.widget.Toast.makeText(
                                 requireContext(),
-                                "Room Created Successfully",
+                                "${unitLabel()} created successfully",
                                 android.widget.Toast.LENGTH_SHORT
                             ).show()
 

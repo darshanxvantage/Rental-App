@@ -30,5 +30,8 @@ data class UpdatePropertyRequest(
     val floorConfig: String? = null,
 
     // Commercial (Shops): maintenance charge applied across all shops
-    val maintenanceCharge: String? = null
+    val maintenanceCharge: String? = null,
+    val unitNumbers: List<String> = emptyList(),
+    val sharingType: String? = null,
+    val bedCount: Int? = null
 )

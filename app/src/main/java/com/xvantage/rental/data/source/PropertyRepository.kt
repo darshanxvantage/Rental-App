@@ -1,7 +1,5 @@
 package com.xvantage.rental.data.source
 
-import android.net.Uri
-import android.provider.MediaStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.xvantage.rental.data.remote.APIInterface
@@ -13,7 +11,6 @@ import com.xvantage.rental.network.utils.ApiLogger
 import com.xvantage.rental.network.utils.NetworkHelper
 import com.xvantage.rental.network.utils.ResultWrapper
 import com.xvantage.rental.network.response.DashboardResponse
-import com.xvantage.rental.utils.BaseApplication
 import com.xvantage.rental.network.request.feedback.FeedbackRequest
 import com.xvantage.rental.network.response.FeedbackResponse
 import jakarta.inject.Inject
@@ -21,12 +18,9 @@ import com.xvantage.rental.network.response.TenantDetailsResponse
 import com.xvantage.rental.network.response.PaymentSuccessResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.MediaType
 import com.xvantage.rental.network.request.tenant.TenantPaymentRequest
 import com.xvantage.rental.network.response.PropertyListResponse
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.Request
 import okhttp3.RequestBody
 import com.xvantage.rental.network.request.tenant.StatusRequest
 import java.io.File
@@ -57,9 +51,6 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val waNumberPart = RequestBody.create("text/plain".toMediaTypeOrNull(), request.wa_number)
             val namePart = RequestBody.create("text/plain".toMediaTypeOrNull(), request.name)
 
-            // Optional type-specific fields — only sent when the caller
-            // actually set them (e.g. city/state/pincode, or rentMode /
-            // floorConfig / maintenanceCharge depending on property type)
             fun optionalPart(value: String?): RequestBody? =
                 value?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
 
@@ -69,6 +60,9 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val rentModePart = optionalPart(request.rentMode)
             val floorConfigPart = optionalPart(request.floorConfig)
             val maintenanceChargePart = optionalPart(request.maintenanceCharge)
+            val unitNumbersPart = if (request.unitNumbers.isNotEmpty()) optionalPart(Gson().toJson(request.unitNumbers)) else null
+            val sharingTypePart = optionalPart(request.sharingType)
+            val bedCountPart = request.bedCount?.let { optionalPart(it.toString()) }
 
             // Handle image part
             var imagePart: MultipartBody.Part? = null
@@ -83,11 +77,11 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                     }
                 } ?: "image/*"
 
-                // Create a file from the URI
+ 
                 val file = File(request.imageUri.path ?: "")
                 val imageRequestBody = RequestBody.create(contentType.toMediaTypeOrNull(), file)
 
-                // Create the MultipartBody.Part
+
                 imagePart = MultipartBody.Part.createFormData(
                     "propertyImage",
                     file.name,
@@ -95,7 +89,6 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 )
             }
 
-            // Create a request info map for logging
             val requestInfo = HashMap<String, Any>()
             requestInfo["address"] = request.address
             requestInfo["noOfRoom"] = request.noOfRoom
@@ -120,7 +113,10 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                 pincodePart,
                 rentModePart,
                 floorConfigPart,
-                maintenanceChargePart
+                maintenanceChargePart,
+                unitNumbersPart,
+                sharingTypePart,
+                bedCountPart
             )
 
             // Log response
@@ -231,7 +227,13 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                     optionalPart(request.floorConfig),
 
-                    optionalPart(request.maintenanceCharge)
+                    optionalPart(request.maintenanceCharge),
+
+                    if (request.unitNumbers.isNotEmpty()) optionalPart(Gson().toJson(request.unitNumbers)) else null,
+
+                    optionalPart(request.sharingType),
+
+                    request.bedCount?.let { optionalPart(it.toString()) }
                 )
 
             NetworkHelper.handleApiResponse(
@@ -771,46 +773,10 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
             val costUnitWaterPart =
                 request.costUnitWater.toRequestBody("text/plain".toMediaTypeOrNull())
 
-            var profilePicPart: MultipartBody.Part? = null
-
-            if (request.profilePic != null) {
-
-                val file = File(request.profilePic.path ?: "")
-
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
-
-                profilePicPart = MultipartBody.Part.createFormData(
-                    "profilePic",
-                    file.name,
-                    requestFile
-                )
-            }
-
-
-            val documentParts = mutableListOf<MultipartBody.Part>()
-
-            request.documents?.forEach { uri ->
-
-                val file = File(uri.path ?: "")
-
-                val requestFile = RequestBody.create(
-                    "image/*".toMediaTypeOrNull(),
-                    file
-                )
-
-                documentParts.add(
-
-                    MultipartBody.Part.createFormData(
-                        "document",
-                        file.name,
-                        requestFile
-                    )
-
-                )
-            }
+            // The request already contains properly-created multipart parts.
+            // Do not treat them as Uri objects or attempt to build them again.
+            val profilePicPart = request.profilePic
+            val documentParts = request.documents
 
 
             val response = apiInterface.updateTenant(
@@ -849,7 +815,7 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
 
                 profilePicPart,
 
-                if (documentParts.isEmpty()) null else documentParts
+                documentParts?.takeIf { it.isNotEmpty() }
 
             )
 

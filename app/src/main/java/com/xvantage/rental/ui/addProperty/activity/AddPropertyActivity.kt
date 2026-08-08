@@ -54,6 +54,7 @@ class AddPropertyActivity : AppCompatActivity() {
     private lateinit var appPreference: AppPreference
     private val viewModel: AddPropertyViewModel by viewModels()
     private var propertyTypeIds = listOf<String>()
+    private var propertyTypeNames = listOf<String>()
     private var selectedPropertyTypeId: String = ""
     private lateinit var llPropertyImage: View
 
@@ -330,10 +331,10 @@ class AddPropertyActivity : AppCompatActivity() {
      */
     private fun validateInputs(): Boolean {
         // Validate property type selection
-//        if (selectedPropertyTypeId.isEmpty()) {
-//            Toast.makeText(this, "Please select a property type", Toast.LENGTH_SHORT).show()
-//            return false
-//        }
+        if (selectedPropertyTypeId.isEmpty()) {
+            Toast.makeText(this, "Please select a property type", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
         // Validate address
         if (binding.etAddress.text.toString().trim().isEmpty()) {
@@ -357,6 +358,24 @@ class AddPropertyActivity : AppCompatActivity() {
         if (binding.etWhatsappNumber.text.toString().trim().isEmpty()) {
             binding.etWhatsappNumber.error = "Please enter WhatsApp number"
             binding.etWhatsappNumber.requestFocus()
+            return false
+        }
+
+        if (requiresUnits() && binding.etHomeNumber.text.toString().toIntOrNull()?.let { it > 0 } != true && parsedUnitNumbers().isEmpty()) {
+            binding.etHomeNumber.error = "Enter the number of ${unitPlural().lowercase()}"
+            binding.etHomeNumber.requestFocus()
+            return false
+        }
+
+        if ((isFlat() || isCommercial() || isOffice()) && parsedUnitNumbers().isEmpty()) {
+            binding.etUnitNumbers.error = "Enter ${unitPlural().lowercase()} number(s)"
+            binding.etUnitNumbers.requestFocus()
+            return false
+        }
+
+        if (isPg() && binding.etBedCount.text.toString().toIntOrNull()?.let { it > 0 } != true) {
+            binding.etBedCount.error = "Enter beds in each room"
+            binding.etBedCount.requestFocus()
             return false
         }
 
@@ -488,7 +507,13 @@ class AddPropertyActivity : AppCompatActivity() {
                             .toString()
                             .trim(),
 
-                    imageUri = compressedImage
+                    imageUri = compressedImage,
+                    rentMode = selectedRentMode(),
+                    floorConfig = selectedFloorConfig(),
+                    maintenanceCharge = binding.etMaintenanceCharge.text.toString().trim().ifBlank { null },
+                    unitNumbers = unitsForSubmission(),
+                    sharingType = if (isPg()) binding.spinnerSharingType.selectedItem.toString() else null,
+                    bedCount = if (isPg()) binding.etBedCount.text.toString().toIntOrNull() else null
                 )
 
                 Log.d(
@@ -556,8 +581,13 @@ class AddPropertyActivity : AppCompatActivity() {
                                 .toString()
                                 .trim(),
 
-                        imageUri =
-                            compressedImage
+                        imageUri = compressedImage,
+                        rentMode = selectedRentMode(),
+                        floorConfig = selectedFloorConfig(),
+                        maintenanceCharge = binding.etMaintenanceCharge.text.toString().trim().ifBlank { null },
+                        unitNumbers = unitsForSubmission(),
+                        sharingType = if (isPg()) binding.spinnerSharingType.selectedItem.toString() else null,
+                        bedCount = if (isPg()) binding.etBedCount.text.toString().toIntOrNull() else null
                     )
 
                 viewModel.updateProperty(
@@ -588,6 +618,14 @@ class AddPropertyActivity : AppCompatActivity() {
      * Initialize all views and drop-down menus.
      */
     private fun initViews() {
+
+        setupSpinner(binding.spinnerRentMode, listOf("Rent the complete property", "Rent separate units"))
+        setupSpinner(binding.spinnerSharingType, listOf("Single", "2-Sharing", "3-Sharing", "4-Sharing"))
+        setupSpinner(binding.spinnerFloorConfig, listOf("G", "G+1", "G+2", "G+3"))
+        binding.spinnerRentMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = updatePropertySection()
+        }
 
         // First show loading text instead of blank spinner
         setupSpinner(
@@ -625,7 +663,7 @@ class AddPropertyActivity : AppCompatActivity() {
                         selectedPropertyTypeId = ""
                     }
 
-                    updatePropertySection(pos)
+                    updatePropertySection()
                 }
 
 
@@ -652,6 +690,8 @@ class AddPropertyActivity : AppCompatActivity() {
 
                     propertyTypeIds =
                         list.map { it.id }
+
+                    propertyTypeNames = list.map { it.name }
 
                     val names =
                         list.map { it.name }
@@ -724,8 +764,64 @@ class AddPropertyActivity : AppCompatActivity() {
     /**
      * Update the visibility of UI sections based on the selected property type.
      */
-    private fun updatePropertySection(selectedPosition: Int) {
-        binding.llHomeNumber.visibility = if (selectedPosition == 1) View.VISIBLE else View.GONE
+    private fun selectedTypeName(): String = propertyTypeNames.getOrNull(propertyTypeIds.indexOf(selectedPropertyTypeId)).orEmpty()
+    private fun isType(fragment: String) = selectedTypeName().contains(fragment, ignoreCase = true)
+    private fun isPg() = isType("pg")
+    private fun isRowHouse() = isType("row house")
+    private fun isBhadaHouse() = isType("bhada")
+    private fun isCommercial() = isType("commercial") || isType("shop")
+    private fun isFlat() = isType("apartment") || isType("flat")
+    private fun isOffice() = isType("office")
+    private fun isUnitWise() = binding.spinnerRentMode.selectedItemPosition == 1
+    private fun requiresUnits() = isFlat() || isPg() || isCommercial() || isOffice() || ((isBhadaHouse() || isRowHouse()) && isUnitWise())
+    private fun unitPlural() = when {
+        isFlat() -> "Flats"
+        isCommercial() -> "Shops"
+        isOffice() -> "Offices"
+        isRowHouse() -> "Floors"
+        else -> "Rooms"
+    }
+
+    private fun updatePropertySection() {
+        val wholeOrUnitChoice = isBhadaHouse() || isRowHouse()
+        binding.llRentMode.visibility = if (wholeOrUnitChoice) View.VISIBLE else View.GONE
+        binding.llHomeNumber.visibility = if (requiresUnits()) View.VISIBLE else View.GONE
+        binding.llUnitNumbers.visibility = if (isFlat() || isCommercial() || isOffice()) View.VISIBLE else View.GONE
+        binding.llPgDetails.visibility = if (isPg()) View.VISIBLE else View.GONE
+        binding.llFloorConfig.visibility = if (isRowHouse() && isUnitWise()) View.VISIBLE else View.GONE
+        binding.llMaintenance.visibility = if (isCommercial()) View.VISIBLE else View.GONE
+        binding.tvUnitCount.text = "Number of ${unitPlural()}"
+        binding.etHomeNumber.hint = "Enter number of ${unitPlural().lowercase()}"
+        binding.tvUnitNumbers.text = when {
+            isFlat() -> "Flat numbers"
+            isCommercial() -> "Shop numbers"
+            isOffice() -> "Office number(s)"
+            else -> "Unit numbers"
+        }
+        binding.etUnitNumbers.hint = when {
+            isFlat() -> "Example: 101, 102, 201"
+            isCommercial() -> "Example: Shop 1, Shop 2"
+            isOffice() -> "Example: Office 301"
+            else -> "Enter unit numbers"
+        }
+    }
+
+    private fun selectedRentMode(): String? = when {
+        (isBhadaHouse() || isRowHouse()) && isUnitWise() -> "UNIT_WISE"
+        isBhadaHouse() || isRowHouse() -> "WHOLE"
+        else -> null
+    }
+    private fun selectedFloorConfig(): String? = if (isRowHouse() && isUnitWise()) binding.spinnerFloorConfig.selectedItem.toString() else null
+    private fun parsedUnitNumbers() = binding.etUnitNumbers.text.toString().split(",").map { it.trim() }.filter { it.isNotBlank() }.distinct()
+    private fun unitsForSubmission(): List<String> {
+        val entered = parsedUnitNumbers()
+        if (entered.isNotEmpty()) return entered
+        if ((isBhadaHouse() || isRowHouse()) && !isUnitWise()) return listOf("Entire ${selectedTypeName()}")
+        if (isRowHouse() && isUnitWise()) {
+            val floors = when (selectedFloorConfig()) { "G+1" -> 2; "G+2" -> 3; "G+3" -> 4; else -> 1 }
+            return (0 until floors).map { if (it == 0) "Ground Floor" else "${it}st Floor" }
+        }
+        return emptyList()
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.xvantage.rental.network.response
+ package com.xvantage.rental.network.response
 
 data class PropertyListResponse(
     val status: Int,
@@ -21,6 +21,7 @@ data class PropertyItem(
     val no_of_room: String,
     val total_tenants: Int,
     val wa_number: String? = "",
+    val property_type: PropertyType? = null,
     val property_room_no: List<PropertyRoom>,
     val property_images: List<PropertyImage> = emptyList()
 )

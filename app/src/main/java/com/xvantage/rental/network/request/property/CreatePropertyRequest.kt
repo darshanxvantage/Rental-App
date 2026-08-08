@@ -30,5 +30,11 @@ data class CreatePropertyRequest(
     val floorConfig: String? = null,
 
     // Commercial (Shops): maintenance charge applied across all shops
-    val maintenanceCharge: String? = null
+    val maintenanceCharge: String? = null,
+
+    // Units created with the property (for example: 101, 102, Shop A).
+    // Keeping this explicit prevents the API from inventing generic room numbers.
+    val unitNumbers: List<String> = emptyList(),
+    val sharingType: String? = null,
+    val bedCount: Int? = null
 )

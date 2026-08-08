@@ -146,6 +146,7 @@ class TakeRentActivity : AppCompatActivity() {
             PropertyItem(
                 propertyName = property.name,
                 propertyId   = property.id,
+                propertyTypeName = property.property_type?.name.orEmpty(),
                 rooms = property.property_room_no.map { room ->
                     val tenant = tenants.firstOrNull { t ->
                         t.property_fk == property.id &&
@@ -159,6 +160,7 @@ class TakeRentActivity : AppCompatActivity() {
 
                         propertyName = property.name,
                         propertyId = property.id,
+                        propertyTypeName = property.property_type?.name.orEmpty(),
 
                         tenantId = tenant?.id ?: "",
                         tenantName = tenant?.tenant_name ?: "Available for Rent",
@@ -262,6 +264,7 @@ class TakeRentActivity : AppCompatActivity() {
     data class PropertyItem(
         val propertyName : String,
         val propertyId   : String,
+        val propertyTypeName: String,
         val rooms        : List<RoomItem>
     )
 
@@ -270,6 +273,7 @@ class TakeRentActivity : AppCompatActivity() {
         val roomNo          : String,
         val propertyName    : String,
         val propertyId      : String,
+        val propertyTypeName: String,
         val tenantId        : String,
         val tenantName      : String,
         val phone           : String,

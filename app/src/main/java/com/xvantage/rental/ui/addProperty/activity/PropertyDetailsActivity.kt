@@ -37,6 +37,7 @@ class PropertyDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPropertyDetailsBinding
     private var propertyId: String = ""
     private var propertyTypeId: String = ""
+    private var propertyTypeName: String = ""
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private val viewModel by viewModels<PropertyDetailsViewModel>()
 
@@ -95,6 +96,15 @@ class PropertyDetailsActivity : AppCompatActivity() {
 
                             // ✅ Store propertyTypeId for room creation
                             propertyTypeId = state.details.data?.propertyTypeId ?: ""
+                            propertyTypeName = state.details.data?.propertyType ?: ""
+                            tabLayoutMediator.detach()
+                            TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+                                tab.text = when (position) {
+                                    0 -> com.xvantage.rental.utils.UnitLabelProvider.forPropertyType(propertyTypeName).plural
+                                    1 -> "Tenants"
+                                    else -> "Financials"
+                                }
+                            }.also { tabLayoutMediator = it; it.attach() }
 
                             android.util.Log.e(
                                 "PROPERTY_DETAILS",
@@ -218,6 +228,8 @@ class PropertyDetailsActivity : AppCompatActivity() {
             "propertyTypeId",
             propertyTypeId
         )
+
+        bundle.putString("propertyTypeName", propertyTypeName)
 
 
         val existingRoomNumbers =

@@ -16,6 +16,7 @@ import com.xvantage.rental.ui.takeRent.bmsheet.ReceivePaymentBottomSheetFragment
 import com.xvantage.rental.ui.takeRent.activity.TakeRentActivity
 import java.text.NumberFormat
 import java.util.Locale
+import com.xvantage.rental.utils.UnitLabelProvider
 
 class PropertyRoomAdapter(
     private val propertyList: List<TakeRentActivity.PropertyItem>,
@@ -121,7 +122,8 @@ Occupied    = ${room.isOccupied}
             )
 
 
-            binding.roomId.text = "Room ${room.roomNo}"
+            val unitLabel = UnitLabelProvider.forPropertyType(room.propertyTypeName).singular
+            binding.roomId.text = "$unitLabel ${room.roomNo}"
             binding.address.text = room.propertyName
 
 
@@ -263,7 +265,7 @@ Occupied    = ${room.isOccupied}
                     val message = buildString {
                         append("🏠 *Rent Reminder – ${room.propertyName}*\n\n")
                         append("Hello *${room.tenantName}* 👋\n")
-                        append("Room No: *${room.roomNo}*\n\n")
+                        append("$unitLabel No: *${room.roomNo}*\n\n")
                         append("📋 *Payment Details*\n")
                         append("Monthly Rent: ${formatAmt(room.monthlyRent)}\n")
                         if (room.nextDueDate.isNotEmpty()) {

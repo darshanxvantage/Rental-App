@@ -32,7 +32,7 @@ object UnitLabelProvider {
                 UnitLabel("Floor", "Floors")
 
             name.contains("bhada") ->
-                UnitLabel("Room", "Rooms")
+                UnitLabel("Bhada House", "Bhada House")
 
             else ->
                 UnitLabel("Room", "Rooms")

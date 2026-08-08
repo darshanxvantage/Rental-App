@@ -11,6 +11,7 @@ import com.xvantage.rental.databinding.ItemRoomBinding
 import com.xvantage.rental.ui.addProperty.tempFiles.Room
 import java.text.NumberFormat
 import java.util.Locale
+import com.xvantage.rental.utils.UnitLabelProvider
 
 
 
@@ -44,7 +45,7 @@ class RoomAdapter(
 
         fun bind(room: Room) {
             binding.tvRoomNumberCircle.text = room.number.take(2)
-            binding.tvRoomName.text = "Room ${room.number}"
+            binding.tvRoomName.text = "${UnitLabelProvider.forPropertyType(room.type).singular} ${room.number}"
             binding.tvRoomType.text = room.type
 
             val formattedRent = NumberFormat.getCurrencyInstance(Locale.getDefault())

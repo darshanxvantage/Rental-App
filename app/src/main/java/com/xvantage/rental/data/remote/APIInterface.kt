@@ -161,7 +161,16 @@ interface   APIInterface {
         floorConfig: RequestBody? = null,
 
         @Part("maintenanceCharge")
-        maintenanceCharge: RequestBody? = null
+        maintenanceCharge: RequestBody? = null,
+
+        @Part("unitNumbers")
+        unitNumbers: RequestBody? = null,
+
+        @Part("sharingType")
+        sharingType: RequestBody? = null,
+
+        @Part("bedCount")
+        bedCount: RequestBody? = null
 
     ): Response<CreatePropertyResponse>
 
@@ -207,7 +216,16 @@ interface   APIInterface {
         floorConfig: RequestBody? = null,
 
         @Part("maintenanceCharge")
-        maintenanceCharge: RequestBody? = null
+        maintenanceCharge: RequestBody? = null,
+
+        @Part("unitNumbers")
+        unitNumbers: RequestBody? = null,
+
+        @Part("sharingType")
+        sharingType: RequestBody? = null,
+
+        @Part("bedCount")
+        bedCount: RequestBody? = null
 
     ): Response<CreatePropertyResponse>
 

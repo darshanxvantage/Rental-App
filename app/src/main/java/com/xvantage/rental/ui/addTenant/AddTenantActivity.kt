@@ -41,6 +41,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.combine
 import dagger.hilt.android.AndroidEntryPoint
+import com.xvantage.rental.utils.UnitLabelProvider
 /**
  * Activity to add a tenant.
  *
@@ -568,6 +569,8 @@ class AddTenantActivity : AppCompatActivity() {
 
             selectedProperty = propertyList[position]
 
+            binding.tvRoom.text = "Select ${unitLabel()}"
+
             loadRooms()
 
         }
@@ -619,7 +622,7 @@ class AddTenantActivity : AppCompatActivity() {
                     selectedRoom = it
 
                     binding.actRoom.setText(
-                        "Room ${it.room_no}",
+                        "${unitLabel()} ${it.room_no}",
                         false
                     )
 
@@ -631,9 +634,11 @@ class AddTenantActivity : AppCompatActivity() {
     }
 
     /** Formats a room the same way it's always been shown: "Room 3   🟠" (dot only — the color already tells vacant/occupied) */
+    private fun unitLabel(): String = UnitLabelProvider.forPropertyType(selectedProperty?.property_type?.name).singular
+
     private fun formatRoomLabel(room: com.xvantage.rental.network.response.PropertyRoom): String {
         val statusDot = if (room.status.equals("VACANT", true)) "🟠" else "🟢"
-        return "Room ${room.room_no}   $statusDot"
+        return "${unitLabel()} ${room.room_no}   $statusDot"
     }
 
 
@@ -715,7 +720,7 @@ class AddTenantActivity : AppCompatActivity() {
                     rooms
                 } else {
                     rooms.filter {
-                        "Room ${it.room_no}".contains(query, ignoreCase = true)
+                        "${unitLabel()} ${it.room_no}".contains(query, ignoreCase = true)
                     }
                 }
 
@@ -975,7 +980,7 @@ class AddTenantActivity : AppCompatActivity() {
         }
 
         if (selectedRoom == null) {
-            return "Please select a room"
+            return "Please select a ${unitLabel().lowercase()}"
         }
 
         if (binding.etTenantName.text.toString().trim().isEmpty()) {
@@ -1408,10 +1413,10 @@ class AddTenantActivity : AppCompatActivity() {
             dialog.findViewById<Button>(R.id.btnCancel)
 
         tvRoomNo.text =
-            "Room $roomNo"
+            "${unitLabel()} $roomNo"
 
         tvMessage.text =
-            "This room is already occupied.\nPlease choose another room."
+            "This ${unitLabel().lowercase()} is already occupied.\nPlease choose another ${unitLabel().lowercase()}."
 
         btnChoose.setOnClickListener {
 
