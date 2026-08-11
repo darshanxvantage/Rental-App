@@ -45,17 +45,36 @@ class RoomAdapter(
 
         fun bind(room: Room) {
             binding.tvRoomNumberCircle.text = room.number.take(2)
-            binding.tvRoomName.text = "${UnitLabelProvider.forPropertyType(room.type).singular} ${room.number}"
-            binding.tvRoomType.text = room.type
+            binding.tvRoomName.text = "${UnitLabelProvider.forPropertyType(room.propertyTypeName).singular} ${room.number}"
+            binding.tvRoomType.text = room.type.ifBlank { room.propertyTypeName }
 
             val formattedRent = NumberFormat.getCurrencyInstance(Locale.getDefault())
                 .format(room.rent)
             binding.tvRoomRent.text = "$formattedRent/month"
 
-            binding.tvStatusBadge.text = if (room.isOccupied) "Occupied" else "Vacant"
-            val badgeColor = if (room.isOccupied)
-                Color.parseColor("#4CAF50") else Color.parseColor("#FF9800")
-            binding.tvStatusBadge.backgroundTintList = ColorStateList.valueOf(badgeColor)
+            // Multi-bed (PG) rooms: show real occupancy ("2/4 Occupied") instead
+            // of a flat Vacant/Occupied — otherwise it looks like a bug to the
+            // owner when a room with tenants in it still says "Vacant".
+            when {
+                room.bedCount <= 1 -> {
+                    binding.tvStatusBadge.text = if (room.isOccupied) "Occupied" else "Vacant"
+                    binding.tvStatusBadge.backgroundTintList = ColorStateList.valueOf(
+                        if (room.isOccupied) Color.parseColor("#4CAF50") else Color.parseColor("#FF9800")
+                    )
+                }
+                room.occupiedBeds <= 0 -> {
+                    binding.tvStatusBadge.text = "Vacant"
+                    binding.tvStatusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9800"))
+                }
+                room.occupiedBeds < room.bedCount -> {
+                    binding.tvStatusBadge.text = "${room.occupiedBeds}/${room.bedCount} Occupied"
+                    binding.tvStatusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2196F3"))
+                }
+                else -> {
+                    binding.tvStatusBadge.text = "Full"
+                    binding.tvStatusBadge.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                }
+            }
 
             binding.btnEditRoom.setOnClickListener {
                 onEditClicked(room)

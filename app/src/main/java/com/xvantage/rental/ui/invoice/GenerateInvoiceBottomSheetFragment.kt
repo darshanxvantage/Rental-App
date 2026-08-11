@@ -21,18 +21,7 @@ import com.xvantage.rental.R
 import com.xvantage.rental.data.model.BillingCycle
 import kotlinx.coroutines.launch
 
-/**
- * "Generate Invoice for any month" bottom sheet.
- *
- * Usage from the tenant screen:
- *   GenerateInvoiceBottomSheetFragment.newInstance(tenantId)
- *       .show(childFragmentManager, "generate_invoice")
- *
- * Wire ONE thing before using this: replace the `apiService` line in
- * onViewCreated() with however your app actually obtains its Retrofit
- * instance (Hilt/Koin injection, a singleton object, etc.) — that's
- * the only project-specific piece I couldn't see from here.
- */
+
 @AndroidEntryPoint
 class GenerateInvoiceBottomSheetFragment : BottomSheetDialogFragment() {
 

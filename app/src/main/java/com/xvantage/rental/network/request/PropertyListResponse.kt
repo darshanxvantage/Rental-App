@@ -30,9 +30,11 @@ data class PropertyImage(
     val image: String
 )
 
-data class PropertyRoom(
-    val id: String,
-    val room_no: String,
-    val status: String,
-    val rent: String? = null
-)
+ data class PropertyRoom(
+     val id: String,
+     val room_no: String,
+     val status: String,
+     val rent: String? = null,
+     val bedCount: Int = 1,
+     val occupiedBeds: Int = 0
+ )

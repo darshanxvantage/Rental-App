@@ -77,7 +77,7 @@ class PropertyRepository @Inject constructor(private val apiInterface: APIInterf
                     }
                 } ?: "image/*"
 
- 
+
                 val file = File(request.imageUri.path ?: "")
                 val imageRequestBody = RequestBody.create(contentType.toMediaTypeOrNull(), file)
 

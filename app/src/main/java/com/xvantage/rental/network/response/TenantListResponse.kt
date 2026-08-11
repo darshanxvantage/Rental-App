@@ -120,5 +120,12 @@ data class TenantRoomDetails(
 
 data class TenantProperty(
 
+    val name: String?,
+
+    val property_type: TenantPropertyType? = null
+)
+
+data class TenantPropertyType(
+
     val name: String?
 )

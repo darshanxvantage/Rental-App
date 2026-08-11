@@ -44,5 +44,11 @@ data class PropertyRoomItem(
 
     val status: String,
 
-    val rent: Double = 0.0
+    val rent: Double = 0.0,
+
+    val roomType: String? = null,
+
+    val bedCount: Int = 1,
+
+    val occupiedBeds: Int = 0
 )

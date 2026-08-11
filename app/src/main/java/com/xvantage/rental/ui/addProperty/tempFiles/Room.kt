@@ -18,9 +18,12 @@ data class Room(
     val propertyId: String = "",
     val number: String = "",
     val type: String = "",
+    val propertyTypeName: String = "",
     val rent: Double = 0.0,
     val meterReading: Double = 0.0,
     val readingDate: Long = 0L,
     val isOccupied: Boolean = false,
-    val tenantId: String = ""
+    val tenantId: String = "",
+    val bedCount: Int = 1,
+    val occupiedBeds: Int = 0
 ) : Parcelable

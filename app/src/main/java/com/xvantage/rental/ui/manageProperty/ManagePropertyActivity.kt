@@ -115,12 +115,13 @@ class ManagePropertyActivity :
 
     override fun onAddTenantClick(
         room: PropertyRoom,
-        position: Int
+        position: Int,
+        propertyTypeName: String?
     ) {
 
         if (room.status.contains("OCCUP", true)) {
 
-            showOccupiedPopup(room)
+            showOccupiedPopup(room, propertyTypeName)
 
         } else {
 
@@ -204,7 +205,7 @@ class ManagePropertyActivity :
 
             .show()
     }
-    private fun showOccupiedPopup(room: PropertyRoom) {
+    private fun showOccupiedPopup(room: PropertyRoom, propertyTypeName: String? = null) {
 
         val dialog = Dialog(this)
 
@@ -215,11 +216,14 @@ class ManagePropertyActivity :
 
         dialog.setCancelable(true)
 
+        val unitWord = com.xvantage.rental.utils.UnitLabelProvider
+            .forPropertyType(propertyTypeName).singular
+
         binding.tvRoomNo.text =
-            "Room ${room.room_no}"
+            "$unitWord ${room.room_no}"
 
         binding.tvMessage.text =
-            "This room is already occupied."
+            "This ${unitWord.lowercase()} is already occupied."
 
         binding.btnAnotherRoom.setOnClickListener {
 

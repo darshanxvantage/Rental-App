@@ -57,14 +57,17 @@ class PropertyGroupAdapter(
                     "Property=${property.name} Room=${it.room_no} Status=${it.status}"
                 )
             }
+            val unitLabel = com.xvantage.rental.utils.UnitLabelProvider
+                .forPropertyType(property.property_type?.name)
             binding.tvTotalRooms.text =
-                "Rooms : ${property.no_of_room}"
+                "Total ${unitLabel.plural} : ${property.no_of_room}"
 
 
             val roomAdapter =
                 ManagePropertyAdapter(
                     context,
-                    listener
+                    listener,
+                    property.property_type?.name
                 )
 
             roomAdapter.addItems(

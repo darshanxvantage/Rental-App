@@ -12,7 +12,8 @@ import android.annotation.SuppressLint
 
 class ManagePropertyAdapter(
     private val context: Context,
-    private val listener: OnRoomItemClickListener
+    private val listener: OnRoomItemClickListener,
+    private val propertyTypeName: String? = null
 ) : RecyclerView.Adapter<ManagePropertyAdapter.ManagePropertyViewHolder>() {
 
     private var roomList: List<PropertyRoom> = emptyList()
@@ -27,7 +28,7 @@ class ManagePropertyAdapter(
 
     interface OnRoomItemClickListener {
         fun onRoomClick(roomNumber: String, position: Int)
-        fun onAddTenantClick(room: PropertyRoom, position: Int)
+        fun onAddTenantClick(room: PropertyRoom, position: Int, propertyTypeName: String?)
     }
 
     inner class ManagePropertyViewHolder(
@@ -42,35 +43,35 @@ class ManagePropertyAdapter(
             itemBinding.tvRoomNumber.text =
                 room.room_no
 
-            if (
-                room.status.contains(
-                    "OCCUP",
-                    true
-                )
-            ) {
-
-                itemBinding.tvOccupied.text =
-                    "Occupied"
-
-                itemBinding.tvOccupied.setBackgroundResource(
-                    R.drawable.green_status_bg
-                )
-
-                itemBinding.btnAddTenant.text =
-                    "View Tenant"
-
+            val bedCount = if (room.bedCount > 0) room.bedCount else 1
+            val isFull = if (bedCount <= 1) {
+                room.status.contains("OCCUP", true)
             } else {
-
-                itemBinding.tvOccupied.text =
-                    "Vacant"
-
-                itemBinding.tvOccupied.setBackgroundResource(
-                    R.drawable.orange_status_bg
-                )
-
-                itemBinding.btnAddTenant.text =
-                    "Add Tenant"
+                room.occupiedBeds >= bedCount
             }
+
+            when {
+                bedCount <= 1 -> {
+                    itemBinding.tvOccupied.text = if (isFull) "Occupied" else "Vacant"
+                    itemBinding.tvOccupied.setBackgroundResource(
+                        if (isFull) R.drawable.green_status_bg else R.drawable.orange_status_bg
+                    )
+                }
+                room.occupiedBeds <= 0 -> {
+                    itemBinding.tvOccupied.text = "Vacant"
+                    itemBinding.tvOccupied.setBackgroundResource(R.drawable.orange_status_bg)
+                }
+                isFull -> {
+                    itemBinding.tvOccupied.text = "Full"
+                    itemBinding.tvOccupied.setBackgroundResource(R.drawable.green_status_bg)
+                }
+                else -> {
+                    itemBinding.tvOccupied.text = "${room.occupiedBeds}/$bedCount Occupied"
+                    itemBinding.tvOccupied.setBackgroundResource(R.drawable.orange_status_bg)
+                }
+            }
+
+            itemBinding.btnAddTenant.text = if (isFull) "View Tenant" else "Add Tenant"
 
             itemBinding.root.setOnClickListener {
 
@@ -84,7 +85,8 @@ class ManagePropertyAdapter(
 
                 listener.onAddTenantClick(
                     room,
-                    position
+                    position,
+                    propertyTypeName
                 )
             }
         }

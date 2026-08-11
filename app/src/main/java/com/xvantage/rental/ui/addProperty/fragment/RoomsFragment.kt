@@ -92,9 +92,12 @@ class RoomsFragment : Fragment() {
             Room(
                 id = it.id,
                 number = it.room_no,
-                type = property.propertyType ?: "",
+                type = it.roomType ?: "",
+                propertyTypeName = property.propertyType ?: "",
                 rent = it.rent,
-                isOccupied = it.status.equals("OCCUPED", true)
+                isOccupied = it.status.equals("OCCUPED", true),
+                bedCount = it.bedCount,
+                occupiedBeds = it.occupiedBeds
             )
         }
         showEmptyState(roomList.isEmpty())

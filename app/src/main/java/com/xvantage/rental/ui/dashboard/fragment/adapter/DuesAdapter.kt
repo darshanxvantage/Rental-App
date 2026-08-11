@@ -41,7 +41,9 @@ class DuesAdapter(
             binding.tvPhone.text = tenant.phone_number ?: ""
             val room = tenant.tenant_details?.room_no ?: "—"
             val property = tenant.tenant_details?.property?.name ?: "—"
-            binding.tvRoomProperty.text = "Room $room • $property"
+            val unitLabel = com.xvantage.rental.utils.UnitLabelProvider
+                .forPropertyType(tenant.tenant_details?.property?.property_type?.name).singular
+            binding.tvRoomProperty.text = "$unitLabel $room • $property"
 
             // ── Profile photo ──
             if (!tenant.profile_pic.isNullOrEmpty()) {
@@ -180,8 +182,10 @@ class DuesAdapter(
             dialog.setContentView(view)
 
             view.findViewById<TextView>(R.id.tvHistoryTenantName)?.text = tenant.tenant_name
+            val historyUnitLabel = com.xvantage.rental.utils.UnitLabelProvider
+                .forPropertyType(tenant.tenant_details?.property?.property_type?.name).singular
             view.findViewById<TextView>(R.id.tvHistoryRoomProperty)?.text =
-                "Room ${tenant.tenant_details?.room_no ?: "—"} • ${tenant.tenant_details?.property?.name ?: "—"}"
+                "$historyUnitLabel ${tenant.tenant_details?.room_no ?: "—"} • ${tenant.tenant_details?.property?.name ?: "—"}"
             view.findViewById<TextView>(R.id.tvHistoryTotalDue)?.text =
                 formatAmount(viewModel.getTotalDue(tenant))
 

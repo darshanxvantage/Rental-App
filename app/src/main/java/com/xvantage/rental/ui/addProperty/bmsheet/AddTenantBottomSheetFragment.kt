@@ -325,7 +325,7 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
                             "Vacant"
                         }
 
-                    "Room ${it.room_no} - $roomStatus"
+                    "${com.xvantage.rental.utils.UnitLabelProvider.forPropertyType(propertyDetails?.propertyType).singular} ${it.room_no} - $roomStatus"
                 }
 
                 ?: emptyList()
@@ -401,10 +401,11 @@ class AddTenantBottomSheetFragment : BottomSheetDialogFragment() {
         val roomNo = dialog.findViewById<TextView>(R.id.tvRoomNo)
         val message = dialog.findViewById<TextView>(R.id.tvMessage)
 
-        roomNo.text = "Room ${room.room_no}"
+        val unitWord = com.xvantage.rental.utils.UnitLabelProvider.forPropertyType(propertyDetails?.propertyType).singular
+        roomNo.text = "$unitWord ${room.room_no}"
 
         message.text =
-            "This room is already occupied.\nPlease choose another room."
+            "This ${unitWord.lowercase()} is already occupied.\nPlease choose another ${unitWord.lowercase()}."
 
         dialog.findViewById<Button>(R.id.btnAnotherRoom)
             .setOnClickListener {
